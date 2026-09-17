@@ -37,3 +37,7 @@ The corrected downloaded reggae MIDI was opened in Logic Pro on its SoCal kit, t
 The audio file was checked for duration, signal and clipping. These tools do not provide listening input, so this is not a subjective listening sign-off. The browser synthesizer and Logic's SoCal kit are different sound sources.
 
 The final computer-use Stop check held at 63 completed calls across subsequent observations. Its exported 1/64 live snapshot contained only kicks after the kick-only direction, with no other drums. This was a partial rolling snapshot after development hot reload, not a complete four-bar fixture.
+
+## Publication
+
+Published commit `7d551f2` to `https://beatbox.grahammiles.me/make`, Worker version `294e4fa9-96e6-4d64-b0a4-dbf51310336d`. Computer-use verification on the public page confirmed the four-bar default, live musical direction and 16 completed model calls, then a stopped transport with MIDI export enabled. Final build, 121 tests and deployment dry-run passed; the live deployment completed successfully.
