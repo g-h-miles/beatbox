@@ -79,6 +79,8 @@ make ml-import PACK=/path/to/my-beatbox-training.json VOICE=my-voice
 
 Import validates sizes/labels/IDs, decodes audio into local WAVs, rejects exact duplicates, and preserves the train/holdout distinction. It does **not** invent ground-truth onset times. Review and annotate those before using the recordings as transcription benchmarks. A profile's fresh isolated takes are also not a substitute for evaluating a separate groove.
 
+For a preliminary personal spectral classifier, run `python ml/evaluate_private_voice.py artifacts/voice-data/<voice>/<pack>/manifest.json` after training the onset model. This selects an SVM using temporal blocks of Take 1 only, then evaluates Take 2. It accepts variable repetition counts. Reports and profile arrays remain beside the ignored private recordings. Its score is agreement with recording-level labels on automatically detected candidates, not verified event accuracy: breaths, false detections, and missing hits require separate review. Do not tune on the reported Take 2 results or publish the private profile by default.
+
 ## Sources and attribution
 
 - Alejandro Delgado, **Amateur Vocal Percussion Dataset v3**, [Zenodo 3250230](https://zenodo.org/records/3250230), CC BY 4.0. The committed ONNX model and spectral model artifacts are derived from AVP. Raw audio is not redistributed.
