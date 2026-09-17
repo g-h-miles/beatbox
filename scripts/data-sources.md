@@ -59,4 +59,16 @@ Run `python3 scripts/data-fetch-public-audio.py --avp-lvt` to fetch official arc
 
 ## Sources examined but not used
 
+The [beatrhyming supplement inventory](../docs/research/beatrhyming-reference-inventory.md)
+adds 88 author-provided release-time measurements, but no audio or complete
+onset reference. It has not been used for model training or evaluation and does
+not fill the literal boots-and-cats benchmark gap. Its CC BY 4.0 archive is
+retained with verified hashes in ignored artifacts.
+
+The [Beatboxset source audit](../docs/research/beatboxset-scope-audit.md) verifies
+allowed-file integrity and contributor metadata, documents the recording-source
+shift between the existing training and validation splits, and clarifies that
+monophony is not established. The source publications define `t` as tom; prior
+frozen experiments that excluded that label remain unchanged.
+
 jaCappella offers isolated vocal percussion plus scores, but currently requires sharing contact details and accepting dataset access conditions. No acceptance/request was submitted. Freesound sample-stitched loops, multitracked drums, and VST outputs were excluded from real monophonic performance testing. Existing AVP and Beatboxset1 are already development-exposed and cannot restore a fresh test simply by renaming a split.

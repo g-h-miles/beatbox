@@ -14,6 +14,14 @@ label errors. AVP 21–28 has been inspected repeatedly and is not a fresh holdo
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.
 
+The subsequent [browser-feature domain expansion](../../ml/browser_domain_protocol.md)
+improves raw core classification on the mixed-recording cohort, but regresses the
+grouped AVP baseline and recognizes too few noncore events to ship. A
+[single scaled-grouping diagnostic](../../ml/browser_domain_groups_protocol.md)
+does not resolve that tradeoff. See the [source audit](beatboxset-scope-audit.md)
+for corpus limits and the [beatrhyming inventory](beatrhyming-reference-inventory.md)
+for a newly located partial reference that has not been used for evaluation.
+
 ## Data and evaluation
 
 Source: Alejandro Delgado, **Amateur Vocal Percussion Dataset v3**, https://zenodo.org/records/3250230, licensed CC BY 4.0. Features, model weights and tiny numeric test fixtures in this branch are derived from that dataset. Audio is not redistributed. This attribution applies to the generated model and fixtures in addition to the application MIT license.
