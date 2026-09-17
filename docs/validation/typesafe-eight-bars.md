@@ -42,3 +42,10 @@ The complete real eight-bar 1/64 browser test passed all 512 sequential position
 That test used 513 model calls and 6,180,419 reported input tokens, approximately $0.260 at the test-date rate. Keeping every previous decision makes the finest, longest setting considerably more expensive than the eight-bar 1/8 example. This result establishes compliance with this explicit instruction, not universal genre quality.
 
 The raw chosen note positions and velocities are preserved in [the rock example](examples/typesafe-rock-64ths.json) and [the balanced reggae example](examples/typesafe-reggae.json). Positions are zero-based; divide by the resolution to locate their bar. The reggae example predates the final onset-boundary wording; final public checks are recorded below.
+
+
+## Public deployment verification
+
+Source commit `6b7c213` was deployed to Cloudflare version `e000c234-ae1a-49bf-9bc4-c3283d324b0a` at https://beatbox.grahammiles.me/make. A real public browser test generated all 12 requested notes at 1/8 resolution, played and exported the pattern, and passed mobile layout and recorder navigation with no page errors.
+
+The default public configuration was then tested with the unexpanded prompt "Syncopated reggae": eight bars, 1/16 notes, 90 BPM. It completed all 128 positions in 77.5 seconds using 129 model calls and 719,125 reported input tokens, approximately $0.0302. Kick and snare land together on beat 3 in every bar at velocity 104; hats play at velocity 56. The model added quarter-note hats as well as offbeats, so its selected offbeat timekeeping intent is interpreted loosely. This remains a basic generated groove, not a guarantee that freeform descriptions translate exactly. [The actual public output](examples/typesafe-reggae-default.json) preserves every chosen note.

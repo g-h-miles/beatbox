@@ -1,0 +1,405 @@
+{
+  "prompt": "Syncopated reggae",
+  "bpm": 90,
+  "bars": 8,
+  "resolution": 16,
+  "intent": {
+    "foundation": "one_drop",
+    "timekeeping": "offbeat_eighths",
+    "voice": "closed",
+    "variation": "subtle",
+    "syncopation": "offbeats"
+  },
+  "notes": [
+    {
+      "position": 2,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 4,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 6,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 8,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 8,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 8,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 10,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 12,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 14,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 18,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 20,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 22,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 24,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 24,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 24,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 26,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 28,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 30,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 32,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 34,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 36,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 38,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 40,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 40,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 40,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 42,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 44,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 46,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 48,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 50,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 52,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 54,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 56,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 56,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 56,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 58,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 60,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 62,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 64,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 66,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 68,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 70,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 72,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 72,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 72,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 74,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 76,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 78,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 80,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 82,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 84,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 86,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 88,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 88,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 88,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 90,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 92,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 94,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 96,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 98,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 100,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 102,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 104,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 104,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 104,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 106,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 108,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 110,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 112,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 114,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 116,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 118,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 120,
+      "drum": "kick",
+      "velocity": 104
+    },
+    {
+      "position": 120,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 120,
+      "drum": "snare",
+      "velocity": 104
+    },
+    {
+      "position": 122,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 124,
+      "drum": "closed",
+      "velocity": 56
+    },
+    {
+      "position": 126,
+      "drum": "closed",
+      "velocity": 56
+    }
+  ]
+}
