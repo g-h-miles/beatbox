@@ -34,6 +34,12 @@ feature blocks reproduced the original relative features exactly across all
 39 extraction recordings, so a relative-feature parity error does not explain
 this rejected result.
 
+The [isolated-hit insertion-context condition](../../ml/browser_isolated_context_results.md)
+added 2,943 public training events to the unchanged 1,161 groove rows. It also
+regressed (610 core/548 four-class versus 639/605), including worse snare recall.
+The source data was extracted with the browser implementation and all original
+training hashes remained unchanged. No production replacement followed.
+
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.
 
