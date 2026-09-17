@@ -15,7 +15,8 @@
     "fft.js": "latest",
     "lucide-react": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "onnxruntime-web": "1.30.0"
   },
   "devDependencies": {
     "@playwright/test": "latest",

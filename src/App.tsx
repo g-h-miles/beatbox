@@ -17,16 +17,10 @@ import {
   WandSparkles,
   X,
 } from "lucide-react";
-import {
-  analyze,
-  demoBuffer,
-  drumSound,
-  features,
-  MAX_SECONDS,
-  mono,
-} from "./audio";
+import { demoBuffer, drumSound, features, MAX_SECONDS, mono } from "./audio";
 import { drums, type Drum, type Hit } from "./model";
 import { applyRhythm, estimateTempo, inferGrid, probabilities } from "./rhythm";
+import { detectHits } from "./detect";
 import { midi } from "./midi";
 import { spectralDistance } from "./evidence";
 const fmt = (t: number) =>
@@ -53,6 +47,7 @@ export default function App() {
     [activePad, setActivePad] = useState<Drum | null>(null),
     [help, setHelp] = useState(false);
   const helpButton = useRef<HTMLButtonElement>(null);
+  const detection = useRef<AbortController | null>(null);
   const input = useRef<HTMLInputElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     context = useRef<AudioContext | null>(null),
@@ -107,6 +102,7 @@ export default function App() {
       .then((v) => setConfigured(!!v?.configured))
       .catch(() => {});
     return () => {
+      detection.current?.abort();
       stream.current?.getTracks().forEach((t) => t.stop());
       cancelAnimationFrame(frame.current);
       void context.current?.close();
@@ -180,14 +176,34 @@ export default function App() {
     draw();
     return () => observer.disconnect();
   }, [samples]);
-  function loadBuffer(decoded: AudioBuffer, fileName: string) {
+  async function findHits(
+    data: Float32Array,
+    sampleRate: number,
+    nextMode = mode,
+  ) {
+    detection.current?.abort();
+    const controller = new AbortController();
+    detection.current = controller;
+    const version = ++generation.current;
+    const result = await detectHits(
+      data,
+      sampleRate,
+      sensitivity,
+      nextMode,
+      controller.signal,
+      (fraction) => setBusy(`Finding hits… ${Math.round(fraction * 100)}%`),
+    );
+    if (controller.signal.aborted || version !== generation.current)
+      throw new DOMException("Cancelled", "AbortError");
+    return result;
+  }
+  async function loadBuffer(decoded: AudioBuffer, fileName: string) {
     if (decoded.duration > MAX_SECONDS)
       throw Error(
         `Keep it under ${MAX_SECONDS} seconds for this little beat machine.`,
       );
-    const data = mono(decoded),
-      found = analyze(data, decoded.sampleRate, sensitivity, mode);
-    generation.current++;
+    const data = mono(decoded);
+    const { hits: found, fallback } = await findHits(data, decoded.sampleRate);
     setBuffer(decoded);
     setSamples(data);
     setName(fileName);
@@ -195,9 +211,11 @@ export default function App() {
     setBeatOne(null);
     setSelected(null);
     setMessage(
-      found.length
-        ? `${found.length} hits found. Play the drum preview, then check the hit list.`
-        : "No hits detected. Increase sensitivity or try a louder recording.",
+      fallback
+        ? "The precise detector could not load. Basic detection is ready; check the hit list."
+        : found.length
+          ? `${found.length} hits found. Classify them, then compare the preview with your recording.`
+          : "No hits detected. Increase sensitivity or try a louder recording.",
     );
   }
   async function loadFile(file?: File) {
@@ -209,7 +227,7 @@ export default function App() {
       if (file.size > 30 * 1024 * 1024)
         throw Error("Please use an audio file smaller than 30 MB.");
       const decoded = await audio().decodeAudioData(await file.arrayBuffer());
-      loadBuffer(decoded, file.name);
+      await loadBuffer(decoded, file.name);
     } catch (e) {
       setMessage(
         e instanceof Error
@@ -225,7 +243,7 @@ export default function App() {
     stop();
     setBusy("Making a little groove…");
     try {
-      loadBuffer(await demoBuffer(), "Pocket groove · synthetic demo");
+      await loadBuffer(await demoBuffer(), "Pocket groove · synthetic demo");
     } catch {
       setMessage("Could not create the demo audio.");
     } finally {
@@ -272,7 +290,7 @@ export default function App() {
           const data = await new Blob(chunks, {
             type: rec.mimeType,
           }).arrayBuffer();
-          loadBuffer(
+          await loadBuffer(
             await audio().decodeAudioData(data),
             "Mic take · " +
               new Date().toLocaleTimeString([], {
@@ -383,13 +401,26 @@ export default function App() {
       `Applied your ${drums.find((d) => d.id === hit.drum)!.name} label to similar sounds. Review the updated hit list.`,
     );
   }
-  function detect() {
+  async function detect(nextMode = mode) {
     if (!samples || !buffer) return;
     stop();
-    generation.current++;
-    setHits(analyze(samples, buffer.sampleRate, sensitivity, mode));
-    setSelected(null);
-    setMessage("Hits detected again. Previous edits were replaced.");
+    setBusy("Finding hits…");
+    try {
+      const result = await findHits(samples, buffer.sampleRate, nextMode);
+      setHits(result.hits);
+      setSelected(null);
+      setBeatOne(null);
+      setMessage(
+        result.fallback
+          ? "The precise detector could not load. Basic detection is ready; check the hit list."
+          : "Hits detected again. Previous edits were replaced.",
+      );
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError"))
+        setMessage("Could not detect hits. Please try again.");
+    } finally {
+      setBusy("");
+    }
   }
   async function classify() {
     if (!hits.length) return;
@@ -658,7 +689,7 @@ export default function App() {
             </button>
           </div>
           <div
-            className="timeline"
+            className={`timeline ${hits.length > 32 ? "dense" : ""}`}
             onClick={(e) => {
               if (buffer && !disabled) {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -823,19 +854,7 @@ export default function App() {
                 onChange={(e) => {
                   const next = e.target.value as "hits" | "syllables";
                   setMode(next);
-                  if (samples && buffer) {
-                    stop();
-                    generation.current++;
-                    setHits(
-                      analyze(samples, buffer.sampleRate, sensitivity, next),
-                    );
-                    setSelected(null);
-                  }
-                  setMessage(
-                    next === "syllables"
-                      ? "Syllable mode groups word endings. Leave a small gap between words; use hit mode for fast percussion."
-                      : "Hit mode keeps individual percussion attacks.",
-                  );
+                  if (samples && buffer) void detect(next);
                 }}
               >
                 <option value="hits">Beatbox hits</option>
@@ -859,7 +878,7 @@ export default function App() {
               </label>
               <button
                 disabled={!buffer || disabled}
-                onClick={detect}
+                onClick={() => void detect()}
                 title="Re-detect hits and replace edits"
               >
                 <RotateCcw size={14} /> Re-detect
