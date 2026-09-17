@@ -4,9 +4,13 @@ export function wavClip(
   sampleRate: number,
   start: number,
   end: number,
+  maxSeconds = 1.5,
 ): Uint8Array {
   const rate = 16000;
-  const count = Math.max(1, Math.min(24000, Math.ceil((end - start) * rate)));
+  const count = Math.max(
+    1,
+    Math.min(Math.min(90, maxSeconds) * rate, Math.ceil((end - start) * rate)),
+  );
   const bytes = new Uint8Array(44 + count * 2),
     view = new DataView(bytes.buffer);
   const text = (at: number, s: string) =>

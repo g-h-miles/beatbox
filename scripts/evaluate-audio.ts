@@ -4,7 +4,7 @@ import { wavClip, toBase64 } from "../src/wav";
 const origin = process.argv[2];
 if (!origin?.startsWith("https://"))
   throw Error("Pass the candidate preview HTTPS origin.");
-const rows = JSON.parse(readFileSync("artifacts/dataset.json", "utf8")) as {
+const rawRows = JSON.parse(readFileSync("artifacts/dataset.json", "utf8")) as {
   participant: string;
   file: string;
   mode: string;
@@ -12,6 +12,9 @@ const rows = JSON.parse(readFileSync("artifacts/dataset.json", "utf8")) as {
   time: number;
   duration: number;
 }[];
+const rows = rawRows.filter((r) =>
+  ["kd", "sd", "hhc", "hho"].includes(r.label),
+);
 const subset: typeof rows = [];
 for (const file of [
   ...new Set(

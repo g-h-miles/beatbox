@@ -68,3 +68,24 @@ npx tsx scripts/evaluate-audio.ts https://YOUR-CANDIDATE-PREVIEW-ORIGIN
 ```
 
 The benchmark uploads clips from the public AVP dataset to Google, then sends the resulting descriptions to TypeSafe. It writes an incremental, ignored result file under `artifacts/`. It does not upload a user's recordings automatically. A released audio-model UI will need to state clearly that classification sends audio to Google.
+
+## Live Gemini results — September 16, 2026
+
+The user configured `GEMINI_API_KEY` through the Makefile. Its presence was verified by secret **name**, and successful live inference confirmed it works. No secret value was printed, committed or sent to the browser.
+
+Google's audio documentation example used `generation_config.response_format.text.mime_type: "application/json"`, but the live endpoint rejected that field value. The candidate now uses the successfully tested `response_mime_type: "application/json"` contract. Input IDs are constrained in the output schema; no model controls MIDI timing.
+
+| Experiment | Result | Scope |
+| --- | --- | --- |
+| Gemini 3.8 Flash, isolated clips in batches of eight | 23/63 labeled clips (36.51%) | Stopped early for poor quality; an extra unlabeled dataset event was excluded. The extractor was corrected to filter unsupported labels before sampling. This partial run is not a complete paired benchmark. |
+| Gemini 3.8 Flash, full recording + target onset times | 50/144 (34.72%) | Completed 12 recordings before a model request failed; planned total was 168. Jev on the descriptions scored 51/144 (35.42%). |
+| Gemini 3.1 Pro, one normalized sound repeated three times per clip | 6/11 (54.55%) | Small diagnostic probe of the first available example per class from selected personal improvisations; not a broad accuracy estimate. Jev also scored 6/11. |
+| Wav2Vec2 base pretrained encoder + CatBoost | 63.30% on 1,139 test groove events | Local experiment; participants 21–28 remained outside training. Worse than the earlier feature classifier. |
+| Wav2Vec2 embeddings + same-person isolated references | Approximately 51–55% | Three, five, or ten references per class; did not provide a reliable calibration fix. |
+| Within-take nearest-neighbor references | Up to 80.24% on remaining events | Three **ground-truth labeled** examples per present class, excluded from scoring; duration-weighted spectral distance. This is assisted evaluation, not automatic recognition. |
+
+Numeric/description results are retained in [gemini-context-results.json](gemini-context-results.json) and [gemini-pro-probe.json](gemini-pro-probe.json). The benchmark is still restricted to four annotated drum classes, not all seven UI choices. Repeated experimentation on these cohorts means they are development benchmarks, not fresh generalization evidence for another tuning round.
+
+**Decision: do not deploy these candidates.** An audio-capable API did not establish an improvement. The production website remains unchanged. Further useful work requires better task-specific data and model development, or an explicitly assisted workflow; neither a new API key nor a different feature library establishes near-perfect recognition.
+
+`pretrained-embedding.py` uses the Apache-2.0-licensed public `facebook/wav2vec2-base-960h` model, downloaded through Hugging Face, with local MPS inference. Those large weights and all raw audio stay outside Git. Temporary Cloudflare preview endpoints are disabled after testing.

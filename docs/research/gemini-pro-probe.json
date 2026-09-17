@@ -1,0 +1,112 @@
+[
+  {
+    "person": 22,
+    "time": 0.17541950113378685,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "Short, low-frequency plosive sound, like 'bo'",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "person": 22,
+    "time": 0.8065759637188209,
+    "truth": "snare",
+    "id": "hit-0",
+    "drum": "snare",
+    "description": "Sharp 'k' sound",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.97
+  },
+  {
+    "person": 22,
+    "time": 1.1231519274376418,
+    "truth": "closed",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short 'ts' sound, high-frequency noise with brief decay.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "person": 22,
+    "time": 4.569024943310658,
+    "truth": "open",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short bright 't' or 'ts' sound.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "person": 23,
+    "time": 0.2246938775510204,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "Low, bass-heavy plosive vocalization imitating a kick drum.",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "person": 23,
+    "time": 0.834671201814059,
+    "truth": "snare",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short bright hiss, 'ts' sound.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "person": 23,
+    "time": 4.661609977324263,
+    "truth": "closed",
+    "id": "hit-0",
+    "drum": "open",
+    "description": "Sustained bright 'tsh' hiss.",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.98
+  },
+  {
+    "person": 23,
+    "time": 11.52814058956916,
+    "truth": "open",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short bright 'ts' sound, imitating a closed hi-hat.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "person": 24,
+    "time": 1.5863945578231293,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "open",
+    "description": "Sustained tsh hiss with longer decay.",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.99
+  },
+  {
+    "person": 24,
+    "time": 0.07383219954648526,
+    "truth": "closed",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short 'ts' sound, bright hiss.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 0.99
+  },
+  {
+    "person": 24,
+    "time": 0.8859863945578231,
+    "truth": "open",
+    "id": "hit-0",
+    "drum": "open",
+    "description": "Sustained bright tsh hiss with longer decay.",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.99
+  }
+]

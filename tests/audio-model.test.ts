@@ -136,3 +136,67 @@ it("rejects missing or invented model IDs rather than moving labels between hits
     (await classifyAudio(request([{ id: "hit-0", audio }]), env)).status,
   ).toBe(502);
 });
+
+it("validates context timestamps against the actual WAV duration", async () => {
+  const fetch = vi.fn();
+  vi.stubGlobal("fetch", fetch);
+  const req = new Request("https://beatbox.example/api/classify-audio", {
+    method: "POST",
+    headers: { Origin: "https://beatbox.example" },
+    body: JSON.stringify({
+      contextAudio: audio,
+      hits: [{ id: "hit-0", time: 1 }],
+    }),
+  });
+  expect((await classifyAudio(req, env)).status).toBe(400);
+  expect(fetch).not.toHaveBeenCalled();
+});
+it("passes context audio with fixed input IDs and times, without asking for new timestamps", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(
+      Response.json({
+        candidates: [
+          {
+            content: {
+              parts: [
+                {
+                  text: JSON.stringify({
+                    answers: [
+                      {
+                        id: "hit-0",
+                        drum: "kick",
+                        description: "A low plosive.",
+                      },
+                    ],
+                  }),
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    )
+    .mockResolvedValueOnce(
+      Response.json({
+        answers: { "hit-0": { choice: "kick", confidence: 0.9 } },
+      }),
+    );
+  vi.stubGlobal("fetch", fetch);
+  const req = new Request("https://beatbox.example/api/classify-audio", {
+    method: "POST",
+    headers: { Origin: "https://beatbox.example" },
+    body: JSON.stringify({
+      contextAudio: audio,
+      hits: [{ id: "hit-0", time: 0.02 }],
+    }),
+  });
+  expect((await classifyAudio(req, env)).status).toBe(200);
+  const body = JSON.parse(fetch.mock.calls[0][1].body);
+  expect(body.contents[0].parts[2].text).toContain('"onsetSeconds":0.02');
+  expect(body.generation_config.response_mime_type).toBe("application/json");
+  expect(
+    body.generation_config.response_schema.properties.answers.items.properties
+      .id.enum,
+  ).toEqual(["hit-0"]);
+});

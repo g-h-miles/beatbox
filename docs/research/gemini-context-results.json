@@ -1,0 +1,1442 @@
+[
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 0.18893424036281178,
+    "truth": "snare",
+    "id": "hit-0",
+    "drum": "snare",
+    "description": "vocalized 'Ta' backbeat imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.88
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 2.4550566893424035,
+    "truth": "closed",
+    "id": "hit-1",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.88
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 3.7714285714285714,
+    "truth": "closed",
+    "id": "hit-2",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare sound on the backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.89
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 5.421383219954649,
+    "truth": "snare",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "sharp 'Ta' vocal snare backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 6.707210884353741,
+    "truth": "snare",
+    "id": "hit-4",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare sound",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.86
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 8.349024943310658,
+    "truth": "closed",
+    "id": "hit-5",
+    "drum": "snare",
+    "description": "vocalized 'Ta' backbeat functioning as a snare",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.9
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 9.632108843537415,
+    "truth": "closed",
+    "id": "hit-6",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.92
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 10.954875283446713,
+    "truth": "closed",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "sharp 'Ta' syllable imitating a snare",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.94
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 12.611337868480726,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.92
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 14.261496598639456,
+    "truth": "open",
+    "id": "hit-9",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare sound",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.84
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 15.872630385487529,
+    "truth": "snare",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "sharp 'Ta' vocal snare backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P21_Improvisation_Fixed.wav",
+    "time": 17.45034013605442,
+    "truth": "open",
+    "id": "hit-11",
+    "drum": "snare",
+    "description": "vocalized 'Ta' snare backbeat",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.93
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 0.17541950113378685,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "Spoken 'pum' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 3.9209750566893424,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "kick",
+    "description": "Spoken 'pum' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 6.49922902494331,
+    "truth": "kick",
+    "id": "hit-2",
+    "drum": "snare",
+    "description": "Spoken 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.76
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 9.456507936507936,
+    "truth": "closed",
+    "id": "hit-3",
+    "drum": "closed",
+    "description": "Spoken 'ti' imitating a closed hi-hat",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 12.52154195011338,
+    "truth": "snare",
+    "id": "hit-4",
+    "drum": "snare",
+    "description": "Spoken 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.79
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 15.219614512471656,
+    "truth": "snare",
+    "id": "hit-5",
+    "drum": "snare",
+    "description": "Spoken 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.76
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 18.45784580498866,
+    "truth": "open",
+    "id": "hit-6",
+    "drum": "closed",
+    "description": "Spoken 'chi' with short bright hiss imitating a closed hi-hat",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 21.4646485260771,
+    "truth": "snare",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Spoken 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.7
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 24.58748299319728,
+    "truth": "closed",
+    "id": "hit-8",
+    "drum": "snare",
+    "description": "Spoken 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.73
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 27.01145124716553,
+    "truth": "snare",
+    "id": "hit-9",
+    "drum": "closed",
+    "description": "Spoken 'ti' imitating a closed hi-hat",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 30.003809523809522,
+    "truth": "open",
+    "id": "hit-10",
+    "drum": "open",
+    "description": "Spoken 'cha' with sustained open release imitating an open hi-hat",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Fixed.wav",
+    "time": 31.765804988662133,
+    "truth": "kick",
+    "id": "hit-11",
+    "drum": "kick",
+    "description": "Spoken 'pum' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 0.41827664399092973,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "Vocal 'boom' sound with a low-frequency punch imitating a kick drum.",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 2.7178231292517006,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "kick",
+    "description": "Deep vocal 'boom' sound imitating a kick drum.",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 5.116371882086168,
+    "truth": "open",
+    "id": "hit-2",
+    "drum": "kick",
+    "description": "Bass-heavy vocal 'boom' percussive hit imitating a kick drum.",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 7.96390022675737,
+    "truth": "closed",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Sharp vocal 'ta' sound with bright mid-range transient imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.98
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 9.821678004535148,
+    "truth": "open",
+    "id": "hit-4",
+    "drum": "kick",
+    "description": "Low-frequency vocal 'boom' sound imitating a kick drum.",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 12.462267573696145,
+    "truth": "open",
+    "id": "hit-5",
+    "drum": "snare",
+    "description": "Sharp vocal 'ta' transient imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.88
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 14.936054421768707,
+    "truth": "open",
+    "id": "hit-6",
+    "drum": "snare",
+    "description": "Aspirated 'ta' syllable acting as a snare drum hit.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.52
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 17.70809523809524,
+    "truth": "snare",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Sharp vocal 'ta' hit functioning as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.8
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 20.645124716553287,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "snare",
+    "description": "Vocal 'ta' sound with mid-frequency transient imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.97
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 22.942448979591838,
+    "truth": "kick",
+    "id": "hit-9",
+    "drum": "snare",
+    "description": "Sharp vocal 'ta' hit imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.92
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 25.294512471655327,
+    "truth": "open",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "Aspirated 'ta' percussive sound imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.77
+  },
+  {
+    "file": "P23_Improvisation_Fixed.wav",
+    "time": 27.78485260770975,
+    "truth": "open",
+    "id": "hit-11",
+    "drum": "closed",
+    "description": "Short high-frequency 'chi'/'ti' sound imitating a closed hi-hat.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 0.21480725623582766,
+    "truth": "snare",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Vocalized 'te' imitating a closed hi-hat",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 1.588390022675737,
+    "truth": "snare",
+    "id": "hit-1",
+    "drum": "open",
+    "description": "Vocalized 'chee' imitating an open hi-hat",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.93
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 3.444172335600907,
+    "truth": "snare",
+    "id": "hit-2",
+    "drum": "snare",
+    "description": "Vocalized 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.8
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 4.777142857142858,
+    "truth": "open",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Vocalized 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.77
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 6.363537414965986,
+    "truth": "closed",
+    "id": "hit-4",
+    "drum": "open",
+    "description": "Vocalized 'chee' imitating an open hi-hat",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.95
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 8.644353741496598,
+    "truth": "open",
+    "id": "hit-5",
+    "drum": "closed",
+    "description": "Vocalized 'ti' imitating a closed hi-hat",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 10.95111111111111,
+    "truth": "snare",
+    "id": "hit-6",
+    "drum": "open",
+    "description": "Vocalized 'chee' imitating an open hi-hat",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.93
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 13.184036281179138,
+    "truth": "open",
+    "id": "hit-7",
+    "drum": "kick",
+    "description": "Vocalized 'pum' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 15.514739229024944,
+    "truth": "closed",
+    "id": "hit-8",
+    "drum": "kick",
+    "description": "Vocalized 'pum' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 17.099138321995465,
+    "truth": "closed",
+    "id": "hit-9",
+    "drum": "open",
+    "description": "Vocalized 'chee' imitating an open hi-hat",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.93
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 19.461768707482992,
+    "truth": "snare",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "Vocalized 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.79
+  },
+  {
+    "file": "P24_Improvisation_Fixed.wav",
+    "time": 22.71437641723356,
+    "truth": "closed",
+    "id": "hit-11",
+    "drum": "snare",
+    "description": "Vocalized 'ta' imitating a snare drum",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.77
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 0.1810657596371882,
+    "truth": "snare",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short, crisp unvoiced 't' sound imitating a closed hi-hat",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 3.7831972789115644,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "kick",
+    "description": "Explosive bilabial 'p' plosive imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 5.860680272108843,
+    "truth": "kick",
+    "id": "hit-2",
+    "drum": "kick",
+    "description": "Vocalized 'boom' lip plosive with low-frequency resonance imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 8.702607709750566,
+    "truth": "open",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ta' sound functioning as the backbeat snare",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.53
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 11.953061224489796,
+    "truth": "kick",
+    "id": "hit-4",
+    "drum": "kick",
+    "description": "Explosive 'p' plosive imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 14.892380952380952,
+    "truth": "open",
+    "id": "hit-5",
+    "drum": "kick",
+    "description": "Punchy lip plosive 'p' kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 18.66668934240363,
+    "truth": "snare",
+    "id": "hit-6",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ta' backbeat snare sound",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.81
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 21.457233560090703,
+    "truth": "kick",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Aspirated 'ta' snare transient",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.5
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 24.96253968253968,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "kick",
+    "description": "Resonant vocalized 'boom' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 28.060272108843538,
+    "truth": "closed",
+    "id": "hit-9",
+    "drum": "closed",
+    "description": "Fast unvoiced 't' closed hi-hat tap",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 29.902879818594105,
+    "truth": "kick",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "Sharp 'ta' transient functioning as a backbeat snare",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.93
+  },
+  {
+    "file": "P25_Improvisation_Fixed.wav",
+    "time": 33.19020408163265,
+    "truth": "open",
+    "id": "hit-11",
+    "drum": "kick",
+    "description": "Low explosive bilabial plosive 'p' kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 0.6183673469387755,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "Low spoken 'pohm' imitating a kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 2.655963718820862,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "kick",
+    "description": "Spoken low 'pohm' vocal percussion kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 3.903832199546485,
+    "truth": "closed",
+    "id": "hit-2",
+    "drum": "open",
+    "description": "Sustained bright 'tsh' open hi-hat hiss",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 4.671768707482993,
+    "truth": "closed",
+    "id": "hit-3",
+    "drum": "open",
+    "description": "Bright 'tsh' hiss imitating an open hi-hat",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.97
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 5.278231292517007,
+    "truth": "closed",
+    "id": "hit-4",
+    "drum": "open",
+    "description": "Aspirated 'tsh' open hi-hat sound",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 5.898775510204081,
+    "truth": "closed",
+    "id": "hit-5",
+    "drum": "open",
+    "description": "Sustained 'tsh' open hi-hat accent",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 6.530136054421769,
+    "truth": "closed",
+    "id": "hit-6",
+    "drum": "open",
+    "description": "Bright open hi-hat 'tsh' hiss",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.98
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 7.036009070294784,
+    "truth": "closed",
+    "id": "hit-7",
+    "drum": "open",
+    "description": "Accented 'tsh' open hi-hat stroke",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.98
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 7.648979591836735,
+    "truth": "closed",
+    "id": "hit-8",
+    "drum": "open",
+    "description": "Longer 'tsh' open hi-hat hiss",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 8.293333333333333,
+    "truth": "closed",
+    "id": "hit-9",
+    "drum": "open",
+    "description": "Sustained 'tsh' open hi-hat sound",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 9.908820861678004,
+    "truth": "kick",
+    "id": "hit-10",
+    "drum": "kick",
+    "description": "Spoken low-frequency 'pohm' kick drum sound",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P26_Improvisation_Fixed.wav",
+    "time": 11.777301587301586,
+    "truth": "open",
+    "id": "hit-11",
+    "drum": "aux",
+    "description": "Vocalized swooshing 'tshu' sound with a soft attack",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.4
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 0,
+    "truth": "open",
+    "id": "hit-0",
+    "drum": "open",
+    "description": "Crisp aspirated open hi-hat hiss sound",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.92
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 1.279092970521542,
+    "truth": "open",
+    "id": "hit-1",
+    "drum": "closed",
+    "description": "Short closed hi-hat t-sound",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 3.318458049886621,
+    "truth": "kick",
+    "id": "hit-2",
+    "drum": "kick",
+    "description": "Low punchy lip-plosive kick sound",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 5.103560090702948,
+    "truth": "open",
+    "id": "hit-3",
+    "drum": "closed",
+    "description": "Short precise closed hi-hat tick",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 6.539138321995464,
+    "truth": "open",
+    "id": "hit-4",
+    "drum": "open",
+    "description": "Sustained aspirated open hi-hat sizzle",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 8.378526077097506,
+    "truth": "kick",
+    "id": "hit-5",
+    "drum": "kick",
+    "description": "Deep voiced lip-plosive bass kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 10.337551020408164,
+    "truth": "open",
+    "id": "hit-6",
+    "drum": "closed",
+    "description": "Tightly articulated closed hi-hat tap",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 11.595646258503402,
+    "truth": "open",
+    "id": "hit-7",
+    "drum": "open",
+    "description": "Extended aspirated open hi-hat decay",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 13.574761904761905,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "kick",
+    "description": "Bass-heavy explosive kick beat",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 15.225396825396825,
+    "truth": "kick",
+    "id": "hit-9",
+    "drum": "closed",
+    "description": "Short closed hi-hat transient",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 16.83374149659864,
+    "truth": "open",
+    "id": "hit-10",
+    "drum": "closed",
+    "description": "Crisp closed hi-hat t-tap",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P27_Improvisation_Fixed.wav",
+    "time": 18.424149659863946,
+    "truth": "open",
+    "id": "hit-11",
+    "drum": "kick",
+    "description": "Low-frequency punchy lip plosive kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 0.3409977324263039,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tch' vocal transient functioning as a backbeat snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.52
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 2.620907029478458,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "snare",
+    "description": "Aspirated 'tch' snare sound with sharp broadband noise.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.78
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 5.004648526077098,
+    "truth": "open",
+    "id": "hit-2",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tch' snare sound.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.56
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 7.53687074829932,
+    "truth": "open",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Aspirated 'tch' backbeat snare transient.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.48
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 9.915464852607709,
+    "truth": "open",
+    "id": "hit-4",
+    "drum": "snare",
+    "description": "Sharp 'tch' aspirated snare sound.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.48
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 12.278095238095238,
+    "truth": "closed",
+    "id": "hit-5",
+    "drum": "snare",
+    "description": "Aspirated 'tch' vocal snare drum hit.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.48
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 14.603854875283446,
+    "truth": "open",
+    "id": "hit-6",
+    "drum": "snare",
+    "description": "Sharp 'tch' aspirated backbeat snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.63
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 16.872607709750568,
+    "truth": "kick",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Aspirated 'tch' vocal snare hit.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.52
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 18.621927437641723,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "snare",
+    "description": "Sharp 'tch' aspirated backbeat snare transient.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.61
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 20.734875283446712,
+    "truth": "open",
+    "id": "hit-9",
+    "drum": "snare",
+    "description": "Aspirated 'tch' vocal snare sound.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.42
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 22.81512471655329,
+    "truth": "kick",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "Sharp 'tch' aspirated snare hit.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.51
+  },
+  {
+    "file": "P28_Improvisation_Fixed.wav",
+    "time": 24.35938775510204,
+    "truth": "kick",
+    "id": "hit-11",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tch' vocal snare transient.",
+    "reviewDrum": "closed",
+    "reviewConfidence": 0.55
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 0.17541950113378685,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "Low bass-heavy explosive lip plosive 'pu' imitating a kick drum.",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 3.603809523809524,
+    "truth": "closed",
+    "id": "hit-1",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' vocal transient functioning as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 6.7070294784580495,
+    "truth": "closed",
+    "id": "hit-2",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' sound imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 10.462222222222222,
+    "truth": "kick",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' vocal percussion transient acting as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 13.734399092970522,
+    "truth": "kick",
+    "id": "hit-4",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' sound functioning as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 16.10340136054422,
+    "truth": "closed",
+    "id": "hit-5",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' vocal transient imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 18.446621315192743,
+    "truth": "open",
+    "id": "hit-6",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' sound functioning as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 20.417301587301587,
+    "truth": "snare",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' vocal transient acting as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 23.31700680272109,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' sound imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 26.16265306122449,
+    "truth": "closed",
+    "id": "hit-9",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' vocal percussion transient acting as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 28.563514739229024,
+    "truth": "kick",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' sound functioning as a snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P22_Improvisation_Personal.wav",
+    "time": 32.045374149659864,
+    "truth": "open",
+    "id": "hit-11",
+    "drum": "snare",
+    "description": "Sharp aspirated 'ka' sound imitating a snare drum.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 0.2246938775510204,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare on the backbeat.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.52
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 1.7240816326530612,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.43
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 3.3529478458049886,
+    "truth": "snare",
+    "id": "hit-2",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.45
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 5.633174603174603,
+    "truth": "kick",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.46
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 7.599614512471655,
+    "truth": "snare",
+    "id": "hit-4",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.45
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 9.440566893424036,
+    "truth": "kick",
+    "id": "hit-5",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.51
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 11.52814058956916,
+    "truth": "open",
+    "id": "hit-6",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.47
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 12.85281179138322,
+    "truth": "snare",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.47
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 14.700589569160998,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.46
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 16.125011337868482,
+    "truth": "snare",
+    "id": "hit-9",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' snare accent ending the hi-hat roll.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.64
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 17.735147392290248,
+    "truth": "kick",
+    "id": "hit-10",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare on the backbeat.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.51
+  },
+  {
+    "file": "P23_Improvisation_Personal.wav",
+    "time": 19.517913832199547,
+    "truth": "snare",
+    "id": "hit-11",
+    "drum": "snare",
+    "description": "Sharp aspirated 'tsh' vocal snare on the backbeat.",
+    "reviewDrum": "snare",
+    "reviewConfidence": 0.53
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 0.07383219954648526,
+    "truth": "closed",
+    "id": "hit-0",
+    "drum": "closed",
+    "description": "Short, crisp 'ts' closed hi-hat sound",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 0.8859863945578231,
+    "truth": "open",
+    "id": "hit-1",
+    "drum": "open",
+    "description": "Aspirated 'tsh' open hi-hat sound with sustained decay",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 2.157097505668934,
+    "truth": "closed",
+    "id": "hit-2",
+    "drum": "open",
+    "description": "Sustained bright 'tsh' open hi-hat hiss",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 3.8791836734693876,
+    "truth": "closed",
+    "id": "hit-3",
+    "drum": "snare",
+    "description": "Explosive 'pf' vocal snare sound",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 4.5396825396825395,
+    "truth": "closed",
+    "id": "hit-4",
+    "drum": "closed",
+    "description": "Short, sharp 'ts' closed hi-hat transient",
+    "reviewDrum": "closed",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 6.116417233560091,
+    "truth": "kick",
+    "id": "hit-5",
+    "drum": "open",
+    "description": "Longer 'tsh' open hi-hat hiss",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 7.026031746031746,
+    "truth": "closed",
+    "id": "hit-6",
+    "drum": "open",
+    "description": "Bright 'tsh' open hi-hat sound with decay",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.99
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 7.979863945578232,
+    "truth": "open",
+    "id": "hit-7",
+    "drum": "snare",
+    "description": "Sharp 'pf' vocal snare sound",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 10.587936507936508,
+    "truth": "open",
+    "id": "hit-8",
+    "drum": "open",
+    "description": "Aspirated 'tsh' open hi-hat with extended decay",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 11.896961451247165,
+    "truth": "closed",
+    "id": "hit-9",
+    "drum": "snare",
+    "description": "Punchy broadband 'pf' vocal snare",
+    "reviewDrum": "snare",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 13.1740589569161,
+    "truth": "open",
+    "id": "hit-10",
+    "drum": "open",
+    "description": "Sustained 'tsh' open hi-hat hiss",
+    "reviewDrum": "open",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P24_Improvisation_Personal.wav",
+    "time": 14.509024943310658,
+    "truth": "closed",
+    "id": "hit-11",
+    "drum": "open",
+    "description": "Bright, decaying 'tsh' open hi-hat sound",
+    "reviewDrum": "open",
+    "reviewConfidence": 0.97
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 0.11464852607709751,
+    "truth": "kick",
+    "id": "hit-0",
+    "drum": "kick",
+    "description": "low bass-heavy lip plosive kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 2.359047619047619,
+    "truth": "kick",
+    "id": "hit-1",
+    "drum": "kick",
+    "description": "deep punchy lip plosive kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 5.299954648526077,
+    "truth": "kick",
+    "id": "hit-2",
+    "drum": "kick",
+    "description": "low-frequency explosive bass kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 8.839909297052154,
+    "truth": "closed",
+    "id": "hit-3",
+    "drum": "kick",
+    "description": "deep lip plosive kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 11.703401360544218,
+    "truth": "snare",
+    "id": "hit-4",
+    "drum": "kick",
+    "description": "punchy low bass kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 14.443174603174603,
+    "truth": "snare",
+    "id": "hit-5",
+    "drum": "kick",
+    "description": "lip plosive bass kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 17.020204081632652,
+    "truth": "snare",
+    "id": "hit-6",
+    "drum": "kick",
+    "description": "low-frequency punchy kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 19.67734693877551,
+    "truth": "kick",
+    "id": "hit-7",
+    "drum": "kick",
+    "description": "bass-heavy explosive kick sound",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 22.62092970521542,
+    "truth": "kick",
+    "id": "hit-8",
+    "drum": "kick",
+    "description": "deep lip plosive kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 26.188480725623585,
+    "truth": "snare",
+    "id": "hit-9",
+    "drum": "kick",
+    "description": "low resonant bass kick",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 29.499637188208617,
+    "truth": "snare",
+    "id": "hit-10",
+    "drum": "kick",
+    "description": "punchy lip plosive kick drum",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  },
+  {
+    "file": "P25_Improvisation_Personal.wav",
+    "time": 32.24079365079365,
+    "truth": "kick",
+    "id": "hit-11",
+    "drum": "kick",
+    "description": "low-frequency bass kick plosive",
+    "reviewDrum": "kick",
+    "reviewConfidence": 1
+  }
+]
