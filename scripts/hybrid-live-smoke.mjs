@@ -14,7 +14,7 @@ const responses = [],
   errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("response", (r) => {
-  if (/onnx|wasm|relative-model|api\//.test(r.url()))
+  if (/onnx|wasm|model[34]-|worker-|api\//.test(r.url()))
     responses.push({ url: r.url(), status: r.status() });
 });
 // Deliberately no request routes, mocks, proxy, or API replacement in this smoke.
@@ -38,7 +38,9 @@ assert.deepEqual(
   times,
 );
 assert(
-  responses.some((r) => r.url.includes("relative-model") && r.status === 200),
+  ["model3-", "model4-", "worker-wdbCfaSA.js"].every((name) =>
+    responses.some((r) => r.url.includes(name) && r.status === 200),
+  ),
 );
 assert(
   responses.some(
@@ -46,6 +48,8 @@ assert(
   ),
 );
 assert(responses.some((r) => r.url.includes(".wasm") && r.status === 200));
+assert.equal(await page.locator(".groove-controls").count(), 0);
+assert(await page.getByLabel("Tempo", { exact: false }).isVisible());
 const api = responses.filter((r) => r.url.includes("/api/classify"));
 assert(api.length > 0 && api.every((r) => r.status === 200));
 assert(
