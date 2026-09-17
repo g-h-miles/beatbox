@@ -52,6 +52,7 @@ export default function App() {
     [position, setPosition] = useState(0),
     [activePad, setActivePad] = useState<Drum | null>(null),
     [help, setHelp] = useState(false);
+  const helpButton = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     context = useRef<AudioContext | null>(null),
@@ -111,6 +112,17 @@ export default function App() {
       void context.current?.close();
     };
   }, []);
+  useEffect(() => {
+    if (!help) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setHelp(false);
+        helpButton.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [help]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (
@@ -184,7 +196,7 @@ export default function App() {
     setSelected(null);
     setMessage(
       found.length
-        ? `${found.length} hits found. Local suggestions are ready to review.`
+        ? `${found.length} hits found. Play the drum preview, then check the hit list.`
         : "No hits detected. Increase sensitivity or try a louder recording.",
     );
   }
@@ -383,7 +395,7 @@ export default function App() {
     if (!hits.length) return;
     stop();
     const version = generation.current;
-    setBusy("Jev is reading the groove…");
+    setBusy("Classifying your hits…");
     setMessage("");
     try {
       let next = [...hits];
@@ -437,7 +449,7 @@ export default function App() {
       if (version === generation.current) {
         setHits(next);
         setMessage(
-          "TypeSafe pass complete. Audition and correct the suggestions before export.",
+          "TypeSafe pass complete. Play the preview and check any wrong sounds.",
         );
       }
     } catch (e) {
@@ -501,7 +513,13 @@ export default function App() {
         </a>
         <div className="header-right">
           <span className="live-dot" /> A little noise. A lot of groove.
-          <button className="text-button" onClick={() => setHelp(!help)}>
+          <button
+            ref={helpButton}
+            className="text-button"
+            aria-expanded={help}
+            aria-controls="instructions"
+            onClick={() => setHelp(!help)}
+          >
             How it works <ArrowUpRight size={15} />
           </button>
         </div>
@@ -518,46 +536,45 @@ export default function App() {
             <p className="lede">
               Beatbox it. Hear it. Make it a drum track.
               <br />
-              Your timing, your swing, every happy accident.
+              Keep your timing and swing. Quantize later if you want.
             </p>
           </div>
           <div className="recipe">
             <span>
-              01 <b>Make some noise</b>
+              01 <b>Record or drop</b>
             </span>
             <ChevronRight />
             <span>
-              02 <b>Find your hits</b>
+              02 <b>Check the sounds</b>
             </span>
             <ChevronRight />
             <span>
-              03 <b>Take the groove</b>
+              03 <b>Download MIDI</b>
             </span>
           </div>
         </section>
         {help && (
-          <section className="help">
+          <section className="help" id="instructions">
             <button
               aria-label="Close instructions"
-              onClick={() => setHelp(false)}
+              onClick={() => {
+                setHelp(false);
+                helpButton.current?.focus();
+              }}
             >
               <X size={16} />
             </button>
             <h2>Your groove, without the grid.</h2>
             <p>
-              Record one sound at a time, close to the microphone in a quiet
-              room. Detection estimates attacks; inspect the waveform and edit
-              any missed or misplaced hit. Local labels are rough acoustic
-              guesses. TypeSafe classifies measured features, not the recording
-              itself, and needs validation on your voice.
+              Record a beat or drop an audio file. Compare Original with Drum
+              preview, then click a hit to change its sound or timing. Try
+              Classify with TypeSafe for another set of suggestions.
             </p>
             <p>
-              Download the .mid, set Logic’s project tempo to the export BPM,
-              then drag it onto a software instrument track with a drum kit.
-              Keep region quantization off. MIDI uses channel 10 and General
-              MIDI notes; Aux defaults to high woodblock (75) because breaths
-              have no standard GM note. The preview is synthesized, so your
-              Logic kit will sound different.
+              Set your Logic project to the export BPM, then drag the MIDI onto
+              a software instrument track with a drum kit. Leave quantization
+              off to keep your timing. Aux uses woodblock note 75. Your chosen
+              kit will sound different from this preview.
             </p>
           </section>
         )}
@@ -614,6 +631,17 @@ export default function App() {
               hidden
               onChange={(e) => void loadFile(e.target.files?.[0])}
             />
+          </div>
+          <div
+            className={`notice ${busy ? "busy" : ""}`}
+            role="status"
+            aria-live="polite"
+          >
+            {busy ||
+              message ||
+              (recording
+                ? "Recording. Press Stop when you are done."
+                : "Up to 90 seconds. No setup needed.")}
           </div>
           <div className="session-bar">
             <div>
@@ -764,6 +792,28 @@ export default function App() {
                 <Plus size={14} /> Add at cursor
               </button>
             </div>
+            <div className="ai-block">
+              <div>
+                <WandSparkles size={17} />
+                <b>Check the sounds</b>
+                <span>{configured ? "CONNECTED" : "UNAVAILABLE"}</span>
+              </div>
+              <p>
+                Listen to the drum preview. Click any hit to correct it, or try
+                another classification pass.
+              </p>
+              <button
+                disabled={!hits.length || disabled || !configured}
+                onClick={() => void classify()}
+              >
+                <WandSparkles size={14} /> Classify with TypeSafe
+              </button>
+              {!configured && (
+                <small>
+                  Classification is unavailable. You can still edit and export.
+                </small>
+              )}
+            </div>
             <div className="mode-control">
               <label htmlFor="detection-mode">Performance</label>
               <select
@@ -821,7 +871,7 @@ export default function App() {
                   <b>Edit hit</b>
                   <span>
                     {hit.source === "typesafe"
-                      ? `${hit.rhythmAdjusted ? "Groove-assisted · " : ""}Jev confidence ${Math.round((hit.confidence || 0) * 100)}%`
+                      ? `${hit.rhythmAdjusted ? "Groove hint · " : ""}Model confidence ${Math.round((hit.confidence || 0) * 100)}%`
                       : hit.source === "manual"
                         ? "Edited by you"
                         : "Local suggestion · unverified"}
@@ -934,8 +984,8 @@ export default function App() {
               {!hits.length ? (
                 <div className="empty-hits">
                   <AudioLines size={22} />
-                  <p>A home for every kick, tss, and ka.</p>
-                  <span>Your detected hits will show up here.</span>
+                  <p>No hits yet.</p>
+                  <span>Record a beat or drop a file above.</span>
                 </div>
               ) : (
                 <>
@@ -981,9 +1031,8 @@ export default function App() {
               <span className="step-number">03</span>
             </div>
             <p>
-              A tiny file. Your whole groove.
-              <br />
-              Ready for Logic, or wherever you make noise.
+              Choose the tempo you will use in Logic. Hit timing stays
+              unchanged.
             </p>
             <div className="tempo">
               <label htmlFor="tempo">
@@ -1006,7 +1055,10 @@ export default function App() {
                 <span>BPM</span>
               </div>
             </div>
-            <div className="groove-controls">
+            <details className="groove-controls">
+              <summary>
+                Groove hints <span>{grooveAssist ? "On" : "Off"}</span>
+              </summary>
               <button
                 disabled={hits.length < 6 || disabled}
                 onClick={() => {
@@ -1058,7 +1110,7 @@ export default function App() {
                       setBeatOne(null);
                     }}
                   >
-                    Auto phase
+                    Reset beat 1
                   </button>
                 )}
               </div>
@@ -1067,18 +1119,15 @@ export default function App() {
                   ? "Groove hints off."
                   : grid
                     ? `${grid.source === "manual" ? `Beat 1 at ${grid.origin.toFixed(3)}s` : "Kick/snare pulse inferred"} · ${rhythmChanges} label${rhythmChanges === 1 ? "" : "s"} adjusted.`
-                    : "Waiting for a clear pulse. Set the tempo and select beat 1, or run TypeSafe to find anchors."}
+                    : "Set the tempo and choose beat 1, or classify to find a pulse."}
               </p>
-            </div>
+            </details>
             <div className="export-facts">
               <span>
                 Timing <b>Original · no snapping</b>
               </span>
               <span>
                 Mapping <b>General MIDI drums</b>
-              </span>
-              <span>
-                Resolution <b>9,600 ticks / quarter</b>
               </span>
             </div>
             <button
@@ -1093,37 +1142,12 @@ export default function App() {
               Drag the downloaded .mid into Logic. Use the same BPM and leave
               quantization off.
             </p>
-            <div className="ai-block">
-              <div>
-                <WandSparkles size={17} />
-                <b>A second set of ears*</b>
-                <span>{configured ? "CONNECTED" : "LOCAL MODE"}</span>
-              </div>
-              <p>
-                *Well, acoustic features. Jev makes a TypeSafe classification
-                pass; you make the final call.
-              </p>
-              <button
-                disabled={!hits.length || disabled || !configured}
-                onClick={() => void classify()}
-              >
-                <WandSparkles size={14} /> Classify with TypeSafe
-              </button>
-              {!configured && (
-                <small>Connect a server API key to enable Jev.</small>
-              )}
-            </div>
           </aside>
         </section>
-        <div
-          className={`notice ${busy ? "busy" : ""}`}
-          role="status"
-          aria-live="polite"
-        >
-          {busy ||
-            message ||
-            "Audio stays in your browser. Only acoustic features are sent when you choose TypeSafe."}
-        </div>
+        <p className="privacy">
+          Audio stays in your browser. TypeSafe receives acoustic measurements
+          when you choose to classify.
+        </p>
         <footer>
           <span>BUILT FOR HAPPY ACCIDENTS.</span>
           <span>
