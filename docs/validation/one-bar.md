@@ -26,3 +26,7 @@ These renders establish actual audio outputs, not a subjective listening sign-of
 130 tests pass, including dependency context, unsupported/malformed model answers, endpoint bounds, one-bar note-off limits, exact repeat timing, bar-boundary replacement, stopping and suspended-tab behavior. Production TypeScript/Vite build passes. Historical tests still cover the previous compatible API; the current UI uses only `oneBar: true`.
 
 Computer-use follow-up: generated the pocket in 0.98 seconds, requested reggae during playback (0.68 seconds), and observed the complete one-drop arrangement after the boundary. A 7/8 request returned unsupported in 0.33 seconds while the same reggae bar continued; its explanation remained visible across repeated bars. Stop stayed stopped. At an actual 390 px viewport, the page had no horizontal overflow and Beat 3 navigation exposed the correct kick/snare cells. Browser error log was empty.
+
+## Publication
+
+Deployed source commit `c09a305` to `https://beatbox.grahammiles.me/make`, Worker version `50bf39cf-5493-4bbb-9474-7e844c187830`. The public UI arranged the default pocket in 0.71 seconds with two model calls, started looping, and stayed stopped after Stop. Source tests, build and deployment dry-run passed before publication.
