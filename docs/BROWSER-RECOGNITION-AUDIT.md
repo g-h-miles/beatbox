@@ -17,10 +17,12 @@ The offline feature-only audit fixes all neural boundaries and computes identica
 
 A separate onset-only live run covered14 available, previously inspected P21–28 Fixed/Personal recordings from the existing manifest. It made no classifier calls and did not consume the reserved MDV or VIS sets.
 
--1,179 detections against1,163 annotated events.
--1,141 one-to-one matches within50ms.
--**97.4381% onset F1**, mean matched timing error**2.6907ms**.
--No browser page errors.
+- 1,179 detections against1,163 annotated events.
+- 1,141 one-to-one matches within50ms.
+- **97.4381% onset F1**, mean matched timing error**2.6907ms**.
+- No browser page errors.
+
+Among the 1,141 matched events, median timing error was 2.086 ms, the 95th percentile was 6.531 ms, and the 99th percentile was 9.397 ms. 1,133 of those matches were within 10 ms; the worst matched error was 37.914 ms. These describe matched events and do not omit unmatched events from the separately reported F1.
 
 This verifies the deployed browser's timing behavior on that cohort. It is not a new blind test, a seven-class result, a label score, or a real spoken boots-and-cats evaluation. The full95% labeled-transcription goal remains unmet.
 
