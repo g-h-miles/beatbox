@@ -2,9 +2,9 @@
 
 Open `/teach` to record examples of all seven kit sounds. This is a data-collection page, not a claim that the classifier is ready.
 
-1. Choose a drum and record five spaced examples in your usual voice.
-2. Record a separate second take. It is marked **holdout**, so it can be kept out of fitting and tuning.
-3. Repeat for the other sounds. Partial packs can also be downloaded.
+1. Choose **Training**, then record up to 60 seconds of one sound in your usual voice. Vary strength and speed with small gaps; no fixed repetition count.
+2. The **Separate check** tab is optional for now. Its recordings are marked **holdout** and excluded from fitting and tuning. This purpose is stated before recording.
+3. Repeat Training for the other six sounds. Downloading seven training recordings is enough to start; separate checks can follow later. Partial packs also work.
 4. Download the training pack. Sharing the downloaded file is a separate, explicit action.
 
 Audio stays in IndexedDB in the current browser. The page sends no recording uploads. Recordings survive a reload; clearing browser site data removes them. The JSON download contains the audio, selected drum labels, take roles, and recording dates. Do not publish a person's training pack without their permission.

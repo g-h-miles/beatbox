@@ -31,6 +31,9 @@ export type Hit = {
   source: "local" | "typesafe" | "manual";
   features: Features;
   confirmedDrum?: boolean;
+  probabilities?: Partial<Record<Drum, number>>;
+  acousticDrum?: Drum;
+  rhythmAdjusted?: boolean;
 };
 export const criteria = {
   kick: "Low, bass-heavy explosive lip plosive; short punch and low spectral centroid.",
