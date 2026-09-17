@@ -2,6 +2,8 @@
 
 The frozen public-data relative SVM is substantially better than the existing TypeSafe feature descriptions on the full AVP validation cohort, but cannot be used on every recording. The browser implementation is in `src/research-relative`; audio stays on the device.
 
+The current worker additionally pools decisions among acoustically similar hits. See [the consistency evaluation](research/relative-consistency.md) for the newer comparison; tables below document the original unpooled baseline.
+
 ## Frozen comparison
 
 Same predicted boundaries, same crops, no user calibration, AVP performers15–20 excluded from model fitting:
