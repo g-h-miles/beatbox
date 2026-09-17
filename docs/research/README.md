@@ -28,6 +28,12 @@ A new [author-example inventory](paroni-data-scope.md) adds twelve checksum-veri
 public WAVs reserved from training and inference. Their file-level labels do not
 provide onset ground truth or a literal boots-and-cats benchmark.
 
+The [exact-browser absolute-plus-relative condition](../../ml/browser_absolute_relative_results.md)
+also regressed (554 core and 490 four-class matches versus 639/605). The added
+feature blocks reproduced the original relative features exactly across all
+39 extraction recordings, so a relative-feature parity error does not explain
+this rejected result.
+
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.
 
