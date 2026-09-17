@@ -296,3 +296,27 @@
     margin-left: 0;
   }
 }
+
+.generator-bars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.generator-bars button {
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+.generator-bars button[aria-current="page"] {
+  background: var(--ink);
+  color: var(--surface);
+  border-color: var(--ink);
+}
+
+.generator-direction {
+  font-size: 12px;
+  color: #636d62;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}

@@ -33,17 +33,19 @@ No user training is required. Corrections can be supplied as examples for the cu
 
 ## Make a beat with TypeSafe
 
-Open **Make a beat** (`/make`), describe a groove, set its tempo, and choose 8, 16, 32, or 64 sixteenth-note steps. Sixteen steps make one bar of 4/4. TypeSafe composes one step at a time; every request includes all previous decisions as individual lines. For each drum, one Choice question selects play or rest and a second selects the intensity to use if it plays (14 questions in one API request per step). The questions at a given step share the same history and run independently; multiple drums can sound together. There are no genre templates or rule-based note corrections.
+Open **Make a beat** (`/make`), describe a groove, set its tempo, and choose the note division: 1/8, 1/16, 1/32, or 1/64. Patterns default to **eight bars of 4/4**, with length separately adjustable to one, two, four, or eight bars. The note division changes timing resolution, not duration: eight bars at 1/64 contain 512 decisions and last exactly as long as eight bars at 1/8 (64 decisions).
 
-Listen to the pattern, click a cell to change its intensity, and download MIDI. Silent steps remain in the exported timeline. The generator uses the same GM notes as the recorder and a separate rate limit. Keys stay in the Worker. Cancel stops the browser's sequence; a request already accepted upstream may still be billed.
+TypeSafe first selects the groove's musical direction: foundation, timekeeping, voice, variation, and syncopation. It then composes one position at a time. Each request includes that direction, all previous note decisions as individual lines, precise bar/beat/subdivision coordinates, and the factual action at the same position in the previous bar. The model selects musical actions and intensities; code does not fill a genre template or override its notes. A finer grid permits detail without requiring a hit at every position.
 
-The UI reports completed requests and returned input-token usage. A real API smoke test can be run against a local full-stack preview or the deployed app:
+Browse the bars, loop the whole pattern, click a cell to change its intensity, and download MIDI. Silent positions remain in the exported timeline. Cancel preserves completed positions and offers continuation. Temporary service failures retry with backoff; keys stay in the Worker. The UI reports completed model calls and returned input-token usage. Generation time and cost grow with the number of positions and the accumulating history.
+
+For reproducible real API checks:
 
 ```sh
-BEATBOX_URL=https://beatbox.grahammiles.me BEATBOX_STEPS=16 node scripts/generator-smoke.mjs
+BEATBOX_URL=https://beatbox.grahammiles.me BEATBOX_BARS=8 BEATBOX_RESOLUTION=16 node scripts/generator-smoke.mjs
 ```
 
-This makes real API calls and writes the resulting pattern and usage to ignored `artifacts/generator/`. Set `BEATBOX_PROMPT` to try another description.
+This incurs API usage and writes the pattern to ignored `artifacts/generator/`. Set `BEATBOX_PROMPT` to try another description. `scripts/generator-analyze.mjs <file>` prints bar notation. `scripts/generator-score.mjs <file> rock` measures exact compliance with an explicit kick-1/3, snare-2/4, eighth-note-hat instruction; it is not a subjective musical quality score. Freeform genre prompts need separate musical review.
 
 ## Keep the groove in Logic
 

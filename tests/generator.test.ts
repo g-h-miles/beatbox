@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { patternNotes, stepSeconds, type BeatStep } from "../src/generator";
+import {
+  patternNotes,
+  patternMidi,
+  stepSeconds,
+  type BeatStep,
+} from "../src/generator";
 import { midi } from "../src/midi";
 const rest: BeatStep = {
   kick: 0,
@@ -64,6 +69,42 @@ describe("generated pattern MIDI", () => {
     ]);
     expect(parsed.end).toBe(19200);
   });
+  it.each([8, 16, 32, 64])(
+    "keeps eight bars fixed while changing resolution to 1/%i",
+    (resolution) => {
+      const history = Array.from({ length: 8 * resolution }, () => ({
+        ...rest,
+      }));
+      history[1].kick = 104;
+      history[resolution].snare = 80;
+      history[history.length - 1].closed = 56;
+      const notes = patternNotes(history, 120, resolution);
+      expect(stepSeconds(120, resolution)).toBe(2 / resolution);
+      expect(notes[1].time).toBe(2);
+      const parsed = parseMidi(
+        midi(notes, 120, 8 * resolution * stepSeconds(120, resolution)),
+      );
+      expect(parsed.notes[0].tick).toBe(38400 / resolution);
+      expect(parsed.notes[1].tick).toBe(38400);
+      expect(parsed.notes[2].tick).toBe(307200 - 38400 / resolution);
+      expect(parsed.end).toBe(307200);
+    },
+  );
+
+  it.each([8, 16, 32, 64])(
+    "exports exact bar ticks despite rounded MIDI tempo at 1/%i",
+    (resolution) => {
+      const history = Array.from({ length: 8 * resolution }, () => ({
+        ...rest,
+      }));
+      history[history.length - 1].snare = 104;
+      const parsed = parseMidi(patternMidi(history, 237, 8, resolution));
+      expect(parsed.notes).toEqual([
+        { tick: 307200 - 38400 / resolution, note: 38, velocity: 104 },
+      ]);
+      expect(parsed.end).toBe(307200);
+    },
+  );
   it("exports an entirely silent pattern at its chosen length", () => {
     const parsed = parseMidi(
       midi(patternNotes(Array(64).fill(rest), 120), 120, 64 * stepSeconds(120)),

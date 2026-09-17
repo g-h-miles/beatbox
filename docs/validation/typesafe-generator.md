@@ -1,4 +1,6 @@
-# TypeSafe beat generator — September 17, 2026
+# TypeSafe beat generator — initial version, September 17, 2026
+
+**Historical report:** this version confused step count with note resolution, and its nonempty-output checks did not establish musical quality. It is superseded by the eight-bar revision.
 
 The `/make` page composes a drum pattern with one sequential TypeSafe request per sixteenth note. Each request contains the user's description, tempo, position, and every prior step on its own line. Seven binary Choice questions decide play/rest; seven conditional Choice questions select intensity. No genre templates, fallback notes, confidence-based substitutions, or musical correction rules are applied.
 
