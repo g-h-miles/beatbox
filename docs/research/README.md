@@ -11,6 +11,11 @@ measured gains and regressions. The later experiments in
 [The native timing audit](native-timing-audit.md) separates onset errors from
 label errors. AVP 21–28 has been inspected repeatedly and is not a fresh holdout.
 
+The [labeled audio example diagnostic](audio-fewshot.md) also failed to improve
+recognition: Gemini 3.1 Pro scored 75/91 core and 70/91 four-class on the frozen
+matched sample, versus 86/91 and 82/91 for the current acoustic model.
+The temporary remote-development endpoint was stopped; production is unchanged.
+
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.
 

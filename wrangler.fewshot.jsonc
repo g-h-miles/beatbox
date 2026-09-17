@@ -1,0 +1,7 @@
+{
+  "name": "beatbox",
+  "main": "worker/research-audio-fewshot.ts",
+  "compatibility_date": "2026-09-16",
+  "workers_dev": false,
+  "preview_urls": false,
+}
