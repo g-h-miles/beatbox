@@ -54,7 +54,7 @@ def import_pack(path, voice_id, root=Path('artifacts/voice-data')):
             source.write_bytes(data)
             output = work / f'{expected_id}.wav'
             process = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(source),
-                                      '-t', '16', '-vn', '-ac', '1', '-ar', '22050',
+                                      '-t', '62', '-vn', '-ac', '1', '-ar', '22050',
                                       '-c:a', 'pcm_s16le', str(output)], capture_output=True, timeout=30)
             if process.returncode:
                 raise ValueError(f'Could not decode {expected_id}.')
@@ -62,8 +62,8 @@ def import_pack(path, voice_id, root=Path('artifacts/voice-data')):
             with wave.open(str(output)) as audio:
                 seconds = audio.getnframes() / audio.getframerate()
                 pcm = audio.readframes(audio.getnframes())
-            if not .5 <= seconds <= 15.75:
-                raise ValueError(f'{expected_id} must be between 0.5 and 15.75 seconds.')
+            if not .5 <= seconds <= 61.5:
+                raise ValueError(f'{expected_id} must be between 0.5 and 61.5 seconds.')
             if np.max(np.abs(np.frombuffer(pcm, dtype='<i2').astype(np.int32))) < 4:
                 raise ValueError(f'{expected_id} contains no usable audio.')
             digest = hashlib.sha256(pcm).hexdigest()

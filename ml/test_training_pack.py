@@ -9,8 +9,8 @@ import numpy as np
 from import_training_pack import import_pack
 
 
-def recording(round_number, frequency):
-    t = np.arange(22050) / 22050
+def recording(round_number, frequency, seconds=1):
+    t = np.arange(22050 * seconds) / 22050
     samples = (np.sin(2 * np.pi * frequency * t) * 4000).astype('<i2')
     output = io.BytesIO()
     with wave.open(output, 'wb') as writer:
@@ -38,6 +38,21 @@ class TrainingPackTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'duplicates'):
                 import_pack(pack, 'test-voice', root / 'private')
             self.assertEqual(list((root / 'private').rglob('*.wav')), [])
+
+    def test_imports_full_minute_without_truncation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); pack = root / 'pack.json'
+            pack.write_text(json.dumps({'format': 'beatbox-training-v1', 'recordings': [recording(1, 440, 60)]}))
+            manifest_path = import_pack(pack, 'test-voice', root / 'private')
+            manifest = json.loads(manifest_path.read_text())
+            self.assertAlmostEqual(manifest['recordings'][0]['duration'], 60, places=2)
+
+    def test_rejects_overlong_recording(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); pack = root / 'pack.json'
+            pack.write_text(json.dumps({'format': 'beatbox-training-v1', 'recordings': [recording(1, 440, 63)]}))
+            with self.assertRaisesRegex(ValueError, '61.5'):
+                import_pack(pack, 'test-voice', root / 'private')
 
     def test_rejects_path_traversal_in_voice_id(self):
         with self.assertRaises(ValueError):
