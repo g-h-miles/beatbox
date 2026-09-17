@@ -35,3 +35,13 @@ Blocking the relative model binary produced an explicit TypeSafe fallback notice
 A separate native browser gate check in `scripts/hybrid-gate-browser-check.mjs` used fresh pages at 44,100 and 48,000 Hz. P15 Fixed improvisation loaded the model and produced 59 Suggested labels among 61 detected hits at both rates. P15 isolated Fixed kick skipped the model entirely and retained the TypeSafe path at both rates. This verifies those gate paths on real browser features; it does not establish general gate accuracy on all sounds.
 
 All 49 unit tests passed. Artifacts are in `artifacts/hybrid-ui/`, including `gate-report.json`, `report.json`, MIDI, and screenshots. Recognition accuracy and the 95 percent target remain separate from this UI review. No deployment was performed by the UI reviewer.
+
+## Deployed hybrid smoke check
+
+The final live check ran on 2026-09-17 against `https://beatbox.grahammiles.me/`, after main commit `fa95741` and Cloudflare deployment `4dc2a29d-8727-4acb-84b2-9bf562fda95e`. The success path used no request interception, mocks, or proxy.
+
+Public AVP P15 Personal improvisation produced 27 events. The detector ONNX, MJS runtime, WASM runtime, relative classifier binary, status endpoint, and both actual classification requests returned HTTP 200. The local model produced Suggested labels. A manual change to the first hit, snare with velocity 101, survived classification. Every displayed hit timestamp stayed unchanged. Original and drum preview controls worked, and the final desktop screenshot was visually reviewed with no horizontal overflow or JavaScript page errors.
+
+The downloaded MIDI was parsed independently. It contained 27 notes on channel 10 at 9,600 PPQ, including the edited snare note 38 with velocity 101. Its largest difference from the UI's rounded millisecond timestamps was 0.5104 ms. This checks export consistency with detected times, not timing against audio annotations or recognition accuracy.
+
+Local evidence is `artifacts/hybrid-live/report.json`, `artifacts/hybrid-live/live.png`, and `artifacts/hybrid-live/reviewed.mid`. The reproducible check is `scripts/hybrid-live-smoke.mjs`. No additional code changes or deployment were required by this check.
