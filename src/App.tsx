@@ -389,6 +389,7 @@ export default function App() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             examples,
+            mode,
             hits: pending
               .slice(i, i + 24)
               .map(({ id, features }) => ({ id, features })),

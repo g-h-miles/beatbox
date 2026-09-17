@@ -1,4 +1,5 @@
 import { criteria, type Features } from "../src/model";
+import { acousticEvidence } from "../src/acoustic";
 import { describe, spectralDistance } from "../src/evidence";
 export type AppEnv = Env & { TYPESAFE_API_KEY?: string };
 const json = (body: unknown, status = 200) =>
@@ -46,7 +47,7 @@ export default {
         const { done, value } = await reader.read();
         if (done) break;
         size += value.length;
-        if (size > 48000) {
+        if (size > 96000) {
           await reader.cancel();
           return json({ error: "Request too large" }, 413);
         }
@@ -115,6 +116,22 @@ export default {
             throw Error("input");
           features.spectrum = values;
         }
+        if (v.features.acoustic !== undefined) {
+          const values = v.features.acoustic;
+          if (
+            !Array.isArray(values) ||
+            values.length !== 80 ||
+            values.some(
+              (n) =>
+                typeof n !== "number" ||
+                !Number.isFinite(n) ||
+                n < -10 ||
+                n > 5,
+            )
+          )
+            throw Error("input");
+          features.acoustic = values;
+        }
         return { id: v.id, features };
       };
       const hits: { id: string; features: Features }[] =
@@ -155,7 +172,7 @@ export default {
           h.id,
           {
             type: "choice",
-            instructions: `Classify this ONE vocal-percussion sound: ${describe(h.features)}${personalEvidence(h.features)} Which intended drum best matches these observations? A brief high-frequency hiss is a closed hi-hat. A bass-heavy b/boot/plosive is a kick. A midrange k/cat/pf burst is a snare. A long high-frequency hiss is an open hat. Do not mistake all noise for snare, or all sustained vowels for cymbals. Use aux if no drum fits. Do not infer rhythm or timing.`,
+            instructions: `Classify this ONE vocal-percussion sound: ${describe(h.features)}${body.mode === "syllables" ? "" : acousticEvidence(h.features)}${personalEvidence(h.features)} Which intended drum best matches these observations? A brief high-frequency hiss is a closed hi-hat. A bass-heavy b/boot/plosive is a kick. A midrange k/cat/pf burst is a snare. A long high-frequency hiss is an open hat. Do not mistake all noise for snare, or all sustained vowels for cymbals. Use aux if no drum fits. Do not infer rhythm or timing.`,
             criteria,
           },
         ]),

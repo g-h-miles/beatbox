@@ -10,6 +10,7 @@ export const drums = [
 export type Drum = (typeof drums)[number]["id"];
 export type Features = {
   spectrum?: number[];
+  acoustic?: number[];
   duration: number;
   centroid: number;
   low: number;

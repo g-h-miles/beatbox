@@ -78,7 +78,51 @@ export function features(
       p += bins[k] / Math.max(frames, 1);
     spectrum.push(Math.log10(Math.max(1e-7, p / (total || 1))));
   }
+  // Time-resolved spectra and decay distinguish an explosive consonant from
+  // its vowel/hiss tail. Normalize globally, retaining attack-to-tail energy.
+  const acoustic: number[] = [];
+  const framePower: number[] = [];
+  const temporal: number[][] = [];
+  for (let frame = 0; frame < 20; frame++) {
+    const at = a + Math.round(frame * 0.01 * sr);
+    const win = Array.from({ length: 1024 }, (_, j) =>
+      at + j < b
+        ? (x[at + j] || 0) * (0.5 - 0.5 * Math.cos((2 * Math.PI * j) / 1023))
+        : 0,
+    );
+    const c = fft.createComplexArray();
+    fft.realTransform(c, win);
+    const bands = Array(20).fill(0);
+    let sum = 0;
+    for (let k = 1; k < 512; k++) {
+      const p = c[2 * k] ** 2 + c[2 * k + 1] ** 2;
+      sum += p;
+      const band = Math.floor(
+        (20 * (mel((k * sr) / 1024) - mel(60))) / (mel(14000) - mel(60)),
+      );
+      if (band >= 0 && band < 20) bands[band] += p;
+    }
+    framePower.push(sum);
+    temporal.push(bands);
+  }
+  const maximum = Math.max(...framePower, 1e-12);
+  for (const [lo, hi] of [
+    [0, 3],
+    [3, 8],
+    [8, 20],
+  ]) {
+    const segment = temporal.slice(lo, hi);
+    const sums = Array.from({ length: 20 }, (_, k) =>
+      segment.reduce((v, f) => v + f[k], 0),
+    );
+    const total = sums.reduce((v, p) => v + p, 0) || 1e-12;
+    acoustic.push(...sums.map((p) => Math.log10(Math.max(1e-7, p / total))));
+  }
+  acoustic.push(
+    ...framePower.map((p) => Math.log10(Math.max(1e-5, p / maximum))),
+  );
   return {
+    acoustic: acoustic.map((v) => Math.round(v * 1000) / 1000),
     spectrum,
     duration: end - start,
     centroid: weighted / (total || 1),

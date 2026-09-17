@@ -8,3 +8,7 @@ artifacts/
 playwright-report/
 test-results/
 .DS_Store
+
+catboost_info/
+
+.venv-research/
