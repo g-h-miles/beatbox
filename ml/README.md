@@ -91,3 +91,7 @@ For a preliminary personal spectral classifier, run `python ml/evaluate_private_
 ### Calibration segmentation audit
 
 `evaluate_private_voice.py` now uses energy-supported isolated segments instead of every neural peak. `compare_voice_features.py` compares attack/decay descriptors and the existing voice embedding using Take 1 temporal blocks. Take 2 is now development data, not a fresh test. `review_voice_pack.py` generates a private waveform/report audit (requires matplotlib). Low-energy exclusions remain listed because some may be real soft hits. This gate is only for spaced calibration recordings; it must not replace groove onset detection. Run `python -m unittest discover -s ml -p 'test_*.py'` for import and segmentation checks. All generated personal reports and vectors remain under ignored `artifacts/`.
+
+### Full-minute private training
+
+`train_personal_voice.py MANIFEST --extra-training OLDER_MANIFEST` fits only training-role audio, using librosa silence regions for spaced calibration takes. It selects epochs with a temporal block of training takes, refits training only, and scores the separate checks. Additional manifests contribute training takes only; duplicate check audio in training is rejected. `attack_window.py` centers classification input on the dominant acoustic attack so a quiet lead-in cannot consume the fixed crop. It does not change event/MIDI timestamps. All personal checkpoints and reports remain ignored. `faster-whisper` is an optional local spoken-syllable research dependency; not part of deployed inference.
