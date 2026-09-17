@@ -20,8 +20,13 @@ The [core-error audit](core-error-concentration.md) localizes most remaining
 cross-voice failures to unfamiliar snare timbres. Fixed
 [performer balancing](../../ml/browser_voice_balance_results.md) and
 [browser pitch augmentation](../../ml/browser_pitch_results.md) both regressed
-recognition and remain research-only. The audit proposes a training-only metric
-experiment; it is not an implemented improvement or a claim of accuracy.
+recognition and remain research-only. The proposed [training-only linear metric](../../ml/browser_metric_results.md)
+also regressed pooled core recognition (639 to 531 correct development events)
+and was rejected without inspecting the test cohort.
+
+A new [author-example inventory](paroni-data-scope.md) adds twelve checksum-verified
+public WAVs reserved from training and inference. Their file-level labels do not
+provide onset ground truth or a literal boots-and-cats benchmark.
 
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.

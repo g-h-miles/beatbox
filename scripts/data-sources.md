@@ -72,3 +72,18 @@ monophony is not established. The source publications define `t` as tom; prior
 frozen experiments that excluded that label remain unchanged.
 
 jaCappella offers isolated vocal percussion plus scores, but currently requires sharing contact details and accepting dataset access conditions. No acceptance/request was submitted. Freesound sample-stitched loops, multitracked drums, and VST outputs were excluded from real monophonic performance testing. Existing AVP and Beatboxset1 are already development-exposed and cannot restore a fresh test simply by renaming a split.
+
+
+## Paroni/Henrich Bernardoni author examples
+
+The [Zenodo record4264747](https://zenodo.org/records/4264747) supplies12named
+WAV examples under CC BY4.0. `scripts/paroni-inventory.py` downloaded only the
+WAVs, checked all source MD5 digests and byte counts, and recorded SHA-256 and
+WAV metadata. Total duration is 39.277seconds; all files are
+22,050Hz mono PCM16 with distinct file hashes. Files and metadata are under
+ignored `artifacts/new-public-audio/paroni/`. No classifier inference, feature
+extraction, fitting, or event labeling has been performed on them. They remain
+reserved pending a defined evaluation role. See the
+[scope review](../docs/research/paroni-data-scope.md) for speaker count, label
+limitations, and the missing event annotations. This does not establish a
+spoken boots-and-cats benchmark or independent >95% transcription accuracy.
