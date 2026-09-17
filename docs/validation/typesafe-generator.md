@@ -31,3 +31,7 @@ Reproduce browser checks with `node scripts/generator-ui-check.mjs [baseURL]`. R
 This is a composition experiment, not a claim of genre mastery. Reggae and rock produced distinct rhythms and densities, but some requested styles yielded sparse patterns. A sparse ambient eight-step test selected silence throughout. The UI reports an all-rest result explicitly and allows editing or another prompt. The model's within-step questions share history but cannot see one another's current answers. Simultaneous incompatible cymbal choices are possible; no hidden musical rule changes them.
 
 An initial combined rest/intensity Choice formulation collapsed to silence. Separating play/rest from conditional intensity improved the real results. A full-subset alternative was tested and rejected. All reported working examples use the shipped fourteen-question formulation.
+
+## Production verification
+
+Deployed source commit `4ed4b90` to Cloudflare version `be442dcb-ff52-48c5-9903-6f53d367d045` at https://beatbox.grahammiles.me/make. The public page completed a real sixteen-step generation with 44,306 input tokens and seven active cells, then passed loop playback, MIDI download, phone overflow, and recorder navigation checks with no browser errors. `/api/status` confirmed the server-side key was configured. An immediate post-deploy browser attempt timed out before finding the new form; after the new assets were visible, the full public smoke test passed.
