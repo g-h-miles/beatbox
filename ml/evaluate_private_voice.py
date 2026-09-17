@@ -1,7 +1,8 @@
-"""Fit a private seven-class profile using take 1; evaluate take 2 once.
+"""Baseline private spectral profile: fit take 1; evaluate inspected take 2.
 
-Scores measure recording-label agreement on automatically proposed segments,
-not verified note accuracy. Raw recordings and fitted profiles stay ignored.
+Scores measure recording-label agreement on energy-supported isolated segments,
+not verified note accuracy. Low-energy candidates can include soft real hits.
+Raw recordings and fitted profiles stay ignored.
 """
 import argparse
 import json
@@ -10,14 +11,13 @@ from pathlib import Path
 import librosa
 import numpy as np
 import soundfile as sf
-import torch
-from scipy.signal import find_peaks
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
 
-from train_transcriber import Transcriber, RATE, HOP, prepare
+from train_transcriber import RATE, HOP
+from isolated_segments import segment_isolated
 
 CLASSES = ['kick', 'closed', 'open', 'ride', 'crash', 'snare', 'aux']
 
@@ -38,32 +38,20 @@ def main():
     parser.add_argument('manifest', type=Path)
     args = parser.parse_args()
     manifest = json.loads(args.manifest.read_text())
-    torch.set_num_threads(4)
-    model = Transcriber().eval()
-    checkpoint = torch.load('artifacts/ml-v2/transcriber.pt', map_location='cpu', weights_only=True)
-    model.load_state_dict(checkpoint['state'])
     banks, labels, splits, folds, rows = [], [], [], [], []
     for entry in manifest['recordings']:
         path = args.manifest.parent / entry['file']
         audio, rate = sf.read(path, dtype='float32')
         audio = librosa.resample(audio, orig_sr=rate, target_sr=RATE)
-        spectrum = prepare([{'path': str(path)}])[0]
-        padded = np.pad(spectrum, ((0, 0), (96, 96)), constant_values=-2)
-        probabilities = []
-        with torch.no_grad():
-            for start in range(0, spectrum.shape[1], 800):
-                end = min(start + 800, spectrum.shape[1])
-                onset, _ = model(torch.from_numpy(padded[:, start:end + 192][None]))
-                probabilities.extend(onset.sigmoid()[0, 96:-96].numpy())
-        peaks, _ = find_peaks(probabilities, height=checkpoint['threshold'], distance=8, prominence=.05)
-        times = peaks * HOP / RATE
+        segments = segment_isolated(audio, RATE)
+        times = np.array([segment['start'] for segment in segments])
         quality = {'file': entry['file'], 'split': entry['split'], 'label': entry['drum'],
                    'duration': len(audio) / RATE, 'candidateEvents': len(times),
-                   'clippedFraction': float(np.mean(np.abs(audio) >= .999)), 'times': times.tolist()}
+                   'clippedFraction': float(np.mean(np.abs(audio) >= .999)), 'times': times.tolist(), 'segments': segments}
         rows.append(quality)
         for i, time in enumerate(times):
-            start = max(0, round((time - .01) * RATE))
-            end = min(len(audio), round((times[i + 1] if i + 1 < len(times) else len(audio) / RATE) * RATE), start + 11025)
+            start = round(time * RATE)
+            end = round(segments[i]['end'] * RATE)
             banks.append(features(audio[start:end]))
             labels.append(CLASSES.index(entry['drum']))
             splits.append(entry['split'])
@@ -89,15 +77,15 @@ def main():
     classifier.fit(X[training], y[training])
     prediction = classifier.predict(X[holdout])
     matrix = confusion_matrix(y[holdout], prediction, labels=list(range(7)))
-    report = {'scope': 'Agreement with recording labels on unreviewed neural onset candidates; not transcription accuracy.',
+    report = {'scope': 'Agreement with recording labels on energy-supported isolated segments; previously inspected second takes; not transcription accuracy.',
               'classes': CLASSES, 'selection': candidates, 'selectedC': selected['C'],
               'trainingCandidates': int(sum(training)), 'holdoutCandidates': int(sum(holdout)),
               'holdoutCorrect': int(sum(prediction == y[holdout])),
               'holdoutAgreement': float(np.mean(prediction == y[holdout])),
               'confusionMatrix': matrix.tolist(), 'recordings': rows}
-    (args.manifest.parent / 'profile-assessment.json').write_text(json.dumps(report, indent=2))
+    (args.manifest.parent / 'profile-segmented-assessment.json').write_text(json.dumps(report, indent=2))
     # Reproducible private training inputs, no pickle or public voice-derived model.
-    np.savez_compressed(args.manifest.parent / 'profile-training.npz', X=X[training], y=y[training], C=selected['C'])
+    np.savez_compressed(args.manifest.parent / 'profile-segmented-training.npz', X=X[training], y=y[training], C=selected['C'])
     print(json.dumps(report, indent=2))
 
 
