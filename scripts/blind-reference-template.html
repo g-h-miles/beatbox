@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recording review</title>
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url(data:font/woff2;base64,__FONT_REGULAR__) format("woff2");
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: Inter;
+        src: url(data:font/woff2;base64,__FONT_SEMIBOLD__) format("woff2");
+        font-weight: 600;
+        font-display: swap;
+      }
+      :root {
+        font-family: Inter, system-ui, sans-serif;
+        color: #242b26;
+        background: #f5f5ef;
+        --line: #d3d8cc;
+        --surface: #fcfcf7;
+        --muted: #626c5c;
+        --sage: #b6c4a0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 1060px;
+        padding: 40px 32px 64px;
+        margin: auto;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: start;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 24px;
+        margin-bottom: 28px;
+      }
+      h1 {
+        font-size: 28px;
+        letter-spacing: -1px;
+        margin: 6px 0 10px;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0;
+      }
+      p {
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--muted);
+        margin: 0;
+        max-width: 670px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: #60724f;
+      }
+      .badge {
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+        padding-top: 8px;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 5px;
+        min-height: 44px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      button:hover:not(:disabled) {
+        background: #e4ebdb;
+      }
+      button:active:not(:disabled) {
+        transform: translateY(1px);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+      button.primary {
+        background: #28352a;
+        color: #fcfcf7;
+        border-color: #28352a;
+      }
+      button.primary:hover:not(:disabled) {
+        background: #3d5037;
+      }
+      input,
+      select,
+      textarea {
+        border: 1px solid #bec8b3;
+        border-radius: 4px;
+        background: #fffef9;
+        padding: 10px;
+        min-height: 44px;
+        width: 100%;
+        font-size: 13px;
+      }
+      input[type="checkbox"] {
+        width: 18px;
+        min-height: 18px;
+        height: 18px;
+        accent-color: #607749;
+      }
+      input[type="range"] {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        accent-color: #607749;
+        cursor: pointer;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #54634b;
+      }
+      label > input,
+      label > select,
+      label > textarea {
+        margin-top: 7px;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid #516d3c;
+        outline-offset: 3px;
+      }
+      .player {
+        padding: 20px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      .wave {
+        position: relative;
+        height: 158px;
+        background: #eff2e9;
+        border: 1px solid #dbe2d0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .wave canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: crosshair;
+      }
+      .playhead {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #ac694a;
+        pointer-events: none;
+        left: 0;
+      }
+      .transport {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .transport label {
+        max-width: 145px;
+      }
+      .transport #clock {
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        color: var(--muted);
+        margin: auto 0 12px auto;
+      }
+      .seek {
+        margin-top: 12px;
+      }
+      .row-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin: 28px 0 12px;
+      }
+      .count {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-left: 8px;
+      }
+      .empty {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 32px 0;
+        text-align: center;
+      }
+      .event {
+        padding: 16px 0;
+        border-top: 1px solid var(--line);
+      }
+      .event-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .event-top strong {
+        font-size: 13px;
+        flex: 1;
+      }
+      .event-top button {
+        min-height: 36px;
+        padding: 7px 12px;
+        font-size: 12px;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: 140px 180px 1fr;
+        gap: 14px;
+      }
+      .ambiguity {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        min-height: 32px;
+      }
+      .ambiguity input {
+        margin: 0;
+      }
+      .review {
+        border-top: 1px solid var(--line);
+        margin-top: 28px;
+        padding-top: 24px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 16px;
+      }
+      .review textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+      .finish {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .finish label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-height: 44px;
+      }
+      .finish input {
+        margin: 0;
+        flex-shrink: 0;
+      }
+      .status {
+        min-height: 24px;
+        margin-top: 16px;
+        font-size: 12px;
+        color: #526344;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 11px;
+      }
+      .footer strong {
+        font-weight: 600;
+      }
+      .error {
+        color: #943f31;
+      }
+      .hint {
+        margin-top: 12px;
+        font-size: 12px;
+      }
+      @media (max-width: 680px) {
+        main {
+          padding: 24px 18px 40px;
+        }
+        header {
+          display: block;
+          margin-bottom: 20px;
+        }
+        .badge {
+          display: block;
+          padding-top: 14px;
+        }
+        h1 {
+          font-size: 26px;
+        }
+        .player {
+          padding: 14px;
+        }
+        .fields {
+          grid-template-columns: 1fr 1fr;
+        }
+        .fields label:last-child {
+          grid-column: 1/-1;
+        }
+        .event-top button {
+          min-height: 44px;
+        }
+        .review {
+          grid-template-columns: 1fr;
+        }
+        .finish {
+          align-items: stretch;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .transport #clock {
+          margin-left: 0;
+          width: 100%;
+          margin-bottom: 0;
+        }
+        .transport label {
+          flex: 1;
+          max-width: none;
+        }
+        .row-heading {
+          align-items: start;
+        }
+        .row-heading button {
+          max-width: 160px;
+        }
+        .badge {
+          white-space: normal;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+        }
+        button:active {
+          transform: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow">LISTENING REVIEW</div>
+          <h1>Recording 001</h1>
+          <p>
+            Listen for each sound. Place its start, choose a label, and mark
+            anything uncertain. Use your own judgment.
+          </p>
+        </div>
+        <span class="badge" id="duration-label">Loading audio</span>
+      </header>
+      <section class="player" aria-label="Recording playback">
+        <div class="wave">
+          <canvas
+            id="wave"
+            aria-label="Audio waveform. Use the seek control below to navigate."
+          ></canvas>
+          <div class="playhead" id="playhead"></div>
+        </div>
+        <div class="transport">
+          <button id="play" class="primary" disabled>Play</button
+          ><label
+            >Playback speed<select id="speed">
+              <option value="1">Normal</option>
+              <option value="0.75">0.75×</option>
+              <option value="0.5">0.5×</option>
+            </select></label
+          ><label
+            >Position (seconds)<input
+              id="position"
+              type="number"
+              min="0"
+              step="0.001"
+              value="0"
+              disabled /></label
+          ><span id="clock">0.000 / 0.000 s</span>
+        </div>
+        <label class="seek"
+          >Seek through recording<input
+            id="seek"
+            type="range"
+            min="0"
+            max="1"
+            step="0.001"
+            value="0"
+            disabled
+        /></label>
+        <p class="hint">
+          Pause at a sound's start, then add an event. You can adjust its time
+          below.
+        </p>
+        <audio id="audio" preload="auto" hidden></audio>
+      </section>
+      <section aria-labelledby="events-heading">
+        <div class="row-heading">
+          <h2 id="events-heading">
+            Events <span class="count" id="count">0</span>
+          </h2>
+          <button id="add" disabled>Add event at cursor</button>
+        </div>
+        <p class="empty" id="empty">
+          No events yet. Listen to the recording to begin.
+        </p>
+        <div id="events"></div>
+      </section>
+      <section class="review" aria-label="Reviewer details">
+        <label
+          >Your name<input
+            id="reviewer"
+            autocomplete="name"
+            placeholder="Reviewer name" /></label
+        ><label
+          >Review notes<textarea
+            id="notes"
+            placeholder="Anything the event labels do not capture"
+          ></textarea>
+        </label>
+      </section>
+      <div class="finish">
+        <label
+          ><input type="checkbox" id="complete" />I have reviewed the whole
+          recording and every event.</label
+        ><button class="primary" id="export" disabled>
+          Export review JSON
+        </button>
+      </div>
+      <p role="status" aria-live="polite" class="status" id="status">
+        Decoding the recording.
+      </p>
+      <p class="footer">
+        Export at any time to save a draft.
+        <strong>Keep this page open until you export.</strong> Nothing is
+        uploaded.
+      </p>
+    </main>
+    <template id="event-template"
+      ><article class="event">
+        <div class="event-top">
+          <strong></strong><button type="button" class="hear">Hear event</button
+          ><button type="button" class="remove">Remove</button>
+        </div>
+        <div class="fields">
+          <label
+            >Start (seconds)<input
+              class="time"
+              type="number"
+              min="0"
+              step="0.001"
+              required /></label
+          ><label
+            >Sound<select class="drum" aria-label="Sound">
+              <option value="">Choose a sound</option>
+              <option value="kick">Kick</option>
+              <option value="snare">Snare</option>
+              <option value="hat">Hat (unspecified)</option>
+              <option value="closed">Closed hat</option>
+              <option value="open">Open hat</option>
+              <option value="ride">Ride</option>
+              <option value="crash">Crash</option>
+              <option value="aux">Aux / breath</option>
+              <option value="unknown">Unknown</option>
+            </select></label
+          ><label
+            >Literal sound or words (optional)<input
+              class="transcript"
+              type="text"
+          /></label>
+        </div>
+        <label class="ambiguity"
+          ><input class="ambiguous" type="checkbox" />This event is
+          ambiguous</label
+        >
+      </article></template
+    >
+    <script>
+      const recording = __RECORDING_DATA__;
+      const $ = (id) => document.getElementById(id),
+        audio = $("audio"),
+        events = [];
+      let decoded = null,
+        raf = 0,
+        serial = 0,
+        stopAt = null;
+      function status(text, error = false) {
+        $("status").textContent = text;
+        $("status").classList.toggle("error", error);
+      }
+      function changed() {
+        if ($("complete").checked) {
+          $("complete").checked = false;
+          status(
+            "The review changed. Mark it complete again when you are ready.",
+          );
+        }
+      }
+      function pause() {
+        audio.pause();
+        stopAt = null;
+        $("play").textContent = "Play";
+        cancelAnimationFrame(raf);
+        updatePosition();
+      }
+      function updatePosition() {
+        const time = Math.min(audio.currentTime || 0, decoded?.duration || 0);
+        $("seek").value = String(time);
+        if (document.activeElement !== $("position"))
+          $("position").value = time.toFixed(3);
+        $("clock").textContent =
+          `${time.toFixed(3)} / ${(decoded?.duration || 0).toFixed(3)} s`;
+        $("playhead").style.left =
+          `${decoded ? (100 * time) / decoded.duration : 0}%`;
+        if (stopAt !== null && time >= stopAt) {
+          pause();
+          return;
+        }
+        if (!audio.paused) raf = requestAnimationFrame(updatePosition);
+      }
+      function seek(time) {
+        if (!decoded || !Number.isFinite(time)) return;
+        audio.currentTime = Math.max(0, Math.min(decoded.duration, time));
+        stopAt = null;
+        updatePosition();
+      }
+      async function play() {
+        try {
+          await audio.play();
+          $("play").textContent = "Pause";
+          cancelAnimationFrame(raf);
+          updatePosition();
+        } catch {
+          status("Playback could not start. Press Play again.", true);
+        }
+      }
+      $("play").onclick = () => (audio.paused ? play() : pause());
+      audio.onended = pause;
+      $("seek").oninput = (e) => seek(Number(e.target.value));
+      $("position").onchange = (e) => seek(Number(e.target.value));
+      $("speed").onchange = (e) => {
+        audio.playbackRate = Number(e.target.value);
+      };
+      $("wave").onclick = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        seek(((e.clientX - rect.left) / rect.width) * (decoded?.duration || 0));
+      };
+      function draw() {
+        if (!decoded) return;
+        const el = $("wave"),
+          rect = el.getBoundingClientRect(),
+          dpr = devicePixelRatio || 1;
+        el.width = rect.width * dpr;
+        el.height = rect.height * dpr;
+        const ctx = el.getContext("2d");
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        const mono = new Float32Array(decoded.length);
+        for (let channel = 0; channel < decoded.numberOfChannels; channel++) {
+          const samples = decoded.getChannelData(channel);
+          for (let i = 0; i < samples.length; i++)
+            mono[i] += samples[i] / decoded.numberOfChannels;
+        }
+        let peak = 0;
+        for (const sample of mono) peak = Math.max(peak, Math.abs(sample));
+        ctx.fillStyle = "#69776b";
+        for (let x = 0; x < rect.width; x += 2) {
+          let amp = 0;
+          const a = Math.floor((x / rect.width) * mono.length),
+            b = Math.floor(((x + 2) / rect.width) * mono.length);
+          for (let i = a; i < Math.min(b, mono.length); i++)
+            amp = Math.max(amp, Math.abs(mono[i]));
+          const height = Math.max(1, (amp / (peak || 1)) * (rect.height - 20));
+          ctx.fillRect(x, (rect.height - height) / 2, 1, height);
+        }
+      }
+      new ResizeObserver(draw).observe($("wave"));
+      function updateCount() {
+        document.querySelectorAll(".event").forEach((el, i) => {
+          el.querySelector("strong").textContent = `Event ${i + 1}`;
+          el.querySelector(".remove").setAttribute(
+            "aria-label",
+            `Remove event ${i + 1}`,
+          );
+          el.querySelector(".hear").setAttribute(
+            "aria-label",
+            `Hear event ${i + 1}`,
+          );
+        });
+        $("count").textContent = events.length;
+        $("empty").hidden = events.length > 0;
+      }
+      $("add").onclick = () => {
+        if (!decoded) return;
+        pause();
+        changed();
+        const event = {
+          id: serial++,
+          time: Math.min(
+            audio.currentTime,
+            Math.max(0, decoded.duration - 0.001),
+          ),
+          drum: "",
+          transcript: "",
+          ambiguous: false,
+        };
+        events.push(event);
+        const el =
+          $("event-template").content.firstElementChild.cloneNode(true);
+        el.dataset.id = event.id;
+        const time = el.querySelector(".time"),
+          drum = el.querySelector(".drum");
+        time.value = event.time.toFixed(3);
+        time.max = String(Math.max(0, decoded.duration - 0.000001));
+        time.oninput = () => {
+          changed();
+          event.time = time.value === "" ? NaN : Number(time.value);
+        };
+        drum.onchange = () => {
+          changed();
+          event.drum = drum.value;
+        };
+        el.querySelector(".transcript").oninput = (e) => {
+          changed();
+          event.transcript = e.target.value;
+        };
+        el.querySelector(".ambiguous").onchange = (e) => {
+          changed();
+          event.ambiguous = e.target.checked;
+        };
+        el.querySelector(".remove").onclick = () => {
+          pause();
+          changed();
+          const index = events.indexOf(event);
+          events.splice(index, 1);
+          el.remove();
+          updateCount();
+          $("add").focus();
+          status("Event removed.");
+        };
+        el.querySelector(".hear").onclick = () => {
+          if (
+            !Number.isFinite(event.time) ||
+            event.time < 0 ||
+            event.time >= decoded.duration
+          ) {
+            time.reportValidity();
+            return;
+          }
+          pause();
+          seek(Math.max(0, event.time - 0.08));
+          stopAt = Math.min(decoded.duration, event.time + 0.55);
+          play();
+        };
+        $("events").append(el);
+        updateCount();
+        drum.focus();
+        status(`Event ${events.length} added. Choose a sound.`);
+      };
+      $("reviewer").oninput = changed;
+      $("notes").oninput = changed;
+      $("export").onclick = () => {
+        if (!decoded) return;
+        for (const event of events) {
+          if (
+            !Number.isFinite(event.time) ||
+            event.time < 0 ||
+            event.time >= decoded.duration
+          ) {
+            status("Each event needs a start time inside the recording.", true);
+            document.querySelector(`[data-id="${event.id}"] .time`).focus();
+            return;
+          }
+          if ($("complete").checked && !event.drum) {
+            status(
+              "Choose a sound for every event before marking the review complete.",
+              true,
+            );
+            document.querySelector(`[data-id="${event.id}"] .drum`).focus();
+            return;
+          }
+        }
+        if ($("complete").checked && !$("reviewer").value.trim()) {
+          status("Enter your name before marking the review complete.", true);
+          $("reviewer").focus();
+          return;
+        }
+        const sorted = events.slice().sort((a, b) => a.time - b.time);
+        if (
+          sorted.some((event, i) => i > 0 && event.time <= sorted[i - 1].time)
+        ) {
+          status(
+            "Each event needs a different start time. Review overlapping entries.",
+            true,
+          );
+          return;
+        }
+        const result = {
+          version: 1,
+          recordingId: recording.recordingId,
+          audioSha256: recording.audioSha256,
+          durationSeconds: decoded.duration,
+          reviewer: $("reviewer").value.trim(),
+          complete: $("complete").checked,
+          notes: $("notes").value,
+          events: events
+            .map(({ time, drum, transcript, ambiguous }) => ({
+              time,
+              drum,
+              transcript,
+              ambiguous,
+            }))
+            .sort((a, b) => a.time - b.time),
+        };
+        const url = URL.createObjectURL(
+          new Blob([JSON.stringify(result, null, 2)], {
+            type: "application/json",
+          }),
+        );
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${recording.recordingId}-${result.complete ? "review" : "draft"}.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        status(
+          result.complete
+            ? "Review exported."
+            : "Draft exported. The review is still incomplete.",
+        );
+      };
+      (async () => {
+        try {
+          const bytes = Uint8Array.from(atob(recording.audioBase64), (c) =>
+            c.charCodeAt(0),
+          );
+          audio.src = URL.createObjectURL(
+            new Blob([bytes], { type: "audio/mpeg" }),
+          );
+          const context = new AudioContext();
+          decoded = await context.decodeAudioData(bytes.buffer.slice(0));
+          await context.close();
+          $("duration-label").textContent =
+            `${decoded.duration.toFixed(3)} seconds`;
+          $("seek").max = String(decoded.duration);
+          $("position").max = String(decoded.duration);
+          for (const id of ["play", "add", "seek", "position", "export"])
+            $(id).disabled = false;
+          draw();
+          updatePosition();
+          status("Ready. No events have been added.");
+        } catch {
+          status("The recording could not be decoded in this browser.", true);
+        }
+      })();
+    </script>
+  </body>
+</html>

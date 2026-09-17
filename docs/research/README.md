@@ -40,6 +40,13 @@ regressed (610 core/548 four-class versus 639/605), including worse snare recall
 The source data was extracted with the browser implementation and all original
 training hashes remained unchanged. No production replacement followed.
 
+The [source phonetic audit](core-phonetic-error-audit.md) found label disagreements
+between published AVP releases and sparse Personal-training coverage for several
+failed snare variants. All original labels and scores remain unchanged. A
+[model-blind review package](blind-reference-review.md) supports human reference
+annotation of the already development-exposed public clip; it supplies no
+prefilled ground truth and does not itself establish independent accuracy.
+
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.
 
