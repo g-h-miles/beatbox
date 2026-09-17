@@ -1,0 +1,5 @@
+{
+  "threshold": 1.2873168143334053,
+  "training": "Public AVP performers 1\u201314 only; threshold fixed before validation",
+  "statistic": "75th percentile of pairwise20-band log-spectrum RMS distance; minimum6 hits, max96uniformly sampled"
+}

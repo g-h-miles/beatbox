@@ -1,12 +1,12 @@
 import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-const out = "artifacts/integration-ui";
+const out = "artifacts/hybrid-ui";
 mkdirSync(out, { recursive: true });
 const root =
   process.env.AVP_PERSONAL_DIR ||
   "artifacts/new-public-audio/avp-lvt/AVP-LVT_Dataset/AVP_Dataset/Personal";
-const base = process.env.UI_URL || "http://127.0.0.1:5183";
+const base = process.env.UI_URL || "http://127.0.0.1:5186";
 const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 1440, height: 1080 } });
 p.setDefaultTimeout(120000);
@@ -15,7 +15,7 @@ const errors = [],
   api = [];
 p.on("pageerror", (e) => errors.push(e.message));
 p.on("response", (r) => {
-  if (/onnx|wasm/.test(r.url()))
+  if (/onnx|wasm|relative-model/.test(r.url()))
     requests.push({ url: r.url(), status: r.status() });
 });
 await p.route("**/api/**", async (route) => {
@@ -58,6 +58,15 @@ assert(
   ),
 );
 assert(requests.some((r) => r.url.includes(".wasm") && r.status === 200));
+// A timing-only edit must remain manual through both classifiers.
+await p.locator(".hit-row").first().click();
+await p.getByLabel("Time (seconds)").fill("0.07");
+await p.getByRole("button", { name: "Add at cursor" }).click();
+await p.getByLabel("Velocity", { exact: true }).fill("115");
+const manualRows = (await p.locator(".hit-row").allTextContents()).slice(0, 2);
+const priorTimes = await p
+  .locator(".hit-row > span:nth-child(2)")
+  .allTextContents();
 await p.getByRole("button", { name: "Classify sounds" }).click();
 await p
   .getByRole("status")
@@ -65,6 +74,23 @@ await p
   .waitFor();
 assert(
   api.filter((a) => a.path === "/api/classify").every((a) => a.status === 200),
+);
+assert(
+  requests.some((r) => r.url.includes("relative-model") && r.status === 200),
+);
+assert.deepEqual(
+  (await p.locator(".hit-row").allTextContents()).slice(0, 2),
+  manualRows,
+);
+assert.equal(await p.getByLabel("Time (seconds)").inputValue(), "0");
+assert.deepEqual(
+  await p.locator(".hit-row > span:nth-child(2)").allTextContents(),
+  priorTimes,
+);
+assert(
+  (await p.locator(".hit-row").allTextContents()).some((t) =>
+    t.includes("Suggested"),
+  ),
 );
 await p.getByRole("button", { name: "Original", exact: true }).click();
 await p.getByRole("button", { name: "Original", exact: true }).click();
@@ -87,38 +113,29 @@ for (const width of [390, 768, 1440, 1920]) {
   );
   await p.screenshot({ path: `${out}/review-${width}.png`, fullPage: true });
 }
-// Exercise real worker cancellation, not merely an already-aborted signal.
-const cancellation = process.env.BUILT
-  ? "not exercised on built bundle"
-  : await p.evaluate(async () => {
-      const { detectNeural } = await import("/src/neural.ts");
-      const controller = new AbortController();
-      const samples = new Float32Array(22050 * 60);
-      for (let i = 0; i < samples.length; i++)
-        samples[i] = Math.sin(i * 0.1) * 0.2;
-      const pending = detectNeural(
-        samples,
-        22050,
-        undefined,
-        controller.signal,
-      );
-      setTimeout(() => controller.abort(), 10);
-      try {
-        await pending;
-        return "not cancelled";
-      } catch (e) {
-        return e.name;
-      }
-    });
-if (!process.env.BUILT) assert.equal(cancellation, "AbortError");
-// Force unavailable weights and confirm visible fallback keeps the app usable.
-await p.route("**/models/beatbox-onsets.onnx", (r) => r.abort());
-await p.getByRole("button", { name: "Re-detect", exact: true }).click();
+// Fail the core model explicitly. The API fallback remains visible and usable.
+await p.route("**/*relative-model*", (r) => r.abort());
+await p.getByRole("button", { name: "Classify sounds" }).click();
 await p
   .getByRole("status")
-  .filter({ hasText: "Basic detection is ready" })
+  .filter({ hasText: "TypeSafe suggestions are ready to review" })
   .waitFor();
+assert.equal(await p.getByLabel("Time (seconds)").inputValue(), "0");
 assert(await p.getByRole("button", { name: "Download MIDI" }).isEnabled());
+const beforeFailure = await p.locator(".hit-row").allTextContents();
+await p.route("**/api/classify", (r) =>
+  r.fulfill({
+    status: 502,
+    json: { error: "Test classification unavailable" },
+  }),
+);
+await p.getByRole("button", { name: "Classify sounds" }).click();
+await p
+  .getByRole("status")
+  .filter({ hasText: "Test classification unavailable" })
+  .waitFor();
+assert.deepEqual(await p.locator(".hit-row").allTextContents(), beforeFailure);
+const cancellation = "covered separately by relative module tests";
 writeFileSync(
   `${out}/report.json`,
   JSON.stringify(

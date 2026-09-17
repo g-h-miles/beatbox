@@ -23,3 +23,15 @@ The test proxied requests to the actual production TypeSafe endpoint with the pr
 A blocked model request produced the explicit basic detection notice and left export usable. A separate development run aborted an in progress worker and received AbortError. The development worktree's shared node_modules symlink required a temporary Vite filesystem allowance; production build assets did not require it. This temporary config is not committed.
 
 `npm test` now passes 38 tests, including exact onset retention, discarded neural instrument labels, explicit model failure fallback, propagated cancellation, and separate spoken syllable mode. `npm run build` passes. `scripts/integration-ui-check.mjs` records the real API and runtime checks. It requires the downloaded public AVP corpus; it does not use private voice recordings. Results and screenshots are in `artifacts/integration-ui/`. These tests do not assert 95 percent classification accuracy, validate all seven sound classes, or replace listening and labeled model evaluation.
+
+## Guarded hybrid classifier review
+
+The production build of the guarded hybrid classifier was tested locally with actual public P15/P16 audio and requests proxied to the real production TypeSafe endpoint. The ONNX detector, WASM runtime, and relative classifier binary all loaded successfully. The UI uses “Classify sounds” and shows “Suggested” for the local model instead of reusing an unrelated confidence percentage.
+
+The browser test changed an existing hit's time, added another hit at the cursor, changed its velocity, and classified again. Both manually edited rows stayed unchanged. Every displayed hit timestamp stayed unchanged through classification. Original playback, drum preview, slice playback, sound editing, and MIDI download passed. Four responsive screenshots were captured and the mobile and desktop layouts were visually inspected. No JavaScript page errors or horizontal overflow occurred.
+
+Blocking the relative model binary produced an explicit TypeSafe fallback notice and kept MIDI export usable. A simulated API failure left the full hit list unchanged. These deliberate failure cases are labeled in `scripts/hybrid-ui-check.mjs`; successful classification calls used the real API.
+
+A separate native browser gate check in `scripts/hybrid-gate-browser-check.mjs` used fresh pages at 44,100 and 48,000 Hz. P15 Fixed improvisation loaded the model and produced 59 Suggested labels among 61 detected hits at both rates. P15 isolated Fixed kick skipped the model entirely and retained the TypeSafe path at both rates. This verifies those gate paths on real browser features; it does not establish general gate accuracy on all sounds.
+
+All 49 unit tests passed. Artifacts are in `artifacts/hybrid-ui/`, including `gate-report.json`, `report.json`, MIDI, and screenshots. Recognition accuracy and the 95 percent target remain separate from this UI review. No deployment was performed by the UI reviewer.

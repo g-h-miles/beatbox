@@ -54,10 +54,10 @@ await page.route("**/api/classify", async (r) => {
     },
   });
 });
-await page.getByRole("button", { name: "Classify with TypeSafe" }).click();
+await page.getByRole("button", { name: "Classify sounds" }).click();
 await page
   .getByRole("status")
-  .filter({ hasText: "TypeSafe pass complete" })
+  .filter({ hasText: "Classification complete" })
   .waitFor();
 assert(
   (await page.locator(".hit-row").allTextContents()).every(
@@ -70,7 +70,7 @@ await page.route("**/api/classify", (r) =>
     json: { error: "Deliberate upstream test failure" },
   }),
 );
-await page.getByRole("button", { name: "Classify with TypeSafe" }).click();
+await page.getByRole("button", { name: "Classify sounds" }).click();
 await page
   .getByRole("status")
   .filter({ hasText: "Deliberate upstream test failure" })

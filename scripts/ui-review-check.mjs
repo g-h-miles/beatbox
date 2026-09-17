@@ -53,10 +53,10 @@ await page.getByRole("button", { name: "Original", exact: true }).click();
 await page.getByRole("button", { name: "Original", exact: true }).click();
 await page.getByRole("button", { name: "Drum preview", exact: true }).click();
 await page.getByRole("button", { name: "Drum preview", exact: true }).click();
-await page.getByRole("button", { name: "Classify with TypeSafe" }).click();
+await page.getByRole("button", { name: "Classify sounds" }).click();
 await page
   .getByRole("status")
-  .filter({ hasText: "TypeSafe pass complete" })
+  .filter({ hasText: "Classification complete" })
   .waitFor();
 await page.locator(".hit-row").first().click();
 await page.getByLabel("Sound", { exact: true }).selectOption("kick");

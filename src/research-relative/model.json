@@ -1,0 +1,48 @@
+{
+  "format": "beatbox-relative-svm-binary-v1",
+  "classes": [
+    "hat",
+    "kick",
+    "snare"
+  ],
+  "features": 1104,
+  "supportCount": 713,
+  "supportCounts": [
+    288,
+    201,
+    224
+  ],
+  "gamma": 0.0009090909075275003,
+  "byteLength": 3177704,
+  "sha256": "9fa09c2a6649426592fa39a7a0cdd3a82b0d49bef775e1f735020ddcb8aead21",
+  "sections": {
+    "mean": {
+      "offset": 0,
+      "length": 1104,
+      "dtype": "f64"
+    },
+    "scale": {
+      "offset": 8832,
+      "length": 1104,
+      "dtype": "f64"
+    },
+    "supports": {
+      "offset": 17664,
+      "length": 787152,
+      "dtype": "f32"
+    },
+    "dual": {
+      "offset": 3166272,
+      "length": 1426,
+      "dtype": "f64"
+    },
+    "intercepts": {
+      "offset": 3177680,
+      "length": 3,
+      "dtype": "f64"
+    }
+  },
+  "training": "Public AVP performers1\u201314 annotated grooves only; no private audio",
+  "source": "https://zenodo.org/records/3250230",
+  "license": "AVP CC BY4.0; research model, only3coreclasses"
+}
