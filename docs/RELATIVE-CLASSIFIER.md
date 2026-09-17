@@ -16,6 +16,22 @@ The hybrid retains TypeSafe ride/crash/aux outputs. For other events the SVM sel
 
 The fully native browser SVM alone achieves590/672 correct core labels (87.80%),84.23% labeled-event F1, with707 detected events against694 references. Browser resampling differs from Python; numerical model parity and native performance are documented separately in the model README. None of these results achieves the requested95% complete-transcription goal.
 
+## Frozen existing-test comparison
+
+The same frozen models, gate and combination rule were then evaluated on the previously inspected AVP performers 21–28: 14 retained grooves, 1,163 reference events, 1,175 neural detections and 1,139 matched events. These performers were excluded from acoustic-model training. This is not a fresh unseen corpus; no parameters were tuned on these results and no reserved MDV/VIS voices were evaluated.
+
+| Pipeline | Correct core / matched | Core labeled-event F1 | Correct four-class / matched | Four-class labeled-event F1 |
+| --- | ---: | ---: | ---: | ---: |
+| TypeSafe |739/1,139 = 64.88%|63.22%|605/1,139 = 53.12%|51.75%|
+| Relative SVM |898/1,139 = 78.84%|76.82%|Not applicable|Not applicable|
+| Guarded hybrid |848/1,139 = 74.45%|72.54%|686/1,139 = 60.23%|58.68%|
+
+The guarded hybrid improved aggregate results but introduced material class regressions. Against TypeSafe, kick recall improved from 280 to 357 of 409 matched kicks and merged-hat recall from 333 to 382 of 452 hats. **Snare recall declined from 126 to 109 of 278 snares.** Only 55 of 231 open hats received the correct open-hat label. The shared onset F1 of 97.43% does not measure correctly labeled MIDI notes.
+
+The gate enabled 13 of 14 recordings. P24 Personal received no relative labels; retaining TypeSafe there avoided 10 errors. Overall, the guarded hybrid corrected 181 core labels that TypeSafe missed but spoiled 72 TypeSafe-correct labels. Retaining TypeSafe ride/crash/aux predictions does not validate those classes: this cohort contains the four core drum labels. Spoken “boots and cats” was not evaluated in this comparison. These results remain well below the requested 95% complete-transcription goal.
+
+A follow-up rule preserving every TypeSafe snare prediction was examined only on existing validation performers 15–20. It corrected 15 snares but spoiled 73 core labels, reducing core labeled-event F1 from 83.14% to 74.86%. The rule was rejected and the original guarded combination was retained. It was not tuned or evaluated again on performers 21–28. Detailed methodology and class counts are in [the experiment report](research/typesafe-hybrid-existing-test.md).
+
 ## Why a recording-level check is required
 
 The relative model subtracts each recording's median feature values. Repeating one identical sound makes every normalized feature zero, regardless of that sound's instrument. A six-file isolated-sound diagnosis confirmed the failure:84/200 correct, despite reference boundaries. This model must therefore never become the unconditional default.
@@ -43,6 +59,8 @@ npx tsx scripts/diversity-training.ts
 python ml/diversity_prepare.py --validation
 npx tsx scripts/diversity-validation.ts
 npx tsx scripts/typesafe-validation-cohort.ts
+npx tsx scripts/typesafe-existing-test.ts
+npx tsx scripts/typesafe-validation-snare.ts
 ```
 
 Raw audio, intermediate records and detailed reports remain in ignored `artifacts/`. Public AVP model attribution is retained with the binary. The feature gate is trained once during development; app users do not need to train it.
