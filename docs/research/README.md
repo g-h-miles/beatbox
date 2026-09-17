@@ -1,6 +1,18 @@
-# Classification research — not released
+# Classification research
 
-These experiments do **not** meet the requested recognition quality. The production classifier still uses the implementation from commit 2393716. Production now also includes the private `/teach` recording page (main commit 99bbf2d); none of the experimental classifiers has been released. The candidate code is on a research branch, not a production recognition improvement claim.
+The requested >95% independent end-to-end recognition quality remains unmet.
+Production now uses the browser-trained acoustic models from commit `15be76a`,
+with TypeSafe preserving noncore choices and the existing diversity gate.
+See [the paired pipeline comparison](native-hybrid-comparison.md) for the
+measured gains and regressions. The later experiments in
+[TypeSafe group pooling](typesafe-group-pooling.md),
+[core/noncore gating](core-other-gate.md), and
+[hat duration/decay](../../ml/hat_shape_protocol.md) are not deployed.
+[The native timing audit](native-timing-audit.md) separates onset errors from
+label errors. AVP 21–28 has been inspected repeatedly and is not a fresh holdout.
+
+The sections below preserve earlier experiments and their historical results;
+their model descriptions and proposed next steps are not the current release.
 
 ## Data and evaluation
 
