@@ -17,16 +17,10 @@ import {
   WandSparkles,
   X,
 } from "lucide-react";
-import {
-  analyze,
-  demoBuffer,
-  drumSound,
-  features,
-  MAX_SECONDS,
-  mono,
-} from "./audio";
+import { demoBuffer, drumSound, features, MAX_SECONDS, mono } from "./audio";
 import { drums, type Drum, type Hit } from "./model";
 import { applyRhythm, estimateTempo, inferGrid, probabilities } from "./rhythm";
+import { detectHits } from "./detect";
 import { midi } from "./midi";
 import { spectralDistance } from "./evidence";
 const fmt = (t: number) =>
@@ -52,6 +46,8 @@ export default function App() {
     [position, setPosition] = useState(0),
     [activePad, setActivePad] = useState<Drum | null>(null),
     [help, setHelp] = useState(false);
+  const helpButton = useRef<HTMLButtonElement>(null);
+  const detection = useRef<AbortController | null>(null);
   const input = useRef<HTMLInputElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     context = useRef<AudioContext | null>(null),
@@ -106,11 +102,23 @@ export default function App() {
       .then((v) => setConfigured(!!v?.configured))
       .catch(() => {});
     return () => {
+      detection.current?.abort();
       stream.current?.getTracks().forEach((t) => t.stop());
       cancelAnimationFrame(frame.current);
       void context.current?.close();
     };
   }, []);
+  useEffect(() => {
+    if (!help) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setHelp(false);
+        helpButton.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [help]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (
@@ -168,14 +176,34 @@ export default function App() {
     draw();
     return () => observer.disconnect();
   }, [samples]);
-  function loadBuffer(decoded: AudioBuffer, fileName: string) {
+  async function findHits(
+    data: Float32Array,
+    sampleRate: number,
+    nextMode = mode,
+  ) {
+    detection.current?.abort();
+    const controller = new AbortController();
+    detection.current = controller;
+    const version = ++generation.current;
+    const result = await detectHits(
+      data,
+      sampleRate,
+      sensitivity,
+      nextMode,
+      controller.signal,
+      (fraction) => setBusy(`Finding hits… ${Math.round(fraction * 100)}%`),
+    );
+    if (controller.signal.aborted || version !== generation.current)
+      throw new DOMException("Cancelled", "AbortError");
+    return result;
+  }
+  async function loadBuffer(decoded: AudioBuffer, fileName: string) {
     if (decoded.duration > MAX_SECONDS)
       throw Error(
         `Keep it under ${MAX_SECONDS} seconds for this little beat machine.`,
       );
-    const data = mono(decoded),
-      found = analyze(data, decoded.sampleRate, sensitivity, mode);
-    generation.current++;
+    const data = mono(decoded);
+    const { hits: found, fallback } = await findHits(data, decoded.sampleRate);
     setBuffer(decoded);
     setSamples(data);
     setName(fileName);
@@ -183,9 +211,11 @@ export default function App() {
     setBeatOne(null);
     setSelected(null);
     setMessage(
-      found.length
-        ? `${found.length} hits found. Local suggestions are ready to review.`
-        : "No hits detected. Increase sensitivity or try a louder recording.",
+      fallback
+        ? "The precise detector could not load. Basic detection is ready; check the hit list."
+        : found.length
+          ? `${found.length} hits found. Classify them, then compare the preview with your recording.`
+          : "No hits detected. Increase sensitivity or try a louder recording.",
     );
   }
   async function loadFile(file?: File) {
@@ -197,7 +227,7 @@ export default function App() {
       if (file.size > 30 * 1024 * 1024)
         throw Error("Please use an audio file smaller than 30 MB.");
       const decoded = await audio().decodeAudioData(await file.arrayBuffer());
-      loadBuffer(decoded, file.name);
+      await loadBuffer(decoded, file.name);
     } catch (e) {
       setMessage(
         e instanceof Error
@@ -213,7 +243,7 @@ export default function App() {
     stop();
     setBusy("Making a little groove…");
     try {
-      loadBuffer(await demoBuffer(), "Pocket groove · synthetic demo");
+      await loadBuffer(await demoBuffer(), "Pocket groove · synthetic demo");
     } catch {
       setMessage("Could not create the demo audio.");
     } finally {
@@ -260,7 +290,7 @@ export default function App() {
           const data = await new Blob(chunks, {
             type: rec.mimeType,
           }).arrayBuffer();
-          loadBuffer(
+          await loadBuffer(
             await audio().decodeAudioData(data),
             "Mic take · " +
               new Date().toLocaleTimeString([], {
@@ -371,19 +401,32 @@ export default function App() {
       `Applied your ${drums.find((d) => d.id === hit.drum)!.name} label to similar sounds. Review the updated hit list.`,
     );
   }
-  function detect() {
+  async function detect(nextMode = mode) {
     if (!samples || !buffer) return;
     stop();
-    generation.current++;
-    setHits(analyze(samples, buffer.sampleRate, sensitivity, mode));
-    setSelected(null);
-    setMessage("Hits detected again. Previous edits were replaced.");
+    setBusy("Finding hits…");
+    try {
+      const result = await findHits(samples, buffer.sampleRate, nextMode);
+      setHits(result.hits);
+      setSelected(null);
+      setBeatOne(null);
+      setMessage(
+        result.fallback
+          ? "The precise detector could not load. Basic detection is ready; check the hit list."
+          : "Hits detected again. Previous edits were replaced.",
+      );
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError"))
+        setMessage("Could not detect hits. Please try again.");
+    } finally {
+      setBusy("");
+    }
   }
   async function classify() {
     if (!hits.length) return;
     stop();
     const version = generation.current;
-    setBusy("Jev is reading the groove…");
+    setBusy("Classifying your hits…");
     setMessage("");
     try {
       let next = [...hits];
@@ -438,7 +481,7 @@ export default function App() {
       if (version === generation.current) {
         setHits(next);
         setMessage(
-          "TypeSafe pass complete. Audition and correct the suggestions before export.",
+          "TypeSafe pass complete. Play the preview and check any wrong sounds.",
         );
       }
     } catch (e) {
@@ -502,7 +545,13 @@ export default function App() {
         </a>
         <div className="header-right">
           <span className="live-dot" /> A little noise. A lot of groove.
-          <button className="text-button" onClick={() => setHelp(!help)}>
+          <button
+            ref={helpButton}
+            className="text-button"
+            aria-expanded={help}
+            aria-controls="instructions"
+            onClick={() => setHelp(!help)}
+          >
             How it works <ArrowUpRight size={15} />
           </button>
         </div>
@@ -519,46 +568,45 @@ export default function App() {
             <p className="lede">
               Beatbox it. Hear it. Make it a drum track.
               <br />
-              Your timing, your swing, every happy accident.
+              Keep your timing and swing. Quantize later if you want.
             </p>
           </div>
           <div className="recipe">
             <span>
-              01 <b>Make some noise</b>
+              01 <b>Record or drop</b>
             </span>
             <ChevronRight />
             <span>
-              02 <b>Find your hits</b>
+              02 <b>Check the sounds</b>
             </span>
             <ChevronRight />
             <span>
-              03 <b>Take the groove</b>
+              03 <b>Download MIDI</b>
             </span>
           </div>
         </section>
         {help && (
-          <section className="help">
+          <section className="help" id="instructions">
             <button
               aria-label="Close instructions"
-              onClick={() => setHelp(false)}
+              onClick={() => {
+                setHelp(false);
+                helpButton.current?.focus();
+              }}
             >
               <X size={16} />
             </button>
             <h2>Your groove, without the grid.</h2>
             <p>
-              Record one sound at a time, close to the microphone in a quiet
-              room. Detection estimates attacks; inspect the waveform and edit
-              any missed or misplaced hit. Local labels are rough acoustic
-              guesses. TypeSafe classifies measured features, not the recording
-              itself, and needs validation on your voice.
+              Record a beat or drop an audio file. Compare Original with Drum
+              preview, then click a hit to change its sound or timing. Try
+              Classify with TypeSafe for another set of suggestions.
             </p>
             <p>
-              Download the .mid, set Logic’s project tempo to the export BPM,
-              then drag it onto a software instrument track with a drum kit.
-              Keep region quantization off. MIDI uses channel 10 and General
-              MIDI notes; Aux defaults to high woodblock (75) because breaths
-              have no standard GM note. The preview is synthesized, so your
-              Logic kit will sound different.
+              Set your Logic project to the export BPM, then drag the MIDI onto
+              a software instrument track with a drum kit. Leave quantization
+              off to keep your timing. Aux uses woodblock note 75. Your chosen
+              kit will sound different from this preview.
             </p>
           </section>
         )}
@@ -616,6 +664,17 @@ export default function App() {
               onChange={(e) => void loadFile(e.target.files?.[0])}
             />
           </div>
+          <div
+            className={`notice ${busy ? "busy" : ""}`}
+            role="status"
+            aria-live="polite"
+          >
+            {busy ||
+              message ||
+              (recording
+                ? "Recording. Press Stop when you are done."
+                : "Up to 90 seconds. No setup needed.")}
+          </div>
           <div className="session-bar">
             <div>
               <span className="file-dot" />
@@ -631,7 +690,7 @@ export default function App() {
             </button>
           </div>
           <div
-            className="timeline"
+            className={`timeline ${hits.length > 32 ? "dense" : ""}`}
             onClick={(e) => {
               if (buffer && !disabled) {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -765,6 +824,28 @@ export default function App() {
                 <Plus size={14} /> Add at cursor
               </button>
             </div>
+            <div className="ai-block">
+              <div>
+                <WandSparkles size={17} />
+                <b>Check the sounds</b>
+                <span>{configured ? "CONNECTED" : "UNAVAILABLE"}</span>
+              </div>
+              <p>
+                Listen to the drum preview. Click any hit to correct it, or try
+                another classification pass.
+              </p>
+              <button
+                disabled={!hits.length || disabled || !configured}
+                onClick={() => void classify()}
+              >
+                <WandSparkles size={14} /> Classify with TypeSafe
+              </button>
+              {!configured && (
+                <small>
+                  Classification is unavailable. You can still edit and export.
+                </small>
+              )}
+            </div>
             <div className="mode-control">
               <label htmlFor="detection-mode">Performance</label>
               <select
@@ -774,19 +855,7 @@ export default function App() {
                 onChange={(e) => {
                   const next = e.target.value as "hits" | "syllables";
                   setMode(next);
-                  if (samples && buffer) {
-                    stop();
-                    generation.current++;
-                    setHits(
-                      analyze(samples, buffer.sampleRate, sensitivity, next),
-                    );
-                    setSelected(null);
-                  }
-                  setMessage(
-                    next === "syllables"
-                      ? "Syllable mode groups word endings. Leave a small gap between words; use hit mode for fast percussion."
-                      : "Hit mode keeps individual percussion attacks.",
-                  );
+                  if (samples && buffer) void detect(next);
                 }}
               >
                 <option value="hits">Beatbox hits</option>
@@ -810,7 +879,7 @@ export default function App() {
               </label>
               <button
                 disabled={!buffer || disabled}
-                onClick={detect}
+                onClick={() => void detect()}
                 title="Re-detect hits and replace edits"
               >
                 <RotateCcw size={14} /> Re-detect
@@ -822,7 +891,7 @@ export default function App() {
                   <b>Edit hit</b>
                   <span>
                     {hit.source === "typesafe"
-                      ? `${hit.rhythmAdjusted ? "Groove-assisted · " : ""}Jev confidence ${Math.round((hit.confidence || 0) * 100)}%`
+                      ? `${hit.rhythmAdjusted ? "Groove hint · " : ""}Model confidence ${Math.round((hit.confidence || 0) * 100)}%`
                       : hit.source === "manual"
                         ? "Edited by you"
                         : "Local suggestion · unverified"}
@@ -935,8 +1004,8 @@ export default function App() {
               {!hits.length ? (
                 <div className="empty-hits">
                   <AudioLines size={22} />
-                  <p>A home for every kick, tss, and ka.</p>
-                  <span>Your detected hits will show up here.</span>
+                  <p>No hits yet.</p>
+                  <span>Record a beat or drop a file above.</span>
                 </div>
               ) : (
                 <>
@@ -982,9 +1051,8 @@ export default function App() {
               <span className="step-number">03</span>
             </div>
             <p>
-              A tiny file. Your whole groove.
-              <br />
-              Ready for Logic, or wherever you make noise.
+              Choose the tempo you will use in Logic. Hit timing stays
+              unchanged.
             </p>
             <div className="tempo">
               <label htmlFor="tempo">
@@ -1007,7 +1075,10 @@ export default function App() {
                 <span>BPM</span>
               </div>
             </div>
-            <div className="groove-controls">
+            <details className="groove-controls">
+              <summary>
+                Groove hints <span>{grooveAssist ? "On" : "Off"}</span>
+              </summary>
               <button
                 disabled={hits.length < 6 || disabled}
                 onClick={() => {
@@ -1059,7 +1130,7 @@ export default function App() {
                       setBeatOne(null);
                     }}
                   >
-                    Auto phase
+                    Reset beat 1
                   </button>
                 )}
               </div>
@@ -1068,18 +1139,15 @@ export default function App() {
                   ? "Groove hints off."
                   : grid
                     ? `${grid.source === "manual" ? `Beat 1 at ${grid.origin.toFixed(3)}s` : "Kick/snare pulse inferred"} · ${rhythmChanges} label${rhythmChanges === 1 ? "" : "s"} adjusted.`
-                    : "Waiting for a clear pulse. Set the tempo and select beat 1, or run TypeSafe to find anchors."}
+                    : "Set the tempo and choose beat 1, or classify to find a pulse."}
               </p>
-            </div>
+            </details>
             <div className="export-facts">
               <span>
                 Timing <b>Original · no snapping</b>
               </span>
               <span>
                 Mapping <b>General MIDI drums</b>
-              </span>
-              <span>
-                Resolution <b>9,600 ticks / quarter</b>
               </span>
             </div>
             <button
@@ -1094,37 +1162,12 @@ export default function App() {
               Drag the downloaded .mid into Logic. Use the same BPM and leave
               quantization off.
             </p>
-            <div className="ai-block">
-              <div>
-                <WandSparkles size={17} />
-                <b>A second set of ears*</b>
-                <span>{configured ? "CONNECTED" : "LOCAL MODE"}</span>
-              </div>
-              <p>
-                *Well, acoustic features. Jev makes a TypeSafe classification
-                pass; you make the final call.
-              </p>
-              <button
-                disabled={!hits.length || disabled || !configured}
-                onClick={() => void classify()}
-              >
-                <WandSparkles size={14} /> Classify with TypeSafe
-              </button>
-              {!configured && (
-                <small>Connect a server API key to enable Jev.</small>
-              )}
-            </div>
           </aside>
         </section>
-        <div
-          className={`notice ${busy ? "busy" : ""}`}
-          role="status"
-          aria-live="polite"
-        >
-          {busy ||
-            message ||
-            "Audio stays in your browser. Only acoustic features are sent when you choose TypeSafe."}
-        </div>
+        <p className="privacy">
+          Audio stays in your browser. TypeSafe receives acoustic measurements
+          when you choose to classify.
+        </p>
         <footer>
           <span>BUILT FOR HAPPY ACCIDENTS.</span>
           <span>

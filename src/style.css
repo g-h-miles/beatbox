@@ -1114,3 +1114,95 @@ footer span:last-child {
     min-height: 44px;
   }
 }
+
+/* Flow review. Keep the existing Inter and sage instrument palette. */
+.machine .notice {
+  margin: 0 25px 10px;
+  padding: 0;
+  min-height: 20px;
+  color: #58664e;
+  font-size: 12px;
+}
+.editor .ai-block {
+  margin: 0 0 18px;
+  padding: 0 0 18px;
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
+}
+.editor .ai-block p {
+  font-size: 12px;
+  color: #616c58;
+}
+.editor .ai-block button {
+  min-height: 40px;
+  font-size: 12px;
+}
+.editor .ai-block small {
+  font-size: 11px;
+  color: #616c58;
+}
+.groove-controls {
+  margin: 12px 0 20px;
+}
+.groove-controls summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: #536247;
+  padding: 10px 0;
+}
+.groove-controls summary span {
+  float: right;
+  color: #69765d;
+}
+.groove-controls summary:focus-visible {
+  outline: 2px solid #65824c;
+  outline-offset: 3px;
+}
+.groove-controls[open] summary {
+  margin-bottom: 8px;
+}
+.privacy {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #65705b;
+  margin: 24px 0 14px;
+}
+.lede,
+aside > p,
+.fine {
+  color: #65705b !important;
+}
+.hit-row > span:nth-child(2),
+.hit-row > span:nth-child(3),
+.hit-fields label {
+  color: #5f6b55;
+}
+@media (max-width: 680px) {
+  .machine .notice {
+    margin: 0 15px 12px;
+    font-size: 11px;
+  }
+  .recipe {
+    gap: 13px;
+  }
+  .text-button,
+  .detection button,
+  .hit-actions button,
+  .teach-button,
+  .transport button,
+  .editor .ai-block button,
+  .hit-fields input,
+  .hit-fields select,
+  .mode-control select,
+  .groove-controls summary {
+    min-height: 44px;
+  }
+  .hit-detail > div:first-child > button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+/* Dense recordings keep markers visible without overlapping syllable labels. */
+.timeline.dense .marker:not(.selected) span {
+  display: none;
+}

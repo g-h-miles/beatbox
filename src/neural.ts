@@ -11,6 +11,7 @@ export async function detectNeural(
   sampleRate: number,
   onProgress?: (fraction: number) => void,
   signal?: AbortSignal,
+  threshold = 0.4,
 ): Promise<NeuralEvent[]> {
   if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
   if (
@@ -72,6 +73,6 @@ export async function detectNeural(
         reject(new Error(event.data.message));
       }
     };
-    worker.postMessage({ samples: resampled }, [resampled.buffer]);
+    worker.postMessage({ samples: resampled, threshold }, [resampled.buffer]);
   });
 }

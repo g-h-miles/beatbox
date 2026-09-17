@@ -23,16 +23,17 @@ await page.route("**/api/classify", (r) => {
     },
   });
 });
-await page.goto("http://localhost:5175");
+await page.goto(process.env.UI_URL || "http://localhost:5175");
 await page.getByRole("button", { name: "Try a demo groove" }).click();
 await page.locator(".hit-row").first().click();
+await page.locator(".groove-controls summary").click();
 await page
   .getByRole("button", { name: "Selected hit is beat 1", exact: true })
   .click();
 await page.getByRole("button", { name: /Classify with TypeSafe/ }).click();
 await page
   .getByText(
-    "TypeSafe pass complete. Audition and correct the suggestions before export.",
+    "TypeSafe pass complete. Play the preview and check any wrong sounds.",
     { exact: true },
   )
   .waitFor();
