@@ -15,6 +15,11 @@
   "routes": [{ "pattern": "beatbox.grahammiles.me", "custom_domain": true }],
   "ratelimits": [
     {
+      "name": "GENERATE_LIMITER",
+      "namespace_id": "1002",
+      "simple": { "limit": 120, "period": 60 },
+    },
+    {
       "name": "CLASSIFY_LIMITER",
       "namespace_id": "1001",
       "simple": { "limit": 30, "period": 60 },

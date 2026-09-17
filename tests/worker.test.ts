@@ -13,6 +13,7 @@ const f = {
 };
 const env = {
   TYPESAFE_API_KEY: "test-key",
+  GENERATE_LIMITER: { limit: async () => ({ success: true }) },
   CLASSIFY_LIMITER: { limit: async () => ({ success: true }) },
   ASSETS: {
     fetch: async () => new Response("asset"),

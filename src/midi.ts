@@ -11,7 +11,12 @@ const u32 = (n: number) => [
   n & 255,
 ];
 // 9600 ticks/quarter. Tempo is metadata: seconds remain invariant at any selected BPM.
-export function midi(hits: Hit[], bpm = 120, duration = 0): Uint8Array {
+export function midi(
+  hits: Pick<Hit, "time" | "duration" | "velocity" | "drum">[],
+  bpm = 120,
+  duration = 0,
+  trackName = "BEATBOX • original timing",
+): Uint8Array {
   const tempo = Math.round(60_000_000 / bpm),
     ppq = 9600,
     ticks = (s: number) => Math.round(((s * 1_000_000) / tempo) * ppq);
@@ -27,7 +32,7 @@ export function midi(hits: Hit[], bpm = 120, duration = 0): Uint8Array {
       ];
     })
     .sort((a, b) => a.t - b.t || a.data[0] - b.data[0]);
-  const name = [...new TextEncoder().encode("BEATBOX • original timing")];
+  const name = [...new TextEncoder().encode(trackName)];
   const track = [
     0,
     255,

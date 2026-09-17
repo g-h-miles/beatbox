@@ -594,6 +594,7 @@ export default function App() {
           BEATBOX<span className="version">VOL. 01</span>
         </a>
         <div className="header-right">
+          <a className="text-button" href="/make">Make a beat <ArrowUpRight size={15} /></a>
           <span className="live-dot" /> A little noise. A lot of groove.
           <button
             ref={helpButton}

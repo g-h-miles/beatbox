@@ -31,6 +31,20 @@ Press **Classify sounds** to combine a local acoustic model with TypeSafe. The b
 
 No user training is required. Corrections can be supplied as examples for the current take. Private recordings are not part of the shipped public-data model. Model attribution and numerical parity checks are in [the model README](src/research-browser-model/README.md).
 
+## Make a beat with TypeSafe
+
+Open **Make a beat** (`/make`), describe a groove, set its tempo, and choose 8, 16, 32, or 64 sixteenth-note steps. Sixteen steps make one bar of 4/4. TypeSafe composes one step at a time; every request includes all previous decisions as individual lines. For each drum, one Choice question selects play or rest and a second selects the intensity to use if it plays (14 questions in one API request per step). The questions at a given step share the same history and run independently; multiple drums can sound together. There are no genre templates or rule-based note corrections.
+
+Listen to the pattern, click a cell to change its intensity, and download MIDI. Silent steps remain in the exported timeline. The generator uses the same GM notes as the recorder and a separate rate limit. Keys stay in the Worker. Cancel stops the browser's sequence; a request already accepted upstream may still be billed.
+
+The UI reports completed requests and returned input-token usage. A real API smoke test can be run against a local full-stack preview or the deployed app:
+
+```sh
+BEATBOX_URL=https://beatbox.grahammiles.me BEATBOX_STEPS=16 node scripts/generator-smoke.mjs
+```
+
+This makes real API calls and writes the resulting pattern and usage to ignored `artifacts/generator/`. Set `BEATBOX_PROMPT` to try another description.
+
 ## Keep the groove in Logic
 
 1. Record dry, monophonic vocal percussion in a quiet space. No overlapping sounds or backing music. Use headphones when previewing.
