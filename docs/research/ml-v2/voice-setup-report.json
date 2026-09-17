@@ -1,0 +1,747 @@
+{
+  "selection": "validation participants 15\u201320 only",
+  "selected": [
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 556,
+      "total": 672,
+      "accuracy": 0.8273809523809523,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 820,
+      "total": 1139,
+      "accuracy": 0.7199297629499561,
+      "suppliedExamples": 168
+    }
+  ],
+  "trials": [
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 314,
+      "total": 672,
+      "accuracy": 0.46726190476190477,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 615,
+      "total": 1139,
+      "accuracy": 0.5399473222124671,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 345,
+      "total": 672,
+      "accuracy": 0.5133928571428571,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 613,
+      "total": 1139,
+      "accuracy": 0.5381913959613697,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 331,
+      "total": 672,
+      "accuracy": 0.49255952380952384,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 625,
+      "total": 1139,
+      "accuracy": 0.5487269534679543,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 331,
+      "total": 672,
+      "accuracy": 0.49255952380952384,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 3,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 625,
+      "total": 1139,
+      "accuracy": 0.5487269534679543,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 347,
+      "total": 672,
+      "accuracy": 0.5163690476190477,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 599,
+      "total": 1139,
+      "accuracy": 0.5258999122036875,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 365,
+      "total": 672,
+      "accuracy": 0.5431547619047619,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 629,
+      "total": 1139,
+      "accuracy": 0.5522388059701493,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 363,
+      "total": 672,
+      "accuracy": 0.5401785714285714,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 627,
+      "total": 1139,
+      "accuracy": 0.5504828797190519,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 363,
+      "total": 672,
+      "accuracy": 0.5401785714285714,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 5,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 627,
+      "total": 1139,
+      "accuracy": 0.5504828797190519,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 352,
+      "total": 672,
+      "accuracy": 0.5238095238095238,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 584,
+      "total": 1139,
+      "accuracy": 0.5127304653204565,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 362,
+      "total": 672,
+      "accuracy": 0.5386904761904762,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 609,
+      "total": 1139,
+      "accuracy": 0.5346795434591747,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 354,
+      "total": 672,
+      "accuracy": 0.5267857142857143,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 610,
+      "total": 1139,
+      "accuracy": 0.5355575065847235,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 354,
+      "total": 672,
+      "accuracy": 0.5267857142857143,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "spectral",
+      "examplesPerClass": 10,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 610,
+      "total": 1139,
+      "accuracy": 0.5355575065847235,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 556,
+      "total": 672,
+      "accuracy": 0.8273809523809523,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 820,
+      "total": 1139,
+      "accuracy": 0.7199297629499561,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 522,
+      "total": 672,
+      "accuracy": 0.7767857142857143,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 856,
+      "total": 1139,
+      "accuracy": 0.7515364354697103,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 531,
+      "total": 672,
+      "accuracy": 0.7901785714285714,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 830,
+      "total": 1139,
+      "accuracy": 0.7287093942054433,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 531,
+      "total": 672,
+      "accuracy": 0.7901785714285714,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 3,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 830,
+      "total": 1139,
+      "accuracy": 0.7287093942054433,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 546,
+      "total": 672,
+      "accuracy": 0.8125,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 800,
+      "total": 1139,
+      "accuracy": 0.7023705004389815,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 530,
+      "total": 672,
+      "accuracy": 0.7886904761904762,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 859,
+      "total": 1139,
+      "accuracy": 0.7541703248463565,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 535,
+      "total": 672,
+      "accuracy": 0.7961309523809523,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 849,
+      "total": 1139,
+      "accuracy": 0.7453906935908692,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 535,
+      "total": 672,
+      "accuracy": 0.7961309523809523,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 5,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 849,
+      "total": 1139,
+      "accuracy": 0.7453906935908692,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 508,
+      "total": 672,
+      "accuracy": 0.7559523809523809,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 828,
+      "total": 1139,
+      "accuracy": 0.7269534679543459,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 519,
+      "total": 672,
+      "accuracy": 0.7723214285714286,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 843,
+      "total": 1139,
+      "accuracy": 0.7401229148375769,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 508,
+      "total": 672,
+      "accuracy": 0.7559523809523809,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 817,
+      "total": 1139,
+      "accuracy": 0.7172958735733099,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 507,
+      "total": 672,
+      "accuracy": 0.7544642857142857,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "temporal",
+      "examplesPerClass": 10,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 816,
+      "total": 1139,
+      "accuracy": 0.7164179104477612,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 456,
+      "total": 672,
+      "accuracy": 0.6785714285714286,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 740,
+      "total": 1139,
+      "accuracy": 0.6496927129060579,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 447,
+      "total": 672,
+      "accuracy": 0.6651785714285714,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 745,
+      "total": 1139,
+      "accuracy": 0.6540825285338016,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 450,
+      "total": 672,
+      "accuracy": 0.6696428571428571,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 758,
+      "total": 1139,
+      "accuracy": 0.6654960491659351,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 450,
+      "total": 672,
+      "accuracy": 0.6696428571428571,
+      "suppliedExamples": 144
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 3,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 758,
+      "total": 1139,
+      "accuracy": 0.6654960491659351,
+      "suppliedExamples": 168
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 462,
+      "total": 672,
+      "accuracy": 0.6875,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 717,
+      "total": 1139,
+      "accuracy": 0.6294995610184372,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 469,
+      "total": 672,
+      "accuracy": 0.6979166666666666,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 777,
+      "total": 1139,
+      "accuracy": 0.6821773485513608,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 472,
+      "total": 672,
+      "accuracy": 0.7023809523809523,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 761,
+      "total": 1139,
+      "accuracy": 0.6681299385425812,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 472,
+      "total": 672,
+      "accuracy": 0.7023809523809523,
+      "suppliedExamples": 240
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 5,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 761,
+      "total": 1139,
+      "accuracy": 0.6681299385425812,
+      "suppliedExamples": 280
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "nearest",
+      "cohort": "validation",
+      "correct": 464,
+      "total": 672,
+      "accuracy": 0.6904761904761905,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "nearest",
+      "cohort": "previouslyInspectedTest",
+      "correct": 733,
+      "total": 1139,
+      "accuracy": 0.6435469710272168,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "svc1",
+      "cohort": "validation",
+      "correct": 465,
+      "total": 672,
+      "accuracy": 0.6919642857142857,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "svc1",
+      "cohort": "previouslyInspectedTest",
+      "correct": 744,
+      "total": 1139,
+      "accuracy": 0.6532045654082529,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "svc10",
+      "cohort": "validation",
+      "correct": 464,
+      "total": 672,
+      "accuracy": 0.6904761904761905,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "svc10",
+      "cohort": "previouslyInspectedTest",
+      "correct": 739,
+      "total": 1139,
+      "accuracy": 0.6488147497805092,
+      "suppliedExamples": 560
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "svc100",
+      "cohort": "validation",
+      "correct": 464,
+      "total": 672,
+      "accuracy": 0.6904761904761905,
+      "suppliedExamples": 480
+    },
+    {
+      "features": "both",
+      "examplesPerClass": 10,
+      "method": "svc100",
+      "cohort": "previouslyInspectedTest",
+      "correct": 739,
+      "total": 1139,
+      "accuracy": 0.6488147497805092,
+      "suppliedExamples": 560
+    }
+  ]
+}

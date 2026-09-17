@@ -1,0 +1,436 @@
+{
+  "dataset": "Beatboxset1, CC BY-SA 3.0",
+  "selection": "Fixed AVP validation checkpoint/threshold; no fitting on this corpus",
+  "fourClass": {
+    "DR": {
+      "detected": 3483,
+      "annotated": 2317,
+      "matched": 2237,
+      "correct": 1245,
+      "onsetF1": 0.7713793103448275,
+      "classificationAccuracy": 0.5565489494859186,
+      "endToEndF1": 0.42931034482758623,
+      "meanTimingErrorMs": 4.571730861411172
+    },
+    "HT": {
+      "detected": 3483,
+      "annotated": 3197,
+      "matched": 2962,
+      "correct": 1539,
+      "onsetF1": 0.8868263473053892,
+      "classificationAccuracy": 0.5195813639432816,
+      "endToEndF1": 0.4607784431137725,
+      "meanTimingErrorMs": 3.90860944852037
+    }
+  },
+  "allAnnotatedOnsets": {
+    "DR": {
+      "detected": 3483,
+      "annotated": 3611,
+      "matched": 3380,
+      "onsetF1": 0.952917958838455,
+      "meanTimingErrorMs": 5.541252645406194
+    },
+    "HT": {
+      "detected": 3483,
+      "annotated": 3849,
+      "matched": 3416,
+      "onsetF1": 0.9318057828696127,
+      "meanTimingErrorMs": 4.128205432214461
+    }
+  },
+  "files": [
+    {
+      "file": "battleclip_daq.wav",
+      "detected": 324,
+      "annotators": {
+        "DR": {
+          "detected": 324,
+          "annotated": 152,
+          "matched": 141,
+          "correct": 69,
+          "onsetF1": 0.592436974789916,
+          "classificationAccuracy": 0.48936170212765956,
+          "endToEndF1": 0.28991596638655465,
+          "meanTimingErrorMs": 7.061321434086728,
+          "outOfScopeAnnotations": 202
+        },
+        "HT": {
+          "detected": 324,
+          "annotated": 240,
+          "matched": 222,
+          "correct": 111,
+          "onsetF1": 0.7872340425531915,
+          "classificationAccuracy": 0.5,
+          "endToEndF1": 0.39361702127659576,
+          "meanTimingErrorMs": 6.853282051101996,
+          "outOfScopeAnnotations": 110
+        }
+      }
+    },
+    {
+      "file": "callout_Pneumatic.wav",
+      "detected": 174,
+      "annotators": {
+        "DR": {
+          "detected": 174,
+          "annotated": 57,
+          "matched": 57,
+          "correct": 14,
+          "onsetF1": 0.4935064935064935,
+          "classificationAccuracy": 0.24561403508771928,
+          "endToEndF1": 0.12121212121212122,
+          "meanTimingErrorMs": 3.363965210725374,
+          "outOfScopeAnnotations": 120
+        },
+        "HT": {
+          "detected": 174,
+          "annotated": 110,
+          "matched": 109,
+          "correct": 52,
+          "onsetF1": 0.7676056338028169,
+          "classificationAccuracy": 0.47706422018348627,
+          "endToEndF1": 0.36619718309859156,
+          "meanTimingErrorMs": 3.8989781282949534,
+          "outOfScopeAnnotations": 62
+        }
+      }
+    },
+    {
+      "file": "callout_Turn-Table.wav",
+      "detected": 131,
+      "annotators": {
+        "DR": {
+          "detected": 131,
+          "annotated": 124,
+          "matched": 124,
+          "correct": 79,
+          "onsetF1": 0.9725490196078431,
+          "classificationAccuracy": 0.6370967741935484,
+          "endToEndF1": 0.6196078431372549,
+          "meanTimingErrorMs": 4.535513277064509,
+          "outOfScopeAnnotations": 5
+        },
+        "HT": {
+          "detected": 131,
+          "annotated": 136,
+          "matched": 129,
+          "correct": 82,
+          "onsetF1": 0.9662921348314607,
+          "classificationAccuracy": 0.6356589147286822,
+          "endToEndF1": 0.6142322097378277,
+          "meanTimingErrorMs": 5.046142332647693,
+          "outOfScopeAnnotations": 4
+        }
+      }
+    },
+    {
+      "file": "callout_adiao.wav",
+      "detected": 254,
+      "annotators": {
+        "DR": {
+          "detected": 254,
+          "annotated": 202,
+          "matched": 199,
+          "correct": 137,
+          "onsetF1": 0.8728070175438597,
+          "classificationAccuracy": 0.6884422110552764,
+          "endToEndF1": 0.6008771929824561,
+          "meanTimingErrorMs": 5.338598069838781,
+          "outOfScopeAnnotations": 60
+        },
+        "HT": {
+          "detected": 254,
+          "annotated": 233,
+          "matched": 228,
+          "correct": 144,
+          "onsetF1": 0.9363449691991786,
+          "classificationAccuracy": 0.631578947368421,
+          "endToEndF1": 0.5913757700205339,
+          "meanTimingErrorMs": 3.0919559998610144,
+          "outOfScopeAnnotations": 26
+        }
+      }
+    },
+    {
+      "file": "callout_azeem.wav",
+      "detected": 279,
+      "annotators": {
+        "DR": {
+          "detected": 279,
+          "annotated": 192,
+          "matched": 186,
+          "correct": 70,
+          "onsetF1": 0.7898089171974523,
+          "classificationAccuracy": 0.3763440860215054,
+          "endToEndF1": 0.29723991507430997,
+          "meanTimingErrorMs": 2.985395136688042,
+          "outOfScopeAnnotations": 101
+        },
+        "HT": {
+          "detected": 279,
+          "annotated": 283,
+          "matched": 267,
+          "correct": 100,
+          "onsetF1": 0.9501779359430605,
+          "classificationAccuracy": 0.37453183520599254,
+          "endToEndF1": 0.35587188612099646,
+          "meanTimingErrorMs": 3.2763465460863355,
+          "outOfScopeAnnotations": 14
+        }
+      }
+    },
+    {
+      "file": "callout_luckeymonkey.wav",
+      "detected": 201,
+      "annotators": {
+        "DR": {
+          "detected": 201,
+          "annotated": 169,
+          "matched": 161,
+          "correct": 125,
+          "onsetF1": 0.8702702702702703,
+          "classificationAccuracy": 0.7763975155279503,
+          "endToEndF1": 0.6756756756756757,
+          "meanTimingErrorMs": 3.5850199687044944,
+          "outOfScopeAnnotations": 42
+        },
+        "HT": {
+          "detected": 201,
+          "annotated": 184,
+          "matched": 172,
+          "correct": 129,
+          "onsetF1": 0.8935064935064935,
+          "classificationAccuracy": 0.75,
+          "endToEndF1": 0.6701298701298701,
+          "meanTimingErrorMs": 3.4303642094080953,
+          "outOfScopeAnnotations": 26
+        }
+      }
+    },
+    {
+      "file": "callout_mcld.wav",
+      "detected": 159,
+      "annotators": {
+        "DR": {
+          "detected": 159,
+          "annotated": 100,
+          "matched": 100,
+          "correct": 64,
+          "onsetF1": 0.7722007722007722,
+          "classificationAccuracy": 0.64,
+          "endToEndF1": 0.4942084942084942,
+          "meanTimingErrorMs": 5.980952750816133,
+          "outOfScopeAnnotations": 71
+        },
+        "HT": {
+          "detected": 159,
+          "annotated": 131,
+          "matched": 129,
+          "correct": 76,
+          "onsetF1": 0.8896551724137931,
+          "classificationAccuracy": 0.5891472868217055,
+          "endToEndF1": 0.5241379310344828,
+          "meanTimingErrorMs": 3.8344847083968165,
+          "outOfScopeAnnotations": 38
+        }
+      }
+    },
+    {
+      "file": "callout_mouss.wav",
+      "detected": 152,
+      "annotators": {
+        "DR": {
+          "detected": 152,
+          "annotated": 125,
+          "matched": 125,
+          "correct": 75,
+          "onsetF1": 0.9025270758122743,
+          "classificationAccuracy": 0.6,
+          "endToEndF1": 0.5415162454873647,
+          "meanTimingErrorMs": 3.806077337795917,
+          "outOfScopeAnnotations": 32
+        },
+        "HT": {
+          "detected": 152,
+          "annotated": 144,
+          "matched": 141,
+          "correct": 79,
+          "onsetF1": 0.9527027027027027,
+          "classificationAccuracy": 0.5602836879432624,
+          "endToEndF1": 0.5337837837837838,
+          "meanTimingErrorMs": 3.5295344805811224,
+          "outOfScopeAnnotations": 9
+        }
+      }
+    },
+    {
+      "file": "putfile_bui.wav",
+      "detected": 499,
+      "annotators": {
+        "DR": {
+          "detected": 499,
+          "annotated": 380,
+          "matched": 376,
+          "correct": 214,
+          "onsetF1": 0.8555176336746303,
+          "classificationAccuracy": 0.5691489361702128,
+          "endToEndF1": 0.4869169510807736,
+          "meanTimingErrorMs": 4.995477067164598,
+          "outOfScopeAnnotations": 116
+        },
+        "HT": {
+          "detected": 499,
+          "annotated": 518,
+          "matched": 473,
+          "correct": 260,
+          "onsetF1": 0.9301868239921337,
+          "classificationAccuracy": 0.5496828752642706,
+          "endToEndF1": 0.511307767944936,
+          "meanTimingErrorMs": 3.6624909667295356,
+          "outOfScopeAnnotations": 27
+        }
+      }
+    },
+    {
+      "file": "putfile_dbztenkaichi.wav",
+      "detected": 312,
+      "annotators": {
+        "DR": {
+          "detected": 312,
+          "annotated": 190,
+          "matched": 165,
+          "correct": 67,
+          "onsetF1": 0.6573705179282868,
+          "classificationAccuracy": 0.40606060606060607,
+          "endToEndF1": 0.26693227091633465,
+          "meanTimingErrorMs": 5.328386222950227,
+          "outOfScopeAnnotations": 157
+        },
+        "HT": {
+          "detected": 312,
+          "annotated": 322,
+          "matched": 284,
+          "correct": 105,
+          "onsetF1": 0.8958990536277602,
+          "classificationAccuracy": 0.36971830985915494,
+          "endToEndF1": 0.3312302839116719,
+          "meanTimingErrorMs": 3.8892080930746715,
+          "outOfScopeAnnotations": 63
+        }
+      }
+    },
+    {
+      "file": "putfile_pepouni.wav",
+      "detected": 488,
+      "annotators": {
+        "DR": {
+          "detected": 488,
+          "annotated": 214,
+          "matched": 196,
+          "correct": 112,
+          "onsetF1": 0.5584045584045584,
+          "classificationAccuracy": 0.5714285714285714,
+          "endToEndF1": 0.3190883190883191,
+          "meanTimingErrorMs": 4.86637532333727,
+          "outOfScopeAnnotations": 297
+        },
+        "HT": {
+          "detected": 488,
+          "annotated": 411,
+          "matched": 356,
+          "correct": 173,
+          "onsetF1": 0.7919911012235817,
+          "classificationAccuracy": 0.4859550561797753,
+          "endToEndF1": 0.38487208008898777,
+          "meanTimingErrorMs": 4.298198578033748,
+          "outOfScopeAnnotations": 205
+        }
+      }
+    },
+    {
+      "file": "putfile_vonny.wav",
+      "detected": 282,
+      "annotators": {
+        "DR": {
+          "detected": 282,
+          "annotated": 201,
+          "matched": 196,
+          "correct": 108,
+          "onsetF1": 0.8115942028985508,
+          "classificationAccuracy": 0.5510204081632653,
+          "endToEndF1": 0.4472049689440994,
+          "meanTimingErrorMs": 4.1304552472229155,
+          "outOfScopeAnnotations": 75
+        },
+        "HT": {
+          "detected": 282,
+          "annotated": 261,
+          "matched": 230,
+          "correct": 124,
+          "onsetF1": 0.8471454880294659,
+          "classificationAccuracy": 0.5391304347826087,
+          "endToEndF1": 0.4567219152854512,
+          "meanTimingErrorMs": 2.821255885882022,
+          "outOfScopeAnnotations": 66
+        }
+      }
+    },
+    {
+      "file": "putfile_william.wav",
+      "detected": 181,
+      "annotators": {
+        "DR": {
+          "detected": 181,
+          "annotated": 168,
+          "matched": 168,
+          "correct": 93,
+          "onsetF1": 0.9627507163323782,
+          "classificationAccuracy": 0.5535714285714286,
+          "endToEndF1": 0.5329512893982808,
+          "meanTimingErrorMs": 3.2700303118184544,
+          "outOfScopeAnnotations": 13
+        },
+        "HT": {
+          "detected": 181,
+          "annotated": 181,
+          "matched": 179,
+          "correct": 91,
+          "onsetF1": 0.988950276243094,
+          "classificationAccuracy": 0.5083798882681564,
+          "endToEndF1": 0.5027624309392266,
+          "meanTimingErrorMs": 3.427329687138321,
+          "outOfScopeAnnotations": 1
+        }
+      }
+    },
+    {
+      "file": "snare_hex.wav",
+      "detected": 47,
+      "annotators": {
+        "DR": {
+          "detected": 47,
+          "annotated": 43,
+          "matched": 43,
+          "correct": 18,
+          "onsetF1": 0.9555555555555556,
+          "classificationAccuracy": 0.4186046511627907,
+          "endToEndF1": 0.4,
+          "meanTimingErrorMs": 3.2146812687866593,
+          "outOfScopeAnnotations": 3
+        },
+        "HT": {
+          "detected": 47,
+          "annotated": 43,
+          "matched": 43,
+          "correct": 13,
+          "onsetF1": 0.9555555555555556,
+          "classificationAccuracy": 0.3023255813953488,
+          "endToEndF1": 0.28888888888888886,
+          "meanTimingErrorMs": 4.381690188683518,
+          "outOfScopeAnnotations": 1
+        }
+      }
+    }
+  ]
+}

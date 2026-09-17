@@ -1,0 +1,9 @@
+{
+  "maxAbsoluteLogitErrors": [
+    6.198883056640625e-06,
+    8.106231689453125e-06,
+    8.106231689453125e-06
+  ],
+  "modelBytes": 1085531,
+  "note": "Numerical conversion parity, not recognition accuracy."
+}

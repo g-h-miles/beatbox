@@ -1,0 +1,7 @@
+{
+  "referenceEvents": 48,
+  "milliseconds": 456.89999997615814,
+  "maxNativeResampleTimingDeltaSeconds": 0.004988662131520272,
+  "inputPreserved": true,
+  "note": "Numerical/runtime parity on one public AVP recording; not classifier accuracy."
+}

@@ -1,0 +1,132 @@
+{
+  "classes": [
+    "hhc",
+    "hho",
+    "kd",
+    "sd"
+  ],
+  "seed": 42,
+  "training": "AVP annotated events, participants 1\u201314",
+  "selection": "macro F1 on detected groove events, participants 15\u201320",
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.8978448749281639,
+      "validationMacroF1": 0.735443359461577,
+      "validationAccuracy": 0.7665198237885462
+    },
+    {
+      "epoch": 2,
+      "loss": 0.6003397356632144,
+      "validationMacroF1": 0.6828351815624054,
+      "validationAccuracy": 0.7048458149779736
+    },
+    {
+      "epoch": 3,
+      "loss": 0.4999308613843696,
+      "validationMacroF1": 0.6868493124233375,
+      "validationAccuracy": 0.7151248164464024
+    },
+    {
+      "epoch": 4,
+      "loss": 0.4140537991080173,
+      "validationMacroF1": 0.6772273011815998,
+      "validationAccuracy": 0.7151248164464024
+    },
+    {
+      "epoch": 5,
+      "loss": 0.3854102565105571,
+      "validationMacroF1": 0.695585149756873,
+      "validationAccuracy": 0.7224669603524229
+    },
+    {
+      "epoch": 6,
+      "loss": 0.35545829423638275,
+      "validationMacroF1": 0.6588793056429033,
+      "validationAccuracy": 0.6798825256975036
+    },
+    {
+      "epoch": 7,
+      "loss": 0.33473948181368585,
+      "validationMacroF1": 0.6548536279522033,
+      "validationAccuracy": 0.6784140969162996
+    }
+  ],
+  "bestValidationMacroF1": 0.735443359461577,
+  "cohorts": {
+    "validation": {
+      "correctlyLabeledMatches": 522,
+      "matched": 681,
+      "detected": 764,
+      "annotated": 694,
+      "classificationAccuracy": 0.7665198237885462,
+      "classificationMacroF1": 0.735443359461577,
+      "endToEndPrecision": 0.6832460732984293,
+      "endToEndRecall": 0.7521613832853026,
+      "endToEndF1": 0.7160493827160493,
+      "confusion": [
+        [
+          125,
+          26,
+          11,
+          20
+        ],
+        [
+          9,
+          58,
+          3,
+          29
+        ],
+        [
+          14,
+          2,
+          220,
+          9
+        ],
+        [
+          17,
+          4,
+          15,
+          119
+        ]
+      ]
+    },
+    "previouslyInspectedTest": {
+      "correctlyLabeledMatches": 727,
+      "matched": 1139,
+      "detected": 1331,
+      "annotated": 1163,
+      "classificationAccuracy": 0.6382791922739245,
+      "classificationMacroF1": 0.6183975963967395,
+      "endToEndPrecision": 0.546205860255447,
+      "endToEndRecall": 0.6251074806534824,
+      "endToEndF1": 0.5829991980753809,
+      "confusion": [
+        [
+          158,
+          28,
+          7,
+          26
+        ],
+        [
+          47,
+          119,
+          11,
+          51
+        ],
+        [
+          58,
+          3,
+          309,
+          47
+        ],
+        [
+          73,
+          27,
+          34,
+          141
+        ]
+      ]
+    }
+  }
+}

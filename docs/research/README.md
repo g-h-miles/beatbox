@@ -1,6 +1,6 @@
 # Classification research — not released
 
-These experiments do **not** meet the requested recognition quality. Production remains at commit 2393716. The candidate code is on a research branch, not a production improvement claim.
+These experiments do **not** meet the requested recognition quality. The production classifier still uses the implementation from commit 2393716. Production now also includes the private `/teach` recording page (main commit 99bbf2d); none of the experimental classifiers has been released. The candidate code is on a research branch, not a production recognition improvement claim.
 
 ## Data and evaluation
 
@@ -111,3 +111,12 @@ python scripts/sequence-eval.py
 The subgroup audit of the earlier refitted acoustic model gave 469/595 (78.82%) on fixed-imitation grooves and 335/544 (61.58%) on personal-imitation grooves. This demonstrates a performance gap; it does not establish that individual annotations are wrong or that intended drum identity is inherently unknowable.
 
 All figures still exclude missed/unmatched onsets. These four-class experiments provide no validation of ride, crash, breath, or literal “boots and cats” recognition. No seven-class automatic accuracy claim is warranted.
+
+
+## Full audio-ML pipeline — September 17, 2026
+
+See [ml/README.md](../../ml/README.md) for the PyTorch/librosa pipeline, separate onset and label results, independent-corpus evaluation, ONNX/browser parity, and Makefile commands. The new neural onset detector improves AVP onset F1 from 91.34% to 97.43% on the same test recordings, and scores 93.18–95.29% against the two annotators on the initially independent Beatboxset1 corpus. This does not establish corresponding drum-label accuracy.
+
+A larger corpus/augmentation run achieved 78.83% label accuracy on its different five-class held-out cohort, with ambiguous annotations excluded as documented. It remains below the requested quality and does not cover dedicated ride/crash classes.
+
+The only production change in this round is the private labeled recording page at `/teach`. It stores recordings locally and exports a user-controlled training pack; it uploads no audio. Main commit: `99bbf2d`. Cloudflare deployment: `4f77f9b4-6396-446f-8798-08a619beeab0`. The original classifier endpoint remains configured. Production page load, microphone recording, local save, no-upload behavior and the original home page were checked after deployment.

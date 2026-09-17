@@ -1,0 +1,27 @@
+[
+  {
+    "name": "BEATs.py",
+    "url": "https://raw.githubusercontent.com/microsoft/unilm/50224e387211f15ac6a3b2685730b9a0c850f145/beats/BEATs.py",
+    "sha256": "27f289db7c56ce26f2ceb50d3719854b91b2dec1c2830d8b1dd8de1bbee19eeb"
+  },
+  {
+    "name": "backbone.py",
+    "url": "https://raw.githubusercontent.com/microsoft/unilm/50224e387211f15ac6a3b2685730b9a0c850f145/beats/backbone.py",
+    "sha256": "31c0378379a7e0f1d1069f9da444fb86890fe1ea078959a2dcd39640cdcadbaa"
+  },
+  {
+    "name": "modules.py",
+    "url": "https://raw.githubusercontent.com/microsoft/unilm/50224e387211f15ac6a3b2685730b9a0c850f145/beats/modules.py",
+    "sha256": "edeb6b6cd6a784da749f932c3e0783c0bce556fc768d0d23a4d53d4b819eb424"
+  },
+  {
+    "name": "LICENSE",
+    "url": "https://raw.githubusercontent.com/microsoft/unilm/50224e387211f15ac6a3b2685730b9a0c850f145/LICENSE",
+    "sha256": "904dc4d8749877f1dba1cda48200d2462dccbeb7c134d5e4ef6fa75e0198c8fe"
+  },
+  {
+    "name": "model.pt",
+    "url": "https://huggingface.co/WeiChihChen/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2/resolve/172e4071a2912392d9151c70750b9a12f55fc54e/BEATs_iter3_plus_AS2M_finetuned_on_AS2M_cpt2.pt",
+    "sha256": "e5815275a04b6885e7b8af63d120b29bffae2cd2225cf4915e1ec6d819d3022c"
+  }
+]
