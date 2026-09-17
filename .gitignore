@@ -12,3 +12,6 @@ test-results/
 catboost_info/
 
 .venv-research/
+
+__pycache__/
+*.py[cod]

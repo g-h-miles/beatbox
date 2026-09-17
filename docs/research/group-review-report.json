@@ -1,0 +1,1694 @@
+[
+  {
+    "features": "spectrum",
+    "groups": 4,
+    "correctUnreviewed": 907,
+    "totalUnreviewed": 1083,
+    "accuracyUnreviewed": 0.8374884579870729,
+    "reviewed": 56,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 38,
+        "total": 54,
+        "reviewed": 4
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 72,
+        "total": 83,
+        "reviewed": 4
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 160,
+        "total": 167,
+        "reviewed": 4
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 85,
+        "total": 105,
+        "reviewed": 4
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 63,
+        "total": 66,
+        "reviewed": 4
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 18,
+        "total": 62,
+        "reviewed": 4
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 34,
+        "total": 37,
+        "reviewed": 4
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 60,
+        "total": 84,
+        "reviewed": 4
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 96,
+        "total": 119,
+        "reviewed": 4
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 39,
+        "total": 42,
+        "reviewed": 4
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 74,
+        "total": 74,
+        "reviewed": 4
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 50,
+        "total": 59,
+        "reviewed": 4
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 53,
+        "total": 59,
+        "reviewed": 4
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 65,
+        "total": 72,
+        "reviewed": 4
+      }
+    ]
+  },
+  {
+    "features": "spectrum",
+    "groups": 6,
+    "correctUnreviewed": 915,
+    "totalUnreviewed": 1055,
+    "accuracyUnreviewed": 0.8672985781990521,
+    "reviewed": 84,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 47,
+        "total": 52,
+        "reviewed": 6
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 81,
+        "reviewed": 6
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 158,
+        "total": 165,
+        "reviewed": 6
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 83,
+        "total": 103,
+        "reviewed": 6
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 63,
+        "total": 64,
+        "reviewed": 6
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 29,
+        "total": 60,
+        "reviewed": 6
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 33,
+        "total": 35,
+        "reviewed": 6
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 61,
+        "total": 82,
+        "reviewed": 6
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 94,
+        "total": 117,
+        "reviewed": 6
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 37,
+        "total": 40,
+        "reviewed": 6
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 72,
+        "total": 72,
+        "reviewed": 6
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 48,
+        "total": 57,
+        "reviewed": 6
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 54,
+        "total": 57,
+        "reviewed": 6
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 66,
+        "total": 70,
+        "reviewed": 6
+      }
+    ]
+  },
+  {
+    "features": "spectrum",
+    "groups": 8,
+    "correctUnreviewed": 921,
+    "totalUnreviewed": 1027,
+    "accuracyUnreviewed": 0.8967867575462513,
+    "reviewed": 112,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 45,
+        "total": 50,
+        "reviewed": 8
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 73,
+        "total": 79,
+        "reviewed": 8
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 156,
+        "total": 163,
+        "reviewed": 8
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 85,
+        "total": 101,
+        "reviewed": 8
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 61,
+        "total": 62,
+        "reviewed": 8
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 58,
+        "reviewed": 8
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 32,
+        "total": 33,
+        "reviewed": 8
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 80,
+        "reviewed": 8
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 95,
+        "total": 115,
+        "reviewed": 8
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 35,
+        "total": 38,
+        "reviewed": 8
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 70,
+        "reviewed": 8
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 50,
+        "total": 55,
+        "reviewed": 8
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 52,
+        "total": 55,
+        "reviewed": 8
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 67,
+        "total": 68,
+        "reviewed": 8
+      }
+    ]
+  },
+  {
+    "features": "spectrum",
+    "groups": 10,
+    "correctUnreviewed": 897,
+    "totalUnreviewed": 999,
+    "accuracyUnreviewed": 0.8978978978978979,
+    "reviewed": 140,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 43,
+        "total": 48,
+        "reviewed": 10
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 71,
+        "total": 77,
+        "reviewed": 10
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 154,
+        "total": 161,
+        "reviewed": 10
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 83,
+        "total": 99,
+        "reviewed": 10
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 59,
+        "total": 60,
+        "reviewed": 10
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 56,
+        "reviewed": 10
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 30,
+        "total": 31,
+        "reviewed": 10
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 78,
+        "reviewed": 10
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 92,
+        "total": 113,
+        "reviewed": 10
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 33,
+        "total": 36,
+        "reviewed": 10
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 68,
+        "reviewed": 10
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 48,
+        "total": 53,
+        "reviewed": 10
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 51,
+        "total": 53,
+        "reviewed": 10
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 65,
+        "total": 66,
+        "reviewed": 10
+      }
+    ]
+  },
+  {
+    "features": "spectrum",
+    "groups": 12,
+    "correctUnreviewed": 874,
+    "totalUnreviewed": 971,
+    "accuracyUnreviewed": 0.9001029866117405,
+    "reviewed": 168,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 43,
+        "total": 46,
+        "reviewed": 12
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 75,
+        "reviewed": 12
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 152,
+        "total": 159,
+        "reviewed": 12
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 81,
+        "total": 97,
+        "reviewed": 12
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 57,
+        "total": 58,
+        "reviewed": 12
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 31,
+        "total": 54,
+        "reviewed": 12
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 28,
+        "total": 29,
+        "reviewed": 12
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 66,
+        "total": 76,
+        "reviewed": 12
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 90,
+        "total": 111,
+        "reviewed": 12
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 34,
+        "reviewed": 12
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 66,
+        "total": 66,
+        "reviewed": 12
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 46,
+        "total": 51,
+        "reviewed": 12
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 49,
+        "total": 51,
+        "reviewed": 12
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 63,
+        "total": 64,
+        "reviewed": 12
+      }
+    ]
+  },
+  {
+    "features": "spectrum",
+    "groups": 16,
+    "correctUnreviewed": 824,
+    "totalUnreviewed": 915,
+    "accuracyUnreviewed": 0.9005464480874317,
+    "reviewed": 224,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 40,
+        "total": 42,
+        "reviewed": 16
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 66,
+        "total": 71,
+        "reviewed": 16
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 148,
+        "total": 155,
+        "reviewed": 16
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 84,
+        "total": 93,
+        "reviewed": 16
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 53,
+        "total": 54,
+        "reviewed": 16
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 50,
+        "reviewed": 16
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 24,
+        "total": 25,
+        "reviewed": 16
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 62,
+        "total": 72,
+        "reviewed": 16
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 76,
+        "total": 107,
+        "reviewed": 16
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 28,
+        "total": 30,
+        "reviewed": 16
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 62,
+        "total": 62,
+        "reviewed": 16
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 44,
+        "total": 47,
+        "reviewed": 16
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 46,
+        "total": 47,
+        "reviewed": 16
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 59,
+        "total": 60,
+        "reviewed": 16
+      }
+    ]
+  },
+  {
+    "features": "temporal",
+    "groups": 4,
+    "correctUnreviewed": 783,
+    "totalUnreviewed": 1083,
+    "accuracyUnreviewed": 0.7229916897506925,
+    "reviewed": 56,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 36,
+        "total": 54,
+        "reviewed": 4
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 53,
+        "total": 83,
+        "reviewed": 4
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 120,
+        "total": 167,
+        "reviewed": 4
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 105,
+        "reviewed": 4
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 58,
+        "total": 66,
+        "reviewed": 4
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 28,
+        "total": 62,
+        "reviewed": 4
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 36,
+        "total": 37,
+        "reviewed": 4
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 47,
+        "total": 84,
+        "reviewed": 4
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 97,
+        "total": 119,
+        "reviewed": 4
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 29,
+        "total": 42,
+        "reviewed": 4
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 73,
+        "total": 74,
+        "reviewed": 4
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 35,
+        "total": 59,
+        "reviewed": 4
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 50,
+        "total": 59,
+        "reviewed": 4
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 51,
+        "total": 72,
+        "reviewed": 4
+      }
+    ]
+  },
+  {
+    "features": "temporal",
+    "groups": 6,
+    "correctUnreviewed": 879,
+    "totalUnreviewed": 1055,
+    "accuracyUnreviewed": 0.833175355450237,
+    "reviewed": 84,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 46,
+        "total": 52,
+        "reviewed": 6
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 81,
+        "reviewed": 6
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 139,
+        "total": 165,
+        "reviewed": 6
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 69,
+        "total": 103,
+        "reviewed": 6
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 61,
+        "total": 64,
+        "reviewed": 6
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 60,
+        "reviewed": 6
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 34,
+        "total": 35,
+        "reviewed": 6
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 56,
+        "total": 82,
+        "reviewed": 6
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 96,
+        "total": 117,
+        "reviewed": 6
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 35,
+        "total": 40,
+        "reviewed": 6
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 72,
+        "total": 72,
+        "reviewed": 6
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 48,
+        "total": 57,
+        "reviewed": 6
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 55,
+        "total": 57,
+        "reviewed": 6
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 66,
+        "total": 70,
+        "reviewed": 6
+      }
+    ]
+  },
+  {
+    "features": "temporal",
+    "groups": 8,
+    "correctUnreviewed": 911,
+    "totalUnreviewed": 1027,
+    "accuracyUnreviewed": 0.887049659201558,
+    "reviewed": 112,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 46,
+        "total": 50,
+        "reviewed": 8
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 67,
+        "total": 79,
+        "reviewed": 8
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 145,
+        "total": 163,
+        "reviewed": 8
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 93,
+        "total": 101,
+        "reviewed": 8
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 61,
+        "total": 62,
+        "reviewed": 8
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 33,
+        "total": 58,
+        "reviewed": 8
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 32,
+        "total": 33,
+        "reviewed": 8
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 69,
+        "total": 80,
+        "reviewed": 8
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 94,
+        "total": 115,
+        "reviewed": 8
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 33,
+        "total": 38,
+        "reviewed": 8
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 70,
+        "reviewed": 8
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 48,
+        "total": 55,
+        "reviewed": 8
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 53,
+        "total": 55,
+        "reviewed": 8
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 67,
+        "total": 68,
+        "reviewed": 8
+      }
+    ]
+  },
+  {
+    "features": "temporal",
+    "groups": 10,
+    "correctUnreviewed": 902,
+    "totalUnreviewed": 999,
+    "accuracyUnreviewed": 0.9029029029029029,
+    "reviewed": 140,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 44,
+        "total": 48,
+        "reviewed": 10
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 73,
+        "total": 77,
+        "reviewed": 10
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 149,
+        "total": 161,
+        "reviewed": 10
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 91,
+        "total": 99,
+        "reviewed": 10
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 59,
+        "total": 60,
+        "reviewed": 10
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 33,
+        "total": 56,
+        "reviewed": 10
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 30,
+        "total": 31,
+        "reviewed": 10
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 67,
+        "total": 78,
+        "reviewed": 10
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 92,
+        "total": 113,
+        "reviewed": 10
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 34,
+        "total": 36,
+        "reviewed": 10
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 68,
+        "reviewed": 10
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 46,
+        "total": 53,
+        "reviewed": 10
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 51,
+        "total": 53,
+        "reviewed": 10
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 65,
+        "total": 66,
+        "reviewed": 10
+      }
+    ]
+  },
+  {
+    "features": "temporal",
+    "groups": 12,
+    "correctUnreviewed": 885,
+    "totalUnreviewed": 971,
+    "accuracyUnreviewed": 0.9114315139031925,
+    "reviewed": 168,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 44,
+        "total": 46,
+        "reviewed": 12
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 71,
+        "total": 75,
+        "reviewed": 12
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 147,
+        "total": 159,
+        "reviewed": 12
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 89,
+        "total": 97,
+        "reviewed": 12
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 57,
+        "total": 58,
+        "reviewed": 12
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 36,
+        "total": 54,
+        "reviewed": 12
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 28,
+        "total": 29,
+        "reviewed": 12
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 76,
+        "reviewed": 12
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 87,
+        "total": 111,
+        "reviewed": 12
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 34,
+        "reviewed": 12
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 66,
+        "total": 66,
+        "reviewed": 12
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 48,
+        "total": 51,
+        "reviewed": 12
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 49,
+        "total": 51,
+        "reviewed": 12
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 63,
+        "total": 64,
+        "reviewed": 12
+      }
+    ]
+  },
+  {
+    "features": "temporal",
+    "groups": 16,
+    "correctUnreviewed": 835,
+    "totalUnreviewed": 915,
+    "accuracyUnreviewed": 0.912568306010929,
+    "reviewed": 224,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 40,
+        "total": 42,
+        "reviewed": 16
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 67,
+        "total": 71,
+        "reviewed": 16
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 143,
+        "total": 155,
+        "reviewed": 16
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 89,
+        "total": 93,
+        "reviewed": 16
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 53,
+        "total": 54,
+        "reviewed": 16
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 36,
+        "total": 50,
+        "reviewed": 16
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 24,
+        "total": 25,
+        "reviewed": 16
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 65,
+        "total": 72,
+        "reviewed": 16
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 79,
+        "total": 107,
+        "reviewed": 16
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 30,
+        "total": 30,
+        "reviewed": 16
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 62,
+        "total": 62,
+        "reviewed": 16
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 44,
+        "total": 47,
+        "reviewed": 16
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 44,
+        "total": 47,
+        "reviewed": 16
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 59,
+        "total": 60,
+        "reviewed": 16
+      }
+    ]
+  },
+  {
+    "features": "mel",
+    "groups": 4,
+    "correctUnreviewed": 889,
+    "totalUnreviewed": 1083,
+    "accuracyUnreviewed": 0.8208679593721145,
+    "reviewed": 56,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 43,
+        "total": 54,
+        "reviewed": 4
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 58,
+        "total": 83,
+        "reviewed": 4
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 138,
+        "total": 167,
+        "reviewed": 4
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 77,
+        "total": 105,
+        "reviewed": 4
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 63,
+        "total": 66,
+        "reviewed": 4
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 31,
+        "total": 62,
+        "reviewed": 4
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 35,
+        "total": 37,
+        "reviewed": 4
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 71,
+        "total": 84,
+        "reviewed": 4
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 97,
+        "total": 119,
+        "reviewed": 4
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 33,
+        "total": 42,
+        "reviewed": 4
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 74,
+        "total": 74,
+        "reviewed": 4
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 52,
+        "total": 59,
+        "reviewed": 4
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 55,
+        "total": 59,
+        "reviewed": 4
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 62,
+        "total": 72,
+        "reviewed": 4
+      }
+    ]
+  },
+  {
+    "features": "mel",
+    "groups": 6,
+    "correctUnreviewed": 892,
+    "totalUnreviewed": 1055,
+    "accuracyUnreviewed": 0.8454976303317535,
+    "reviewed": 84,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 41,
+        "total": 52,
+        "reviewed": 6
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 65,
+        "total": 81,
+        "reviewed": 6
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 137,
+        "total": 165,
+        "reviewed": 6
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 83,
+        "total": 103,
+        "reviewed": 6
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 61,
+        "total": 64,
+        "reviewed": 6
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 30,
+        "total": 60,
+        "reviewed": 6
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 30,
+        "total": 35,
+        "reviewed": 6
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 71,
+        "total": 82,
+        "reviewed": 6
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 95,
+        "total": 117,
+        "reviewed": 6
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 31,
+        "total": 40,
+        "reviewed": 6
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 72,
+        "total": 72,
+        "reviewed": 6
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 53,
+        "total": 57,
+        "reviewed": 6
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 53,
+        "total": 57,
+        "reviewed": 6
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 70,
+        "total": 70,
+        "reviewed": 6
+      }
+    ]
+  },
+  {
+    "features": "mel",
+    "groups": 8,
+    "correctUnreviewed": 877,
+    "totalUnreviewed": 1027,
+    "accuracyUnreviewed": 0.8539435248296008,
+    "reviewed": 112,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 41,
+        "total": 50,
+        "reviewed": 8
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 66,
+        "total": 79,
+        "reviewed": 8
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 136,
+        "total": 163,
+        "reviewed": 8
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 81,
+        "total": 101,
+        "reviewed": 8
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 59,
+        "total": 62,
+        "reviewed": 8
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 30,
+        "total": 58,
+        "reviewed": 8
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 31,
+        "total": 33,
+        "reviewed": 8
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 69,
+        "total": 80,
+        "reviewed": 8
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 93,
+        "total": 115,
+        "reviewed": 8
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 31,
+        "total": 38,
+        "reviewed": 8
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 70,
+        "total": 70,
+        "reviewed": 8
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 51,
+        "total": 55,
+        "reviewed": 8
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 51,
+        "total": 55,
+        "reviewed": 8
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 68,
+        "total": 68,
+        "reviewed": 8
+      }
+    ]
+  },
+  {
+    "features": "mel",
+    "groups": 10,
+    "correctUnreviewed": 872,
+    "totalUnreviewed": 999,
+    "accuracyUnreviewed": 0.8728728728728729,
+    "reviewed": 140,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 39,
+        "total": 48,
+        "reviewed": 10
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 64,
+        "total": 77,
+        "reviewed": 10
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 141,
+        "total": 161,
+        "reviewed": 10
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 86,
+        "total": 99,
+        "reviewed": 10
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 57,
+        "total": 60,
+        "reviewed": 10
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 29,
+        "total": 56,
+        "reviewed": 10
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 30,
+        "total": 31,
+        "reviewed": 10
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 71,
+        "total": 78,
+        "reviewed": 10
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 91,
+        "total": 113,
+        "reviewed": 10
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 32,
+        "total": 36,
+        "reviewed": 10
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 68,
+        "reviewed": 10
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 49,
+        "total": 53,
+        "reviewed": 10
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 49,
+        "total": 53,
+        "reviewed": 10
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 66,
+        "total": 66,
+        "reviewed": 10
+      }
+    ]
+  },
+  {
+    "features": "mel",
+    "groups": 12,
+    "correctUnreviewed": 871,
+    "totalUnreviewed": 971,
+    "accuracyUnreviewed": 0.8970133882595263,
+    "reviewed": 168,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 40,
+        "total": 46,
+        "reviewed": 12
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 68,
+        "total": 75,
+        "reviewed": 12
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 146,
+        "total": 159,
+        "reviewed": 12
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 84,
+        "total": 97,
+        "reviewed": 12
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 55,
+        "total": 58,
+        "reviewed": 12
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 30,
+        "total": 54,
+        "reviewed": 12
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 28,
+        "total": 29,
+        "reviewed": 12
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 69,
+        "total": 76,
+        "reviewed": 12
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 91,
+        "total": 111,
+        "reviewed": 12
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 34,
+        "total": 34,
+        "reviewed": 12
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 66,
+        "total": 66,
+        "reviewed": 12
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 47,
+        "total": 51,
+        "reviewed": 12
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 49,
+        "total": 51,
+        "reviewed": 12
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 64,
+        "total": 64,
+        "reviewed": 12
+      }
+    ]
+  },
+  {
+    "features": "mel",
+    "groups": 16,
+    "correctUnreviewed": 824,
+    "totalUnreviewed": 915,
+    "accuracyUnreviewed": 0.9005464480874317,
+    "reviewed": 224,
+    "details": [
+      {
+        "file": "P21_Improvisation_Fixed.wav",
+        "correct": 39,
+        "total": 42,
+        "reviewed": 16
+      },
+      {
+        "file": "P22_Improvisation_Fixed.wav",
+        "correct": 64,
+        "total": 71,
+        "reviewed": 16
+      },
+      {
+        "file": "P22_Improvisation_Personal.wav",
+        "correct": 142,
+        "total": 155,
+        "reviewed": 16
+      },
+      {
+        "file": "P23_Improvisation_Fixed.wav",
+        "correct": 82,
+        "total": 93,
+        "reviewed": 16
+      },
+      {
+        "file": "P23_Improvisation_Personal.wav",
+        "correct": 52,
+        "total": 54,
+        "reviewed": 16
+      },
+      {
+        "file": "P24_Improvisation_Fixed.wav",
+        "correct": 28,
+        "total": 50,
+        "reviewed": 16
+      },
+      {
+        "file": "P24_Improvisation_Personal.wav",
+        "correct": 25,
+        "total": 25,
+        "reviewed": 16
+      },
+      {
+        "file": "P25_Improvisation_Fixed.wav",
+        "correct": 65,
+        "total": 72,
+        "reviewed": 16
+      },
+      {
+        "file": "P25_Improvisation_Personal.wav",
+        "correct": 87,
+        "total": 107,
+        "reviewed": 16
+      },
+      {
+        "file": "P26_Improvisation_Fixed.wav",
+        "correct": 30,
+        "total": 30,
+        "reviewed": 16
+      },
+      {
+        "file": "P27_Improvisation_Fixed.wav",
+        "correct": 62,
+        "total": 62,
+        "reviewed": 16
+      },
+      {
+        "file": "P27_Improvisation_Personal.wav",
+        "correct": 43,
+        "total": 47,
+        "reviewed": 16
+      },
+      {
+        "file": "P28_Improvisation_Fixed.wav",
+        "correct": 45,
+        "total": 47,
+        "reviewed": 16
+      },
+      {
+        "file": "P28_Improvisation_Personal.wav",
+        "correct": 60,
+        "total": 60,
+        "reviewed": 16
+      }
+    ]
+  }
+]

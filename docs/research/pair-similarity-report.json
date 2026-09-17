@@ -1,0 +1,182 @@
+[
+  {
+    "cohort": "validation",
+    "linkage": "average",
+    "groups": 4,
+    "correctUnreviewed": 574,
+    "totalUnreviewed": 633,
+    "accuracyUnreviewed": 0.9067930489731437,
+    "reviewed": 48
+  },
+  {
+    "cohort": "validation",
+    "linkage": "average",
+    "groups": 6,
+    "correctUnreviewed": 581,
+    "totalUnreviewed": 609,
+    "accuracyUnreviewed": 0.9540229885057471,
+    "reviewed": 72
+  },
+  {
+    "cohort": "validation",
+    "linkage": "average",
+    "groups": 8,
+    "correctUnreviewed": 551,
+    "totalUnreviewed": 585,
+    "accuracyUnreviewed": 0.9418803418803419,
+    "reviewed": 96
+  },
+  {
+    "cohort": "validation",
+    "linkage": "average",
+    "groups": 10,
+    "correctUnreviewed": 519,
+    "totalUnreviewed": 561,
+    "accuracyUnreviewed": 0.9251336898395722,
+    "reviewed": 120
+  },
+  {
+    "cohort": "validation",
+    "linkage": "average",
+    "groups": 12,
+    "correctUnreviewed": 497,
+    "totalUnreviewed": 537,
+    "accuracyUnreviewed": 0.925512104283054,
+    "reviewed": 144
+  },
+  {
+    "cohort": "validation",
+    "linkage": "complete",
+    "groups": 4,
+    "correctUnreviewed": 579,
+    "totalUnreviewed": 633,
+    "accuracyUnreviewed": 0.9146919431279621,
+    "reviewed": 48
+  },
+  {
+    "cohort": "validation",
+    "linkage": "complete",
+    "groups": 6,
+    "correctUnreviewed": 571,
+    "totalUnreviewed": 609,
+    "accuracyUnreviewed": 0.9376026272577996,
+    "reviewed": 72
+  },
+  {
+    "cohort": "validation",
+    "linkage": "complete",
+    "groups": 8,
+    "correctUnreviewed": 549,
+    "totalUnreviewed": 585,
+    "accuracyUnreviewed": 0.9384615384615385,
+    "reviewed": 96
+  },
+  {
+    "cohort": "validation",
+    "linkage": "complete",
+    "groups": 10,
+    "correctUnreviewed": 532,
+    "totalUnreviewed": 561,
+    "accuracyUnreviewed": 0.948306595365419,
+    "reviewed": 120
+  },
+  {
+    "cohort": "validation",
+    "linkage": "complete",
+    "groups": 12,
+    "correctUnreviewed": 513,
+    "totalUnreviewed": 537,
+    "accuracyUnreviewed": 0.9553072625698324,
+    "reviewed": 144
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "average",
+    "groups": 4,
+    "correctUnreviewed": 880,
+    "totalUnreviewed": 1083,
+    "accuracyUnreviewed": 0.8125577100646353,
+    "reviewed": 56
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "average",
+    "groups": 6,
+    "correctUnreviewed": 922,
+    "totalUnreviewed": 1055,
+    "accuracyUnreviewed": 0.8739336492890996,
+    "reviewed": 84
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "average",
+    "groups": 8,
+    "correctUnreviewed": 920,
+    "totalUnreviewed": 1027,
+    "accuracyUnreviewed": 0.8958130477117819,
+    "reviewed": 112
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "average",
+    "groups": 10,
+    "correctUnreviewed": 904,
+    "totalUnreviewed": 999,
+    "accuracyUnreviewed": 0.9049049049049049,
+    "reviewed": 140
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "average",
+    "groups": 12,
+    "correctUnreviewed": 887,
+    "totalUnreviewed": 971,
+    "accuracyUnreviewed": 0.913491246138002,
+    "reviewed": 168
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "complete",
+    "groups": 4,
+    "correctUnreviewed": 930,
+    "totalUnreviewed": 1083,
+    "accuracyUnreviewed": 0.8587257617728532,
+    "reviewed": 56
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "complete",
+    "groups": 6,
+    "correctUnreviewed": 928,
+    "totalUnreviewed": 1055,
+    "accuracyUnreviewed": 0.8796208530805687,
+    "reviewed": 84
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "complete",
+    "groups": 8,
+    "correctUnreviewed": 935,
+    "totalUnreviewed": 1027,
+    "accuracyUnreviewed": 0.9104186952288218,
+    "reviewed": 112
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "complete",
+    "groups": 10,
+    "correctUnreviewed": 908,
+    "totalUnreviewed": 999,
+    "accuracyUnreviewed": 0.908908908908909,
+    "reviewed": 140
+  },
+  {
+    "cohort": "developmentTest",
+    "linkage": "complete",
+    "groups": 12,
+    "correctUnreviewed": 884,
+    "totalUnreviewed": 971,
+    "accuracyUnreviewed": 0.9104016477857878,
+    "reviewed": 168
+  }
+]

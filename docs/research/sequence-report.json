@@ -1,0 +1,15 @@
+{
+  "validationAccuracy": 0.8076358296622613,
+  "transitionWeight": 1,
+  "priorWeight": 0.5,
+  "developmentTest": {
+    "correct": 804,
+    "total": 1139,
+    "accuracy": 0.7058823529411765
+  },
+  "baseline": {
+    "correct": 808,
+    "total": 1139,
+    "accuracy": 0.7093942054433714
+  }
+}

@@ -55,11 +55,11 @@ npx tsx scripts/dataset.ts
 
 The next experiment should evaluate an audio-capable pretrained model on the same labeled clips, then establish another genuinely fresh test set. Actual audio understanding could supply richer evidence for TypeSafe, but it is not yet demonstrated to solve this task. Any audio upload requires the product to explain where it goes; the current production app sends only features.
 
-## Audio-capable candidate (awaiting credentials and live evaluation)
+## Audio-capable candidate (evaluated; not released)
 
 `worker/audio.ts` adds `/api/classify-audio` on this research branch only. It accepts at most eight canonical PCM16 mono WAV clips (16 kHz, 1.5 seconds each), caps the request body, checks browser origin, uses the existing rate limiter, and validates returned IDs and drum labels. Gemini hears the clips; Jev independently classifies Gemini's auditory descriptions. Both labels are retained so the benchmark can measure whether the second pass helps instead of silently overriding results. Neither model returns or changes MIDI timestamps.
 
-The default model follows Google's current audio documentation (`gemini-3.8-flash`) and is overridable server-side with `GEMINI_MODEL`. Actual model availability and prediction quality remain unverified until a live API call succeeds. The code uses the documented Generate Content audio and JSON schema contract.
+The default model follows Google's current audio documentation (`gemini-3.8-flash`) and is overridable server-side with `GEMINI_MODEL`. Live calls confirmed availability but failed the recognition benchmark; results and the tested response-format contract are recorded below.
 
 Create a dedicated key through Google AI Studio, then use `make audio-secret`. This uses `wrangler versions secret put GEMINI_API_KEY`, which creates a candidate version without deploying it to production. Never put the key in the browser bundle or a committed file. Once a candidate preview is uploaded with the secret, run:
 
@@ -89,3 +89,25 @@ Numeric/description results are retained in [gemini-context-results.json](gemini
 **Decision: do not deploy these candidates.** An audio-capable API did not establish an improvement. The production website remains unchanged. Further useful work requires better task-specific data and model development, or an explicitly assisted workflow; neither a new API key nor a different feature library establishes near-perfect recognition.
 
 `pretrained-embedding.py` uses the Apache-2.0-licensed public `facebook/wav2vec2-base-960h` model, downloaded through Hugging Face, with local MPS inference. Those large weights and all raw audio stay outside Git. Temporary Cloudflare preview endpoints are disabled after testing.
+
+
+## Follow-up experiments — September 17, 2026
+
+No candidate in this round solved automatic recognition. No production deployment was made.
+
+- **Fine-tuned Wav2Vec2:** unfroze the final two layers of an eight-layer truncated encoder, trained 20 epochs on participants 1–14, and selected the checkpoint using classification accuracy on participants 15–20. Evaluation on the previously inspected participants 21–28 gave **545/1,139 = 47.85%** on matched groove events. This was worse than the feature model and was rejected. The pretrained encoder's frozen features and this fine-tuned version are distinct experiments. MPS requires eager attention during training because its SDPA implementation does not support attention dropout.
+- **Sequence prior:** learned drum-to-drum transition frequencies on training grooves and selected transition/prior weights on validation grooves. It changes labels only, never timing. The selected candidate gave **804/1,139 = 70.59%**, versus **808/1,139 = 70.94%** for its paired, unrefitted acoustic baseline. Rejected. The earlier 70.59% acoustic result came from the separately refitted model and is coincidentally the same number.
+- **Representative review:** grouped sounds using acoustic features without labels, then revealed only each group's medoid label. Reviewed events were excluded from accuracy. A learned pairwise similarity model was trained on participants 1–14. The configuration with the highest validation accuracy (complete linkage, 12 groups per recording) reached **884/971 = 91.04%** on the remaining test events, after supplying **168 correct representative labels** across 14 recordings. This is a simulated assisted workflow, assumes perfect human labels, and does not establish automatic accuracy or usability. It is still too error-prone to present as a solution.
+
+Full numeric reports: [encoder](finetuned-report.json), [sequence](sequence-report.json), [feature grouping](group-review-report.json), [learned similarity](pair-similarity-report.json). Scripts use the same ignored public audio and cached feature artifacts as the earlier experiments:
+
+```sh
+python scripts/finetune-encoder.py
+python scripts/group-review-eval.py
+python scripts/pair-similarity.py
+python scripts/sequence-eval.py
+```
+
+The subgroup audit of the earlier refitted acoustic model gave 469/595 (78.82%) on fixed-imitation grooves and 335/544 (61.58%) on personal-imitation grooves. This demonstrates a performance gap; it does not establish that individual annotations are wrong or that intended drum identity is inherently unknowable.
+
+All figures still exclude missed/unmatched onsets. These four-class experiments provide no validation of ride, crash, breath, or literal “boots and cats” recognition. No seven-class automatic accuracy claim is warranted.
