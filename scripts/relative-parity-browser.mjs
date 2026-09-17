@@ -24,8 +24,23 @@ await page.route("**/relative-harness", (route) =>
 );
 await page.goto("http://127.0.0.1:5178/relative-harness");
 const result = await page.evaluate(async (fixtures) => {
-  const { predictRelative } = await import("/src/research-relative/index.ts");
+  const { predictRelative, resampleRelative } =
+    await import("/src/research-relative/index.ts");
   const { detectNeural } = await import("/src/neural.ts");
+  // Raw coefficient parity stays separate from the now-grouped worker API.
+  const { recordingFeatures } =
+    await import("/src/research-relative/features.ts");
+  const { readModel, predictRelative: rawPredict } =
+    await import("/src/research-relative/svm.ts");
+  const model = readModel(
+    await (
+      await fetch("/src/research-relative/relative-model.bin")
+    ).arrayBuffer(),
+  );
+  const rawLabels = async (samples, rate, times) =>
+    recordingFeatures(await resampleRelative(samples, rate), times).map(
+      (row) => rawPredict(row, model).drum,
+    );
   function match(times, labels, truth) {
     const pairs = [];
     times.forEach((t, i) =>
@@ -63,10 +78,10 @@ const result = await page.evaluate(async (fixtures) => {
     const before = samples.slice(),
       timesBefore = [...fixture.times];
     let started = performance.now();
-    const labels16k = await predictRelative(samples, 16000, fixture.times);
+    const labels16k = await rawLabels(samples, 16000, fixture.times);
     const milliseconds16k = performance.now() - started;
     started = performance.now();
-    const labelsNative = await predictRelative(
+    const labelsNative = await rawLabels(
       original,
       fixture.sampleRate,
       fixture.times,
@@ -149,6 +164,8 @@ const result = await page.evaluate(async (fixtures) => {
     invalidRejected = true;
   }
   return {
+    protocol:
+      "Raw model parity plus grouped worker full native validation; no new fitting or selection.",
     results,
     milliseconds100,
     performanceCount: performanceLabels.length,
@@ -160,7 +177,7 @@ const result = await page.evaluate(async (fixtures) => {
 }, fixtures);
 await browser.close();
 writeFileSync(
-  `${root}/browser-report.json`,
+  `${root}/browser-consistency-report.json`,
   JSON.stringify({ ...result, errors }, null, 2),
 );
 console.log(JSON.stringify({ ...result, errors }, null, 2));

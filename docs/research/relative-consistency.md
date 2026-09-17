@@ -25,7 +25,7 @@ On cached features from26 recordings, the TypeScript implementation reproduces e
 
 ## Native browser audio check
 
-Using actual browser resampling, neural onset timestamps and JavaScript acoustic features from all12 validation recordings, the frozen grouping rule improves590→628/672 correct core labels. Core labeled-event F1 improves84.23%→89.65%, with707 detections and694 references. Grouped matched-class recall is280/285 hats,224/234 kicks and124/153 snares. The classifier/grouping comparison is performed against the frozen numerical model on those browser-extracted features. The browser UI separately exercises the bundled worker and MIDI export.
+Using actual browser resampling, neural onset timestamps and JavaScript acoustic features from all12 validation recordings, the frozen grouping rule improves590→628/672 correct core labels. Core labeled-event F1 improves84.23%→89.65%, with707 detections and694 references. Grouped matched-class recall is280/285 hats,224/234 kicks and124/153 snares. A separate complete browser run, including the actual grouped worker, reproduced all628 correct core labels across the12 recordings. The raw-model parity check still matched777/777 reference labels at16kHz. Cancellation, input preservation and invalid-time rejection passed, with no page errors. The100-hit worker probe took about210ms on this Mac. The browser UI separately exercises MIDI export.
 
 The native result is lower than the Python-only comparison, so they are reported separately. It still does not reach95% complete transcription. No native test labels were used to change the rule.
 
