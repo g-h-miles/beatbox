@@ -1,4 +1,4 @@
-/** Frozen Ward grouping for recording-level margin pooling. Research only. */
+/** Frozen Ward grouping for recording-level margin pooling. */
 export function wardGroups(rows: Float32Array[], count = 8): number[] {
   const n = rows.length;
   if (!n) return [];

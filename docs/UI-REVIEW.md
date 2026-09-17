@@ -51,3 +51,11 @@ Local evidence is `artifacts/hybrid-live/report.json`, `artifacts/hybrid-live/li
 The next built release groups similar hits before assigning core sounds. The browser loaded the new worker bundle `worker-DX8b03_K.js`, existing model binary and detector runtime, and completed eight real TypeSafe API batches. Manual timing edits and added-hit velocity edits survived; every displayed timestamp remained unchanged. Original/drum playback, slice playback, label edits, model-failure fallback and unchanged-list behavior on API failure passed. Four responsive sizes passed with no page errors or horizontal overflow.
 
 An independently parsed MIDI contained76 notes on channel10 at9600PPQ, preserving edited onsets at0 and0.070 seconds and the added note's velocity115. These checks verify behavior, not recognition accuracy. All51 release unit tests passed. Separate results are retained in ignored `artifacts/consistency-ui/`; the test supports `SMOKE_OUTPUT` to avoid overwriting earlier evidence.
+
+## Deployed consistency worker smoke check
+
+The live check was repeated after main `90670a5` and Cloudflare deployment `a1ba6e62-0d1b-4e96-83ff-b5ac8bb24684`. The final run completed at 2026-09-17 05:02 UTC with no request interception, mocks, or proxy. The browser loaded the new `worker-DX8b03_K.js` with HTTP 200, alongside the detector, relative model binary, MJS and WASM runtime. Both actual classification requests succeeded.
+
+Public P15 Personal improvisation produced 27 hits. A manually selected snare at velocity 101 survived classification, all displayed hit times stayed unchanged, and original and drum preview controls worked. Parsed MIDI retained all 27 notes on channel 10 at 9,600 PPQ, including snare note 38 with velocity 101. The maximum difference from the UI's rounded timestamps remained 0.5104 ms. No page errors or horizontal overflow occurred, and the final desktop screenshot was visually reviewed.
+
+Separate evidence is saved under `artifacts/consistency-live/` as `report.json`, `live.png`, and `reviewed.mid`. A temporary copy of the existing live smoke script additionally logged worker bundle responses. This is a production integration check, not an estimate of classification accuracy.
