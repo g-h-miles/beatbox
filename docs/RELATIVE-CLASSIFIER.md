@@ -1,5 +1,7 @@
 # Guarded core classifier
 
+The current app uses browser-trained core and hat-subtype models. See [the exact current comparison](research/native-hybrid-comparison.md); the sections below preserve earlier baseline experiments.
+
 The frozen public-data relative SVM is substantially better than the existing TypeSafe feature descriptions on the full AVP validation cohort, but cannot be used on every recording. The browser implementation is in `src/research-relative`; audio stays on the device.
 
 The current worker additionally pools decisions among acoustically similar hits. See [the consistency evaluation](research/relative-consistency.md) for the newer comparison; tables below document the original unpooled baseline.
