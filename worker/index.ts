@@ -1,7 +1,12 @@
+import { classifyAudio } from "./audio";
 import { criteria, type Features } from "../src/model";
 import { acousticEvidence } from "../src/acoustic";
 import { describe, spectralDistance } from "../src/evidence";
-export type AppEnv = Env & { TYPESAFE_API_KEY?: string };
+export type AppEnv = Env & {
+  TYPESAFE_API_KEY?: string;
+  GEMINI_API_KEY?: string;
+  GEMINI_MODEL?: string;
+};
 const json = (body: unknown, status = 200) =>
   Response.json(body, {
     status,
@@ -15,6 +20,8 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/status")
       return json({ configured: !!env.TYPESAFE_API_KEY });
+    if (url.pathname === "/api/classify-audio")
+      return classifyAudio(request, env);
     if (url.pathname !== "/api/classify")
       return url.pathname.startsWith("/api/")
         ? json({ error: "Not found" }, 404)

@@ -54,3 +54,17 @@ npx tsx scripts/dataset.ts
 `export-model.py` writes the candidate model, native Python probability fixtures, and held-out results. Unit tests verify TypeScript inference against native CatBoost probabilities on those numeric fixtures. The live comparison requires a separately uploaded candidate version and a valid server-side TypeSafe key; do not treat its stored preview URL as permanent.
 
 The next experiment should evaluate an audio-capable pretrained model on the same labeled clips, then establish another genuinely fresh test set. Actual audio understanding could supply richer evidence for TypeSafe, but it is not yet demonstrated to solve this task. Any audio upload requires the product to explain where it goes; the current production app sends only features.
+
+## Audio-capable candidate (awaiting credentials and live evaluation)
+
+`worker/audio.ts` adds `/api/classify-audio` on this research branch only. It accepts at most eight canonical PCM16 mono WAV clips (16 kHz, 1.5 seconds each), caps the request body, checks browser origin, uses the existing rate limiter, and validates returned IDs and drum labels. Gemini hears the clips; Jev independently classifies Gemini's auditory descriptions. Both labels are retained so the benchmark can measure whether the second pass helps instead of silently overriding results. Neither model returns or changes MIDI timestamps.
+
+The default model follows Google's current audio documentation (`gemini-3.8-flash`) and is overridable server-side with `GEMINI_MODEL`. Actual model availability and prediction quality remain unverified until a live API call succeeds. The code uses the documented Generate Content audio and JSON schema contract.
+
+Create a dedicated key through Google AI Studio, then use `make audio-secret`. This uses `wrangler versions secret put GEMINI_API_KEY`, which creates a candidate version without deploying it to production. Never put the key in the browser bundle or a committed file. Once a candidate preview is uploaded with the secret, run:
+
+```sh
+npx tsx scripts/evaluate-audio.ts https://YOUR-CANDIDATE-PREVIEW-ORIGIN
+```
+
+The benchmark uploads clips from the public AVP dataset to Google, then sends the resulting descriptions to TypeSafe. It writes an incremental, ignored result file under `artifacts/`. It does not upload a user's recordings automatically. A released audio-model UI will need to state clearly that classification sends audio to Google.
