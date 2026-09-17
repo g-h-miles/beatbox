@@ -1,0 +1,9 @@
+# Browser-domain playback-pitch augmentation
+
+Freeze before extraction, fitting or evaluation: use only the 27 AVP participant 1–14 annotated grooves and their 1,161 events. Add two variants per recording, at −2 and +2 semitones of playback pitch. For each variant, round the source sample rate times `2^(semitones/12)` to the nearest integer; use this actual rate for browser OfflineAudioContext resampling and divide annotation times by the actual rate ratio. This deliberately changes both pitch and duration in training; it never changes production audio, onsets, or MIDI times.
+
+Extract all augmented recording-relative 1,104-dimensional features with the existing browser implementation. Include the unmodified original features, yielding 3,483 examples. Each original and each variant gets weight 1/3, preserving total SVM loss weight rather than tripling regularization strength. Fit StandardScaler and RBF SVC with unchanged C10 core/C1 four-class, gamma=scale. No hyperparameter or shift selection. Use the existing eight-Ward-cluster mean-margin core vote plus four-class hat-pair margin combiner.
+
+Freeze model hashes before reading evaluation labels. Evaluate the same native P15–20 development recordings, and the previously inspected P21–28 recordings; neither cohort is an independent holdout. Baselines are 639/605 core/four correct out of672matches and962/839 out of1141matches. Report all detections/references and joint scores, not conditional accuracy alone. No private voice audio, reserved recordings, TypeSafe guard changes, or production changes.
+
+Earlier augmentation used Python-preprocessed features; this experiment tests waveform pitch variability through the exact browser pipeline. It does not establish that pitch shifts simulate independent speakers or spoken boots-and-cats.

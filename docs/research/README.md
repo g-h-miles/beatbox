@@ -16,6 +16,13 @@ recognition: Gemini 3.1 Pro scored 75/91 core and 70/91 four-class on the frozen
 matched sample, versus 86/91 and 82/91 for the current acoustic model.
 The temporary remote-development endpoint was stopped; production is unchanged.
 
+The [core-error audit](core-error-concentration.md) localizes most remaining
+cross-voice failures to unfamiliar snare timbres. Fixed
+[performer balancing](../../ml/browser_voice_balance_results.md) and
+[browser pitch augmentation](../../ml/browser_pitch_results.md) both regressed
+recognition and remain research-only. The audit proposes a training-only metric
+experiment; it is not an implemented improvement or a claim of accuracy.
+
 The sections below preserve earlier experiments and their historical results;
 their model descriptions and proposed next steps are not the current release.
 
