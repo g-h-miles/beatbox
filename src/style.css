@@ -707,7 +707,7 @@ aside > p {
 .tempo input {
   background: #fcfcf7;
   border: 1px solid #d7ddcb;
-  width: 59px;
+  width: 78px;
   padding: 7px 4px 7px 9px;
   border-radius: 4px;
   color: #536545;
@@ -1079,4 +1079,38 @@ footer span:last-child {
   width: 100%;
   margin-top: 10px;
   min-height: 32px;
+}
+.groove-controls {
+  margin: -4px 0 20px;
+}
+.groove-controls > button {
+  margin-bottom: 12px;
+}
+.groove-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  min-height: 36px;
+}
+.groove-toggle input {
+  width: 16px;
+  height: 16px;
+}
+.groove-controls p {
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 5px 0 10px;
+}
+.groove-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+@media (pointer: coarse) {
+  .groove-controls button,
+  .groove-toggle {
+    min-height: 44px;
+  }
 }

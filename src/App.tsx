@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpRight,
@@ -26,6 +26,7 @@ import {
   mono,
 } from "./audio";
 import { drums, type Drum, type Hit } from "./model";
+import { applyRhythm, estimateTempo, inferGrid, probabilities } from "./rhythm";
 import { midi } from "./midi";
 import { spectralDistance } from "./evidence";
 const fmt = (t: number) =>
@@ -33,7 +34,7 @@ const fmt = (t: number) =>
 export default function App() {
   const [buffer, setBuffer] = useState<AudioBuffer | null>(null),
     [samples, setSamples] = useState<Float32Array | null>(null),
-    [hits, setHits] = useState<Hit[]>([]),
+    [rawHits, setHits] = useState<Hit[]>([]),
     [name, setName] = useState(""),
     [selected, setSelected] = useState<string | null>(null);
   const [recording, setRecording] = useState(false),
@@ -45,6 +46,8 @@ export default function App() {
     [sensitivity, setSensitivity] = useState(50),
     [mode, setMode] = useState<"hits" | "syllables">("hits"),
     [bpm, setBpm] = useState(120),
+    [grooveAssist, setGrooveAssist] = useState(true),
+    [beatOne, setBeatOne] = useState<number | null>(null),
     [playing, setPlaying] = useState<"original" | "drums" | null>(null),
     [position, setPosition] = useState(0),
     [activePad, setActivePad] = useState<Drum | null>(null),
@@ -59,6 +62,15 @@ export default function App() {
     recordStart = useRef(0),
     generation = useRef(0),
     padTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const grid = useMemo(
+    () => inferGrid(rawHits, bpm, beatOne),
+    [rawHits, bpm, beatOne],
+  );
+  const hits = useMemo(
+    () => applyRhythm(rawHits, grid, grooveAssist),
+    [rawHits, grid, grooveAssist],
+  );
+  const rhythmChanges = hits.filter((h) => h.rhythmAdjusted).length;
   const duration = buffer?.duration || 5,
     hit = hits.find((h) => h.id === selected),
     disabled = !!busy || recording;
@@ -168,6 +180,7 @@ export default function App() {
     setSamples(data);
     setName(fileName);
     setHits(found);
+    setBeatOne(null);
     setSelected(null);
     setMessage(
       found.length
@@ -326,6 +339,7 @@ export default function App() {
           ? {
               ...h,
               ...patch,
+              drum: patch.drum ?? hit.drum,
               source: "manual",
               confidence: null,
               confirmedDrum: patch.drum !== undefined || h.confirmedDrum,
@@ -396,7 +410,12 @@ export default function App() {
         });
         const data = (await response.json()) as {
           error?: string;
-          answers: { id: string; drum: Drum; confidence: number }[];
+          answers: {
+            id: string;
+            drum: Drum;
+            confidence: number;
+            probabilities?: unknown;
+          }[];
         };
         if (!response.ok)
           throw Error(data.error || "Classification unavailable.");
@@ -406,6 +425,9 @@ export default function App() {
             ? {
                 ...h,
                 drum: a.drum,
+                acousticDrum: a.drum,
+                probabilities: probabilities(a.probabilities),
+                rhythmAdjusted: false,
                 confidence: a.confidence,
                 source: "typesafe",
               }
@@ -799,7 +821,7 @@ export default function App() {
                   <b>Edit hit</b>
                   <span>
                     {hit.source === "typesafe"
-                      ? `Jev confidence ${Math.round((hit.confidence || 0) * 100)}%`
+                      ? `${hit.rhythmAdjusted ? "Groove-assisted · " : ""}Jev confidence ${Math.round((hit.confidence || 0) * 100)}%`
                       : hit.source === "manual"
                         ? "Edited by you"
                         : "Local suggestion · unverified"}
@@ -940,7 +962,9 @@ export default function App() {
                         <span>{h.velocity}</span>
                         <span className={h.source === "manual" ? "manual" : ""}>
                           {h.source === "typesafe"
-                            ? `${Math.round((h.confidence || 0) * 100)}%`
+                            ? h.rhythmAdjusted
+                              ? "Groove hint"
+                              : `${Math.round((h.confidence || 0) * 100)}%`
                             : h.source === "manual"
                               ? "Edited"
                               : "Review"}
@@ -963,21 +987,88 @@ export default function App() {
             </p>
             <div className="tempo">
               <label htmlFor="tempo">
-                Export tempo <small>Match this in your DAW</small>
+                Tempo <small>Match this in your DAW</small>
               </label>
               <div>
                 <input
                   id="tempo"
                   type="number"
+                  step="0.5"
                   min="30"
                   max="300"
                   value={bpm}
-                  onChange={(e) =>
-                    setBpm(Math.max(30, Math.min(300, +e.target.value || 120)))
-                  }
+                  disabled={disabled}
+                  onChange={(e) => {
+                    stop();
+                    setBpm(Math.max(30, Math.min(300, +e.target.value || 120)));
+                  }}
                 />
                 <span>BPM</span>
               </div>
+            </div>
+            <div className="groove-controls">
+              <button
+                disabled={hits.length < 6 || disabled}
+                onClick={() => {
+                  const estimate = estimateTempo(hits);
+                  if (estimate) {
+                    stop();
+                    setBpm(estimate.bpm);
+                    setMessage(
+                      `Estimated ${estimate.bpm} BPM. Check the pulse; half or double tempo may also fit.`,
+                    );
+                  } else
+                    setMessage(
+                      "No steady pulse found. Enter a tempo, or leave groove hints off.",
+                    );
+                }}
+              >
+                Estimate tempo
+              </button>
+              <label className="groove-toggle">
+                <input
+                  type="checkbox"
+                  checked={grooveAssist}
+                  disabled={disabled}
+                  onChange={(e) => {
+                    stop();
+                    setGrooveAssist(e.target.checked);
+                  }}
+                />
+                Use 4/4 groove hints
+              </label>
+              <p>Helps decide uncertain kicks and snares. Never moves a hit.</p>
+              <div className="groove-actions">
+                <button
+                  disabled={!hit || disabled}
+                  onClick={() => {
+                    if (hit) {
+                      stop();
+                      setBeatOne(hit.time);
+                    }
+                  }}
+                >
+                  Selected hit is beat 1
+                </button>
+                {beatOne !== null && (
+                  <button
+                    disabled={disabled}
+                    onClick={() => {
+                      stop();
+                      setBeatOne(null);
+                    }}
+                  >
+                    Auto phase
+                  </button>
+                )}
+              </div>
+              <p role="status">
+                {!grooveAssist
+                  ? "Groove hints off."
+                  : grid
+                    ? `${grid.source === "manual" ? `Beat 1 at ${grid.origin.toFixed(3)}s` : "Kick/snare pulse inferred"} · ${rhythmChanges} label${rhythmChanges === 1 ? "" : "s"} adjusted.`
+                    : "Waiting for a clear pulse. Set the tempo and select beat 1, or run TypeSafe to find anchors."}
+              </p>
             </div>
             <div className="export-facts">
               <span>
