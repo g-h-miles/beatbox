@@ -15,7 +15,7 @@ const errors = [],
   api = [];
 p.on("pageerror", (e) => errors.push(e.message));
 p.on("response", (r) => {
-  if (/onnx|wasm|relative-model|worker-/.test(r.url()))
+  if (/onnx|wasm|model[34]-|worker-/.test(r.url()))
     requests.push({ url: r.url(), status: r.status() });
 });
 await p.route("**/api/**", async (route) => {
@@ -76,7 +76,9 @@ assert(
   api.filter((a) => a.path === "/api/classify").every((a) => a.status === 200),
 );
 assert(
-  requests.some((r) => r.url.includes("relative-model") && r.status === 200),
+  ["model3-", "model4-"].every((name) =>
+    requests.some((r) => r.url.includes(name) && r.status === 200),
+  ),
 );
 assert.deepEqual(
   (await p.locator(".hit-row").allTextContents()).slice(0, 2),
@@ -92,6 +94,8 @@ assert(
     t.includes("Suggested"),
   ),
 );
+assert.equal(await p.locator(".groove-controls").count(), 0);
+assert(await p.getByLabel("Tempo", { exact: false }).isVisible());
 await p.getByRole("button", { name: "Original", exact: true }).click();
 await p.getByRole("button", { name: "Original", exact: true }).click();
 await p.getByRole("button", { name: "Drum preview", exact: true }).click();
@@ -114,7 +118,7 @@ for (const width of [390, 768, 1440, 1920]) {
   await p.screenshot({ path: `${out}/review-${width}.png`, fullPage: true });
 }
 // Fail the core model explicitly. The API fallback remains visible and usable.
-await p.route("**/*relative-model*", (r) => r.abort());
+await p.route("**/*model3-*", (r) => r.abort());
 await p.getByRole("button", { name: "Classify sounds" }).click();
 await p
   .getByRole("status")
@@ -122,6 +126,10 @@ await p
   .waitFor();
 assert.equal(await p.getByLabel("Time (seconds)").inputValue(), "0");
 assert(await p.getByRole("button", { name: "Download MIDI" }).isEnabled());
+assert.equal(await p.locator(".groove-controls").count(), 1);
+await p.locator(".groove-controls summary").click();
+await p.getByLabel("Use 4/4 groove hints").uncheck();
+assert(await p.getByLabel("Tempo", { exact: false }).isVisible());
 const beforeFailure = await p.locator(".hit-row").allTextContents();
 await p.route("**/api/classify", (r) =>
   r.fulfill({
@@ -135,6 +143,35 @@ await p
   .filter({ hasText: "Test classification unavailable" })
   .waitFor();
 assert.deepEqual(await p.locator(".hit-row").allTextContents(), beforeFailure);
+// Isolate preference retention with explicit API fixtures; model inference remains real.
+await p.route("**/api/classify", async (r) => {
+  const body = r.request().postDataJSON();
+  await r.fulfill({
+    json: {
+      answers: body.hits.map((h) => ({
+        id: h.id,
+        drum: "kick",
+        confidence: 0.6,
+        probabilities: { kick: 0.6, snare: 0.4 },
+      })),
+    },
+  });
+});
+await p.unroute("**/*model3-*");
+await p.getByRole("button", { name: "Classify sounds" }).click();
+await p
+  .getByRole("status")
+  .filter({ hasText: "Classification complete" })
+  .waitFor();
+assert.equal(await p.locator(".groove-controls").count(), 0);
+await p.route("**/*model3-*", (r) => r.abort());
+await p.getByRole("button", { name: "Classify sounds" }).click();
+await p
+  .getByRole("status")
+  .filter({ hasText: "TypeSafe suggestions are ready to review" })
+  .waitFor();
+await p.locator(".groove-controls summary").click();
+assert.equal(await p.getByLabel("Use 4/4 groove hints").isChecked(), false);
 const cancellation = "covered separately by relative module tests";
 writeFileSync(
   `${out}/report.json`,

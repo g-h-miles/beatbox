@@ -1,0 +1,49 @@
+{
+  "format": "beatbox-browser-svm-v1",
+  "classes": [
+    "hat",
+    "kick",
+    "snare"
+  ],
+  "featureCount": 1104,
+  "supportCount": 714,
+  "supportCounts": [
+    289,
+    204,
+    221
+  ],
+  "gamma": 0.000909090908387834,
+  "byteLength": 3182136,
+  "sha256": "181a2b2baaa08466da987f2dc60ff313e341a64a9296e8cadcb6cbabe209a799",
+  "sourcePickleSha256": "2efe413f007e0d674da90fc696b542d4591c2fae0e2cd46da08f3770f15bedf7",
+  "sections": {
+    "mean": {
+      "offset": 0,
+      "length": 1104,
+      "dtype": "f64"
+    },
+    "scale": {
+      "offset": 8832,
+      "length": 1104,
+      "dtype": "f64"
+    },
+    "supports": {
+      "offset": 17664,
+      "length": 788256,
+      "dtype": "f32"
+    },
+    "dual": {
+      "offset": 3170688,
+      "length": 1428,
+      "dtype": "f64"
+    },
+    "intercepts": {
+      "offset": 3182112,
+      "length": 3,
+      "dtype": "f64"
+    }
+  },
+  "training": "Frozen public AVP1\u201314 annotated training grooves with native browser preprocessing; no private data",
+  "source": "https://zenodo.org/records/3250230",
+  "license": "AVP CC BY4.0. Attribution retained for derived model."
+}

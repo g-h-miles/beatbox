@@ -51,6 +51,16 @@ describe("validated core and cymbal combination", () => {
       applyCoreLabels([hit({ probabilities: undefined })], ["hat"])[0].drum,
     ).toBe("closed");
   });
+  it("retains explicit acoustic hat subtypes regardless of TypeSafe posterior", () => {
+    expect(
+      applyCoreLabels([hit({ probabilities: { open: 0.99 } })], ["closed"])[0]
+        .drum,
+    ).toBe("closed");
+    expect(
+      applyCoreLabels([hit({ probabilities: { closed: 0.99 } })], ["open"])[0]
+        .drum,
+    ).toBe("open");
+  });
   it("rejects a partial result rather than shifting predictions onto the wrong hit", () => {
     expect(() => applyCoreLabels([hit()], [])).toThrow("Incomplete");
   });

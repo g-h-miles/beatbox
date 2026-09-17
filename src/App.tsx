@@ -23,7 +23,7 @@ import { applyRhythm, estimateTempo, inferGrid, probabilities } from "./rhythm";
 import { detectHits } from "./detect";
 import { applyCoreLabels, type CoreLabel } from "./core-labels";
 import { supportsRelative } from "./core-diversity";
-import { predictRelative } from "./research-relative";
+import { predictBrowserSounds } from "./research-browser-model/classifier";
 import { midi } from "./midi";
 import { spectralDistance } from "./evidence";
 const fmt = (t: number) =>
@@ -71,6 +71,13 @@ export default function App() {
     [rawHits, grid, grooveAssist],
   );
   const rhythmChanges = hits.filter((h) => h.rhythmAdjusted).length;
+  const hasGrooveCandidates = rawHits.some(
+    (h) =>
+      !h.confirmedDrum &&
+      h.source === "typesafe" &&
+      (h.drum === "kick" || h.drum === "snare") &&
+      h.probabilities,
+  );
   const duration = buffer?.duration || 5,
     hit = hits.find((h) => h.id === selected),
     disabled = !!busy || recording;
@@ -455,7 +462,7 @@ export default function App() {
           const ordered = hits
             .map((hit, index) => ({ hit, index }))
             .sort((a, b) => a.hit.time - b.hit.time);
-          const labels = await predictRelative(
+          const labels = await predictBrowserSounds(
             samples,
             buffer.sampleRate,
             ordered.map(({ hit }) => hit.time),
@@ -1122,73 +1129,77 @@ export default function App() {
                 <span>BPM</span>
               </div>
             </div>
-            <details className="groove-controls">
-              <summary>
-                Groove hints <span>{grooveAssist ? "On" : "Off"}</span>
-              </summary>
-              <button
-                disabled={hits.length < 6 || disabled}
-                onClick={() => {
-                  const estimate = estimateTempo(hits);
-                  if (estimate) {
-                    stop();
-                    setBpm(estimate.bpm);
-                    setMessage(
-                      `Estimated ${estimate.bpm} BPM. Check the pulse; half or double tempo may also fit.`,
-                    );
-                  } else
-                    setMessage(
-                      "No steady pulse found. Enter a tempo, or leave groove hints off.",
-                    );
-                }}
-              >
-                Estimate tempo
-              </button>
-              <label className="groove-toggle">
-                <input
-                  type="checkbox"
-                  checked={grooveAssist}
-                  disabled={disabled}
-                  onChange={(e) => {
-                    stop();
-                    setGrooveAssist(e.target.checked);
-                  }}
-                />
-                Use 4/4 groove hints
-              </label>
-              <p>Helps decide uncertain kicks and snares. Never moves a hit.</p>
-              <div className="groove-actions">
+            {hasGrooveCandidates && (
+              <details className="groove-controls">
+                <summary>
+                  Groove hints <span>{grooveAssist ? "On" : "Off"}</span>
+                </summary>
                 <button
-                  disabled={!hit || disabled}
+                  disabled={hits.length < 6 || disabled}
                   onClick={() => {
-                    if (hit) {
+                    const estimate = estimateTempo(hits);
+                    if (estimate) {
                       stop();
-                      setBeatOne(hit.time);
-                    }
+                      setBpm(estimate.bpm);
+                      setMessage(
+                        `Estimated ${estimate.bpm} BPM. Check the pulse; half or double tempo may also fit.`,
+                      );
+                    } else
+                      setMessage(
+                        "No steady pulse found. Enter a tempo, or leave groove hints off.",
+                      );
                   }}
                 >
-                  Selected hit is beat 1
+                  Estimate tempo
                 </button>
-                {beatOne !== null && (
-                  <button
+                <label className="groove-toggle">
+                  <input
+                    type="checkbox"
+                    checked={grooveAssist}
                     disabled={disabled}
-                    onClick={() => {
+                    onChange={(e) => {
                       stop();
-                      setBeatOne(null);
+                      setGrooveAssist(e.target.checked);
+                    }}
+                  />
+                  Use 4/4 groove hints
+                </label>
+                <p>
+                  Helps decide uncertain kicks and snares. Never moves a hit.
+                </p>
+                <div className="groove-actions">
+                  <button
+                    disabled={!hit || disabled}
+                    onClick={() => {
+                      if (hit) {
+                        stop();
+                        setBeatOne(hit.time);
+                      }
                     }}
                   >
-                    Reset beat 1
+                    Selected hit is beat 1
                   </button>
-                )}
-              </div>
-              <p role="status">
-                {!grooveAssist
-                  ? "Groove hints off."
-                  : grid
-                    ? `${grid.source === "manual" ? `Beat 1 at ${grid.origin.toFixed(3)}s` : "Kick/snare pulse inferred"} · ${rhythmChanges} label${rhythmChanges === 1 ? "" : "s"} adjusted.`
-                    : "Set the tempo and choose beat 1, or classify to find a pulse."}
-              </p>
-            </details>
+                  {beatOne !== null && (
+                    <button
+                      disabled={disabled}
+                      onClick={() => {
+                        stop();
+                        setBeatOne(null);
+                      }}
+                    >
+                      Reset beat 1
+                    </button>
+                  )}
+                </div>
+                <p role="status">
+                  {!grooveAssist
+                    ? "Groove hints off."
+                    : grid
+                      ? `${grid.source === "manual" ? `Beat 1 at ${grid.origin.toFixed(3)}s` : "Kick/snare pulse inferred"} · ${rhythmChanges} label${rhythmChanges === 1 ? "" : "s"} adjusted.`
+                      : "Set the tempo and choose beat 1, or classify to find a pulse."}
+                </p>
+              </details>
+            )}
             <div className="export-facts">
               <span>
                 Timing <b>Original · no snapping</b>

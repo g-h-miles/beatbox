@@ -1,10 +1,12 @@
 import type { Hit } from "./model";
-export type CoreLabel = "hat" | "kick" | "snare";
+export type CoreLabel = "hat" | "kick" | "snare" | "closed" | "open";
 /** Frozen hybrid rule, evaluated before integration. No note timing changes. */
 export function applyCoreLabels(hits: Hit[], labels: CoreLabel[]): Hit[] {
   if (
     hits.length !== labels.length ||
-    labels.some((label) => !["hat", "kick", "snare"].includes(label))
+    labels.some(
+      (label) => !["hat", "kick", "snare", "closed", "open"].includes(label),
+    )
   )
     throw new Error("Incomplete core classification.");
   return hits.map((hit, index) => {
