@@ -1,3 +1,4 @@
+import { composeBar } from "./compose-bar";
 import { drums } from "../src/model";
 import type { BeatStep, MusicalIntent } from "../src/generator";
 import type { AppEnv } from "./index";
@@ -157,6 +158,17 @@ export async function generateStep(
       body.history.length >= (body.bars as number) * (body.resolution as number)
     )
       throw Error("input");
+    if (
+      body.oneBar !== undefined &&
+      (body.oneBar !== true ||
+        body.bars !== 1 ||
+        body.resolution !== 16 ||
+        body.history.length ||
+        body.intent ||
+        body.batchStart !== undefined ||
+        body.planOnly)
+    )
+      throw Error("input");
     const history: BeatStep[] = body.history.map((step: unknown) => {
       if (
         !record(step) ||
@@ -284,6 +296,8 @@ export async function generateStep(
         ? value
         : null;
     };
+    if (body.oneBar === true)
+      return json(await composeBar(body.prompt.trim(), body.bpm, infer));
     let intent = body.intent as MusicalIntent | undefined;
     let planningTokens: number | null = 0;
     let modelCalls = 1;

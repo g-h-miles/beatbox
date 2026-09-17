@@ -455,3 +455,70 @@ describe("parallel composer", () => {
     expect(upstream).not.toHaveBeenCalled();
   });
 });
+
+describe("one-bar endpoint", () => {
+  it("rejects incompatible dimensions before model inference", async () => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    for (const extra of [
+      { bars: 4 },
+      { resolution: 64 },
+      { batchStart: 0 },
+      { intent },
+    ]) {
+      const r = await worker.fetch(
+        request({
+          prompt: "Pocket",
+          bpm: 90,
+          bars: 1,
+          resolution: 16,
+          history: [],
+          oneBar: true,
+          ...extra,
+        }),
+        env,
+      );
+      expect(r.status).toBe(400);
+    }
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+  it("returns a complete one-bar arrangement from two dependent model requests", async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(
+        Response.json({
+          answers: { foundation: { type: "choice", choice: "straight" } },
+          usage: { input_tokens: 100 },
+        }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({
+          answers: {
+            top: { type: "choice", choice: "eighths" },
+            feel: { type: "choice", choice: "straight" },
+          },
+          usage: { input_tokens: 200 },
+        }),
+      );
+    vi.stubGlobal("fetch", fetcher);
+    const r = await worker.fetch(
+      request({
+        prompt: "Straight backbeat",
+        bpm: 90,
+        bars: 1,
+        resolution: 16,
+        history: [],
+        oneBar: true,
+      }),
+      env,
+    );
+    expect(r.status).toBe(200);
+    const data = (await r.json()) as any;
+    expect(data.groove.steps).toHaveLength(16);
+    expect(data.modelCalls).toBe(2);
+    expect(data.inputTokens).toBe(300);
+    expect(
+      JSON.parse(fetcher.mock.calls[1][1].body).state.foundation.snare,
+    ).toEqual([4, 12]);
+  });
+});

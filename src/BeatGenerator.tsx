@@ -1,464 +1,279 @@
 import { useEffect, useRef, useState } from "react";
 import { AudioLines, ArrowLeft, Download, Play, Square } from "lucide-react";
-import { drumSound } from "./audio";
+import { grooveSound } from "./groove-audio";
 import { drums, type Drum } from "./model";
+import { VELOCITIES } from "./generator";
 import {
-  patternMidi,
-  pendingBatches,
-  patternNotes,
-  stepSeconds,
-  VELOCITIES,
-  type BeatStep,
-  type MusicalIntent,
-} from "./generator";
+  barMidi,
+  foundations,
+  tops,
+  feels,
+  type BarGroove,
+} from "./bar-groove";
+import { BarPlayer } from "./bar-player";
 import "./generator.css";
-import { LiveDrummer, emptyStep } from "./live-drummer";
 
 export default function BeatGenerator() {
-  const [live, setLive] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const [clickEnabled, setClickEnabled] = useState(true);
-  const clickRef = useRef(true);
-  const liveEngine = useRef<LiveDrummer | null>(null);
-  const [prompt, setPrompt] = useState("Syncopated reggae");
+  const [prompt, setPrompt] = useState(
+    "A laid-back pocket. Firm kick, snare on 2 and 4, quiet eighth-note hats.",
+  );
   const [bpm, setBpm] = useState(90);
-  const [bars, setBars] = useState(4);
-  const [resolution, setResolution] = useState(16);
-  const [visibleBar, setVisibleBar] = useState(0);
-  const [visibleBeat, setVisibleBeat] = useState(0);
-  const [compact, setCompact] = useState(() => window.innerWidth < 700);
+  const [groove, setGroove] = useState<BarGroove | null>(null);
+  const [busy, setBusy] = useState(false),
+    [playing, setPlaying] = useState(false);
+  const [message, setMessage] = useState(""),
+    [playhead, setPlayhead] = useState(-1);
+  const [click, setClick] = useState(false);
+  const [elapsed, setElapsed] = useState<number | null>(null);
+  const [calls, setCalls] = useState(0);
+  const [beat, setBeat] = useState(0),
+    [compact, setCompact] = useState(window.innerWidth < 700);
+  const ctx = useRef<AudioContext | null>(null),
+    player = useRef<BarPlayer | null>(null);
+  const sources = useRef<AudioScheduledSourceNode[]>([]),
+    clickSources = useRef<AudioScheduledSourceNode[]>([]);
+  const clickRef = useRef(false),
+    controller = useRef<AbortController | null>(null);
+  const mounted = useRef(true);
   useEffect(() => {
+    mounted.current = true;
     const media = matchMedia("(max-width: 699px)");
-    const update = () => setCompact(media.matches);
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  const columns = compact ? resolution / 4 : resolution;
-  const firstColumn = compact ? visibleBeat * columns : 0;
-  const steps = bars * resolution;
-  const [history, setHistory] = useState<BeatStep[]>([]);
-  const [completed, setCompleted] = useState<Set<number>>(new Set());
-  const [intent, setIntent] = useState<MusicalIntent | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
-  const [inputTokens, setInputTokens] = useState(0);
-  const [requests, setRequests] = useState(0);
-  const [usageComplete, setUsageComplete] = useState(true);
-  const [playing, setPlaying] = useState(false);
-  const [playhead, setPlayhead] = useState(-1);
-  const controller = useRef<AbortController | null>(null);
-  const context = useRef<AudioContext | null>(null);
-  const nodes = useRef<AudioScheduledSourceNode[]>([]);
-  const frame = useRef(0);
-  const scheduler = useRef<ReturnType<typeof setInterval> | undefined>(
-    undefined,
-  );
-  const playbackId = useRef(0);
-  const [generationSettings, setGenerationSettings] = useState("");
-  const settingsKey = JSON.stringify([prompt.trim(), bpm, bars, resolution]);
-  const canContinue =
-    intent !== null &&
-    completed.size < steps &&
-    generationSettings === settingsKey;
-
-  useEffect(() => {
-    if (!live) return;
-    const timer = setTimeout(() => liveEngine.current?.setPrompt(prompt), 400);
-    return () => clearTimeout(timer);
-  }, [prompt, live]);
-
-  function stop() {
-    liveEngine.current?.stop();
-    liveEngine.current = null;
-    setLive(false);
-    setCountdown(0);
-    playbackId.current++;
-    cancelAnimationFrame(frame.current);
-    clearInterval(scheduler.current);
-    for (const node of nodes.current) {
-      try {
-        node.stop();
-      } catch {
-        /* already ended */
-      }
-    }
-    nodes.current = [];
-    setPlaying(false);
-    setPlayhead(-1);
-  }
-  useEffect(
-    () => () => {
+    const change = () => setCompact(media.matches);
+    media.addEventListener("change", change);
+    return () => {
+      mounted.current = false;
+      media.removeEventListener("change", change);
       controller.current?.abort();
-      liveEngine.current?.stop();
-      playbackId.current++;
-      cancelAnimationFrame(frame.current);
-      clearInterval(scheduler.current);
-      for (const node of nodes.current) {
+      player.current?.stop();
+      sources.current.forEach((n) => {
         try {
-          node.stop();
-        } catch {
-          /* already ended */
-        }
-      }
-      void context.current?.close();
-    },
-    [],
-  );
-
-  async function startDrummer() {
-    if (live) {
-      stop();
-      setMessage("Drummer stopped. Keep this pattern, or start again.");
-      return;
-    }
-    stop();
-    resetPattern();
-    const id = playbackId.current;
-    const ctx = (context.current ??= new AudioContext());
-    try {
-      await ctx.resume();
-      if (id !== playbackId.current) return;
-      const keep = (source: AudioScheduledSourceNode) => {
-        nodes.current.push(source);
-        source.addEventListener(
-          "ended",
-          () => {
-            nodes.current = nodes.current.filter((n) => n !== source);
-          },
-          { once: true },
-        );
-      };
-      const engine = new LiveDrummer(
-        { prompt: prompt.trim(), bpm, bars, resolution },
-        {
-          now: () => ctx.currentTime,
-          click: (time, accent) => {
-            if (!clickRef.current) return;
-            const oscillator = ctx.createOscillator(),
-              gain = ctx.createGain();
-            oscillator.frequency.value = accent ? 1400 : 1000;
-            gain.gain.setValueAtTime(0.12, time);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.035);
-            oscillator.connect(gain);
-            gain.connect(ctx.destination);
-            oscillator.start(time);
-            oscillator.stop(time + 0.04);
-            keep(oscillator);
-          },
-          hit: (time, step) => {
-            for (const drum of drums)
-              if (step[drum.id] > 0)
-                drumSound(ctx, drum.id, time, step[drum.id]).forEach(keep);
-          },
-          position: (absolute, count) => {
-            setCountdown(count);
-            const position = absolute < 0 ? -1 : absolute % steps;
-            setPlayhead(position);
-            if (position >= 0) {
-              setVisibleBar(Math.floor(position / resolution));
-              setVisibleBeat(
-                Math.floor((position % resolution) / (resolution / 4)),
-              );
-            }
-          },
-          decisions: (start, part) => {
-            setHistory((previous) => {
-              const next = Array.from(
-                { length: steps },
-                (_, i) => previous[i] ?? emptyStep(),
-              );
-              part.forEach((step, i) => {
-                next[(start + i) % steps] = step;
-              });
-              return next;
-            });
-            setCompleted((previous) => {
-              const next = new Set(previous);
-              part.forEach((_, i) => next.add((start + i) % steps));
-              return next;
-            });
-          },
-          direction: setIntent,
-          usage: (calls, tokens) => {
-            setRequests((value) => value + calls);
-            if (tokens === null) setUsageComplete(false);
-            else setInputTokens((value) => value + tokens);
-          },
-          status: setMessage,
-        },
-      );
-      liveEngine.current = engine;
-      setLive(true);
-      engine.start();
-    } catch {
-      setMessage("Audio could not start. Try starting the drummer again.");
-    }
-  }
-  async function generate(resume = false) {
-    stop();
-    controller.current?.abort();
-    const current = new AbortController();
-    controller.current = current;
-    setBusy(true);
-    if (!resume) {
-      setHistory([]);
-      setIntent(null);
-      setVisibleBar(0);
-      setInputTokens(0);
-      setRequests(0);
-      setUsageComplete(true);
-    }
-    setGenerationSettings(settingsKey);
-    setMessage("");
-    const empty = () =>
-      Object.fromEntries(drums.map((d) => [d.id, 0])) as BeatStep;
-    const next = Array.from({ length: steps }, (_, i) =>
-      resume ? (history[i] ?? empty()) : empty(),
-    );
-    const done = resume ? new Set(completed) : new Set<number>();
-    if (!resume) setCompleted(new Set());
-    let nextIntent = resume ? intent : null;
-    const call = async (extra: Record<string, unknown>) => {
-      for (let retry = 0; ; retry++) {
-        current.signal.throwIfAborted();
-        const response = await fetch("/api/generate-step", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: prompt.trim(),
-            bpm,
-            bars,
-            resolution,
-            history: [],
-            ...extra,
-          }),
-          signal: current.signal,
-        });
-        const data = (await response.json()) as {
-          error?: string;
-          retryable?: boolean;
-          intent?: MusicalIntent;
-          start?: number;
-          steps?: BeatStep[];
-          inputTokens?: number;
-          modelCalls?: number;
-        };
-        if (!response.ok) {
-          if (
-            [429, 502, 503, 504].includes(response.status) &&
-            data.retryable !== false &&
-            retry < 2
-          ) {
-            setMessage("TypeSafe is busy. Retrying the unfinished part…");
-            await new Promise<void>((resolve, reject) => {
-              const abort = () => {
-                clearTimeout(timer);
-                reject(new DOMException("Aborted", "AbortError"));
-              };
-              const timer = setTimeout(
-                () => {
-                  current.signal.removeEventListener("abort", abort);
-                  resolve();
-                },
-                response.status === 429 ? 60000 : 2000 * 2 ** retry,
-              );
-              current.signal.addEventListener("abort", abort, { once: true });
-              if (current.signal.aborted) abort();
-            });
-            continue;
-          }
-          throw Error(
-            data.error ||
-              "Could not finish this beat. Continue to retry the missing parts.",
-          );
-        }
-        current.signal.throwIfAborted();
-        setRequests((value) => value + (data.modelCalls ?? 1));
-        if (
-          typeof data.inputTokens === "number" &&
-          Number.isFinite(data.inputTokens)
-        )
-          setInputTokens((value) => value + data.inputTokens!);
-        else setUsageComplete(false);
-        return data;
-      }
+          n.stop();
+        } catch {}
+      });
+      void ctx.current?.close();
     };
-    try {
-      if (!nextIntent) {
-        const data = await call({ planOnly: true });
-        if (!data.intent)
-          throw Error("The server returned an invalid musical direction.");
-        nextIntent = data.intent;
-        setIntent(nextIntent);
-      }
-      const jobs = pendingBatches(steps, done);
-      const results = await Promise.allSettled(
-        jobs.map(async ({ start, size }) => {
-          const data = await call({
-            intent: nextIntent,
-            batchStart: start,
-            batchSize: size,
-          });
-          if (
-            data.start !== start ||
-            data.steps?.length !== size ||
-            data.steps.some(
-              (step) =>
-                !step ||
-                drums.some(
-                  (d) =>
-                    !(VELOCITIES as readonly number[]).includes(step[d.id]),
-                ),
-            )
-          )
-            throw Error(
-              "The server returned an invalid part. Continue to retry it.",
-            );
-          current.signal.throwIfAborted();
-          data.steps.forEach((step, i) => {
-            if (!done.has(start + i)) next[start + i] = step;
-            done.add(start + i);
-          });
-          setHistory([...next]);
-          setCompleted(new Set(done));
-        }),
-      );
-      current.signal.throwIfAborted();
-      const failed = results.find((result) => result.status === "rejected");
-      if (failed?.status === "rejected") throw failed.reason;
-      setMessage("");
-    } catch (error) {
-      if (!current.signal.aborted)
-        setMessage(
-          error instanceof Error
-            ? error.message
-            : "Could not make this beat. Try again.",
-        );
-    } finally {
-      if (controller.current === current) {
-        controller.current = null;
-        setBusy(false);
-      }
-    }
-  }
-  function cancel() {
+  }, []);
+  function stop() {
     controller.current?.abort();
     controller.current = null;
     setBusy(false);
-    setMessage(
-      "Stopped. Continue when ready, or play and edit the steps made so far.",
+    player.current?.stop();
+    player.current = null;
+    sources.current.forEach((n) => {
+      try {
+        n.stop();
+      } catch {}
+    });
+    sources.current = [];
+    clickSources.current = [];
+    setPlaying(false);
+    setPlayhead(-1);
+    setMessage("Stopped. Your bar is ready to edit or export.");
+  }
+  const keep = (node: AudioScheduledSourceNode) => {
+    sources.current.push(node);
+    node.addEventListener(
+      "ended",
+      () => {
+        sources.current = sources.current.filter((n) => n !== node);
+        clickSources.current = clickSources.current.filter((n) => n !== node);
+      },
+      { once: true },
     );
+  };
+  function start(value: BarGroove) {
+    if (!ctx.current) return;
+    const audio = ctx.current;
+    player.current?.stop();
+    const transport = new BarPlayer(value, bpm, {
+      now: () => audio.currentTime,
+      hit: (note, time) =>
+        grooveSound(audio, note.drum, time, note.velocity).forEach(keep),
+      click: (time, accent) => {
+        if (!clickRef.current) return;
+        const osc = audio.createOscillator(),
+          gain = audio.createGain();
+        osc.frequency.value = accent ? 1400 : 1000;
+        gain.gain.setValueAtTime(0.08, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+        osc.connect(gain);
+        gain.connect(audio.destination);
+        osc.start(time);
+        osc.stop(time + 0.035);
+        keep(osc);
+        clickSources.current.push(osc);
+      },
+      bar: (value) => {
+        setGroove(value);
+        setMessage(
+          "Looping one bar. Make a new groove to change it at the next bar.",
+        );
+      },
+      position: (i) => {
+        setPlayhead(i);
+        if (i >= 0) setBeat(Math.floor(i / 4));
+      },
+    });
+    player.current = transport;
+    setPlaying(true);
+    transport.start();
+  }
+  async function make() {
+    if (
+      busy ||
+      !prompt.trim() ||
+      !Number.isInteger(bpm) ||
+      bpm < 40 ||
+      bpm > 240
+    )
+      return;
+    const abort = new AbortController();
+    controller.current?.abort();
+    controller.current = abort;
+    setBusy(true);
+    setMessage("Arranging the whole bar…");
+    setElapsed(null);
+    const started = performance.now();
+    try {
+      const audio = (ctx.current ??= new AudioContext());
+      await audio.resume();
+      const response = await fetch("/api/generate-step", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          bpm,
+          bars: 1,
+          resolution: 16,
+          history: [],
+          oneBar: true,
+        }),
+        signal: AbortSignal.any([abort.signal, AbortSignal.timeout(12000)]),
+      });
+      const data = (await response.json()) as {
+        error?: string;
+        modelCalls?: number;
+        unsupported?: boolean;
+        message?: string;
+        groove?: BarGroove;
+      };
+      abort.signal.throwIfAborted();
+      if (!response.ok)
+        throw Error(
+          data.error || "The groove could not be arranged. Try again.",
+        );
+      setCalls(data.modelCalls ?? 0);
+      setElapsed((performance.now() - started) / 1000);
+      if (data.unsupported) {
+        setMessage(
+          data.message || "That request is outside this one-bar vocabulary.",
+        );
+        return;
+      }
+      const next = data.groove as BarGroove;
+      if (
+        !next ||
+        !Object.hasOwn(foundations, next.foundation) ||
+        !Object.hasOwn(tops, next.top) ||
+        !Object.hasOwn(feels, next.feel) ||
+        !Array.isArray(next.steps) ||
+        next.steps.length !== 16 ||
+        next.steps.some(
+          (s) =>
+            !s ||
+            drums.some(
+              (d) => !(VELOCITIES as readonly number[]).includes(s[d.id]),
+            ),
+        )
+      )
+        throw Error("The model returned an invalid arrangement.");
+      if (player.current) {
+        player.current.queue(next);
+        setMessage("New groove ready. Switching at the next bar.");
+      } else {
+        setGroove(next);
+        start(next);
+      }
+    } catch (error) {
+      if (!abort.signal.aborted && mounted.current)
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Could not arrange the groove.",
+        );
+    } finally {
+      if (controller.current === abort) {
+        setBusy(false);
+        controller.current = null;
+      }
+    }
   }
   async function play() {
     if (playing) {
       stop();
       return;
     }
-    const id = ++playbackId.current;
-    const ctx = (context.current ??= new AudioContext());
+    if (!groove) return;
+    const abort = new AbortController();
+    controller.current = abort;
     try {
-      await ctx.resume();
-      if (id !== playbackId.current) return;
-      const start = ctx.currentTime + 0.05;
-      const interval = stepSeconds(bpm, resolution);
-      let nextStep = 0;
-      const schedule = () => {
-        if (id !== playbackId.current) return;
-        nextStep = Math.max(
-          nextStep,
-          Math.ceil((ctx.currentTime - start) / interval),
-        );
-        while (start + nextStep * interval < ctx.currentTime + 0.12) {
-          const step = history[nextStep % steps];
-          if (step)
-            for (const drum of drums)
-              if (step[drum.id] > 0) {
-                const sources = drumSound(
-                  ctx,
-                  drum.id,
-                  start + nextStep * interval,
-                  step[drum.id],
-                );
-                for (const source of sources)
-                  source.addEventListener(
-                    "ended",
-                    () => {
-                      nodes.current = nodes.current.filter(
-                        (node) => node !== source,
-                      );
-                    },
-                    { once: true },
-                  );
-                nodes.current.push(...sources);
-              }
-          nextStep++;
-        }
-      };
-      schedule();
-      scheduler.current = setInterval(schedule, 25);
-      setPlaying(true);
-      const tick = () => {
-        if (id !== playbackId.current) return;
-        const position = Math.floor(
-          (ctx.currentTime - start) / stepSeconds(bpm, resolution),
-        );
-        setPlayhead(position < 0 ? -1 : position % steps);
-        if (position >= 0) {
-          setVisibleBar(Math.floor((position % steps) / resolution));
-          setVisibleBeat(
-            Math.floor((position % resolution) / (resolution / 4)),
-          );
-        }
-        frame.current = requestAnimationFrame(tick);
-      };
-      tick();
+      await (ctx.current ??= new AudioContext()).resume();
+      if (!abort.signal.aborted && mounted.current) start(groove);
     } catch {
-      setMessage("Audio could not start. Press Play to try again.");
+      setMessage("Audio could not start. Try Play again.");
+    } finally {
+      if (controller.current === abort) controller.current = null;
     }
   }
   function edit(index: number, drum: Drum) {
+    if (!groove) return;
     stop();
-    setCompleted((previous) => new Set(previous).add(index));
-    setHistory((previous) => {
-      const next = Array.from(
-        { length: Math.max(previous.length, index + 1) },
-        (_, i) =>
-          previous[i] ??
-          (Object.fromEntries(drums.map((d) => [d.id, 0])) as BeatStep),
-      );
-      const old = next[index][drum];
-      next[index] = {
-        ...next[index],
-        [drum]:
-          VELOCITIES[
-            ((VELOCITIES as readonly number[]).indexOf(old) + 1) %
-              VELOCITIES.length
-          ],
-      };
-      return next;
-    });
-  }
-  function resetPattern() {
-    setHistory([]);
-    setCompleted(new Set());
-    setIntent(null);
-    setVisibleBar(0);
-    setInputTokens(0);
-    setRequests(0);
-    setUsageComplete(true);
-    setMessage("");
+    const steps = groove.steps.map((s) => ({ ...s }));
+    const old = steps[index][drum];
+    steps[index][drum] =
+      VELOCITIES[
+        ((VELOCITIES as readonly number[]).indexOf(old) + 1) % VELOCITIES.length
+      ];
+    if (
+      drums.find((d) => d.id === drum) &&
+      ["closed", "open", "ride"].includes(drum) &&
+      steps[index][drum]
+    )
+      for (const other of ["closed", "open", "ride"] as const)
+        if (other !== drum) steps[index][other] = 0;
+    setGroove({ ...groove, steps });
+    setMessage("Edited. Press Play to hear your bar.");
   }
   function download() {
-    const bytes = patternMidi(history, bpm, bars, resolution);
-    const url = URL.createObjectURL(
-      new Blob([bytes.buffer as ArrayBuffer], { type: "audio/midi" }),
-    );
+    if (!groove) return;
+    const bytes = barMidi(groove, bpm),
+      url = URL.createObjectURL(
+        new Blob([bytes.buffer as ArrayBuffer], { type: "audio/midi" }),
+      );
     const link = document.createElement("a");
     link.href = url;
-    link.download = `beatbox-${bpm}bpm-${bars}bars-1-${resolution}.mid`;
+    link.download = `beatbox-${bpm}bpm-one-bar.mid`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  const validBpm = Number.isInteger(bpm) && bpm >= 40 && bpm <= 240;
+  const shown = [...drums]
+    .sort(
+      (a, b) =>
+        ["kick", "snare", "closed", "open", "ride", "crash", "aux"].indexOf(
+          a.id,
+        ) -
+        ["kick", "snare", "closed", "open", "ride", "crash", "aux"].indexOf(
+          b.id,
+        ),
+    )
+    .filter(
+      (d) =>
+        ["kick", "snare", "closed", "open"].includes(d.id) ||
+        groove?.steps.some((s) => s[d.id] > 0),
+    );
+  const offset = compact ? beat * 4 : 0,
+    columns = compact ? 4 : 16;
   return (
     <div className="generator-app">
       <header>
@@ -469,247 +284,148 @@ export default function BeatGenerator() {
           BEATBOX<span className="version">VOL. 01</span>
         </a>
         <a className="generator-back" href="/">
-          <ArrowLeft size={15} /> Audio to MIDI
+          <ArrowLeft size={15} />
+          Audio to MIDI
         </a>
       </header>
       <main className="generator-main">
         <section className="generator-intro">
-          <p className="eyebrow">TYPESAFE ON THE DRUMS</p>
-          <h1>Your live drummer.</h1>
+          <p className="eyebrow">ONE BAR. FIND THE POCKET.</p>
+          <h1>A groove worth repeating.</h1>
           <p>
-            Start the click. TypeSafe plays along, choosing new hits as you go.
-            Change the groove while it plays.
+            Describe the feel. TypeSafe combines written drum phrases from a
+            small groove library. One bar repeats steadily until you change it.
           </p>
         </section>
         <form
           className="generator-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (live) {
-              liveEngine.current?.setPrompt(prompt);
-              setMessage("New direction queued for the upcoming beats.");
-            } else void startDrummer();
+          onSubmit={(e) => {
+            e.preventDefault();
+            void make();
           }}
         >
           <label className="generator-prompt">
             Your groove
             <input
+              value={prompt}
               maxLength={500}
               required
-              value={prompt}
-              disabled={busy}
-              onChange={(event) => {
-                setPrompt(event.target.value);
-              }}
-              placeholder="A loose, syncopated reggae groove"
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="A laid-back pocket with quiet hats"
             />
           </label>
           <div className="generator-settings">
             <label>
-              Tempo{" "}
+              Tempo
               <span className="generator-number">
                 <input
                   aria-label="Tempo in BPM"
                   type="number"
                   min={40}
                   max={240}
+                  step={1}
                   required
                   value={bpm}
-                  disabled={busy || live}
-                  onChange={(event) => {
-                    stop();
-                    setBpm(Number(event.target.value));
-                  }}
+                  disabled={busy || playing}
+                  onChange={(e) => setBpm(Number(e.target.value))}
                 />
                 <span>BPM</span>
               </span>
             </label>
-            <label>
-              Length
-              <select
-                aria-label="Length"
-                value={bars}
-                disabled={busy || live}
-                onChange={(event) => {
-                  stop();
-                  setBars(Number(event.target.value));
-                  resetPattern();
-                }}
-              >
-                {[1, 2, 4].map((n) => (
-                  <option key={n} value={n}>
-                    {n} {n === 1 ? "bar" : "bars"}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Note division
-              <select
-                aria-label="Note division"
-                value={resolution}
-                disabled={busy || live}
-                onChange={(event) => {
-                  stop();
-                  setResolution(Number(event.target.value));
-                  resetPattern();
-                }}
-              >
-                {[8, 16, 32, 64].map((n) => (
-                  <option key={n} value={n}>
-                    1/{n} notes
-                  </option>
-                ))}
-              </select>
-            </label>
-            {busy ? (
-              <button
-                type="button"
-                className="generator-cancel"
-                onClick={(event) => {
-                  event.preventDefault();
-                  cancel();
-                }}
-              >
-                <Square size={14} /> Stop generating
-              </button>
-            ) : (
-              <button
-                type={live ? "button" : "submit"}
-                onClick={
-                  live
-                    ? (event) => {
-                        event.preventDefault();
-                        void startDrummer();
-                      }
-                    : undefined
-                }
-                className="generator-primary"
-                disabled={!live && (!prompt.trim() || bpm < 40 || bpm > 240)}
-              >
-                {live ? "Stop drummer" : "Start drummer"}
-                <AudioLines size={17} />
-              </button>
-            )}
+            <span className="generator-direction">
+              1 bar · 4/4 · sixteenth-note grid
+            </span>
+            <button
+              type="submit"
+              className="generator-primary"
+              disabled={
+                busy ||
+                !prompt.trim() ||
+                !Number.isInteger(bpm) ||
+                bpm < 40 ||
+                bpm > 240
+              }
+            >
+              {busy
+                ? "Arranging…"
+                : playing
+                  ? "Make new groove"
+                  : "Make & play"}
+              <AudioLines size={17} />
+            </button>
           </div>
           <div className="generator-live-controls">
             <label className="generator-click-toggle">
               <input
                 type="checkbox"
-                checked={clickEnabled}
-                onChange={(event) => {
-                  setClickEnabled(event.target.checked);
-                  clickRef.current = event.target.checked;
+                checked={click}
+                onChange={(e) => {
+                  setClick(e.target.checked);
+                  clickRef.current = e.target.checked;
+                  if (!e.target.checked) {
+                    clickSources.current.forEach((n) => {
+                      try {
+                        n.stop();
+                      } catch {}
+                    });
+                    clickSources.current = [];
+                  }
                 }}
-              />{" "}
+              />
               Click track
             </label>
-            {!live && (
-              <button
-                type="button"
-                disabled={busy || !prompt.trim() || bpm < 40 || bpm > 240}
-                onClick={() => void generate()}
-              >
-                Generate a fixed pattern
+            <span>Changes land at the next bar. No random fills.</span>
+            {busy && (
+              <button type="button" onClick={stop}>
+                Cancel
               </button>
             )}
-            {live && (
-              <span role="status">
-                {countdown
-                  ? `Count in · ${countdown}`
-                  : "LIVE · Change the groove as it plays"}
-              </span>
-            )}
           </div>
-          {!busy && !live && canContinue && (
-            <button
-              className="generator-resume"
-              type="button"
-              onClick={() => void generate(true)}
-            >
-              Continue unfinished parts
-            </button>
-          )}
         </form>
         <section className="generator-pattern" aria-label="Beat pattern">
           <div className="generator-toolbar">
             <div>
-              <h2>{live ? "On the drums" : "Your pattern"}</h2>
+              <h2>Your bar</h2>
               <p>
-                {live
-                  ? `${bars}-bar rolling view · 1/${resolution} notes · new decisions every beat`
-                  : busy
-                    ? `${completed.size} / ${steps} positions · ${intent ? "Building your groove" : "Finding the feel"}`
-                    : `${bars} ${bars === 1 ? "bar" : "bars"} in 4/4 · 1/${resolution} notes · ${((bars * 240) / bpm).toFixed(1)} seconds. Tap a cell to change its intensity.`}
+                {validBpm ? (240 / bpm).toFixed(2) : "—"} seconds · Tap a cell
+                to change its intensity.
               </p>
             </div>
             <div className="generator-actions">
               <button
+                type="button"
                 onClick={() => void play()}
-                disabled={
-                  busy || live || !history.length || bpm < 40 || bpm > 240
-                }
+                disabled={!groove || (!playing && busy) || !validBpm}
               >
-                {playing ? <Square size={15} /> : <Play size={15} />}
+                {playing ? <Square size={15} /> : <Play size={15} />}{" "}
                 {playing ? "Stop" : "Play loop"}
               </button>
               <button
+                type="button"
                 onClick={download}
-                disabled={
-                  busy || live || !history.length || bpm < 40 || bpm > 240
-                }
+                disabled={!groove || !validBpm}
               >
-                <Download size={15} /> MIDI
+                <Download size={15} />
+                MIDI
               </button>
             </div>
           </div>
-          {intent && (
-            <p
-              className="generator-direction"
-              aria-label="TypeSafe musical direction"
-            >
-              TypeSafe chose:{" "}
-              {[
-                intent.foundation.replaceAll("_", " "),
-                intent.timekeeping.replaceAll("_", " "),
-                intent.voice === "closed"
-                  ? "closed hats"
-                  : intent.voice === "open"
-                    ? "open hats"
-                    : intent.voice === "mixed"
-                      ? "mixed cymbals"
-                      : "ride",
-                {
-                  steady: "steady groove",
-                  subtle: "subtle variation",
-                  fills: "phrase-end fills",
-                  evolving: "evolving phrase",
-                }[intent.variation],
-              ].join(" · ")}
+          {groove && (
+            <p className="generator-direction">
+              {foundations[groove.foundation].name} · {tops[groove.top].name} ·{" "}
+              {groove.feel.replaceAll("_", " ")}
             </p>
           )}
-          <nav className="generator-bars" aria-label="Pattern bars">
-            {Array.from({ length: bars }, (_, index) => (
-              <button
-                key={index}
-                type="button"
-                aria-current={visibleBar === index ? "page" : undefined}
-                onClick={() => setVisibleBar(index)}
-              >
-                Bar {index + 1}
-              </button>
-            ))}
-          </nav>
           {compact && (
             <nav className="generator-bars" aria-label="Beats within bar">
-              {[0, 1, 2, 3].map((beat) => (
+              {[0, 1, 2, 3].map((i) => (
                 <button
-                  key={beat}
+                  key={i}
                   type="button"
-                  aria-current={visibleBeat === beat ? "page" : undefined}
-                  onClick={() => setVisibleBeat(beat)}
+                  aria-current={beat === i ? "page" : undefined}
+                  onClick={() => setBeat(i)}
                 >
-                  Beat {beat + 1}
+                  Beat {i + 1}
                 </button>
               ))}
             </nav>
@@ -722,49 +438,41 @@ export default function BeatGenerator() {
             <div
               className="generator-grid"
               style={{
-                gridTemplateColumns: `80px repeat(${columns}, minmax(0, 1fr))`,
+                gridTemplateColumns: `80px repeat(${columns},minmax(0,1fr))`,
               }}
             >
               <span className="generator-row-label generator-corner">
                 SOUND / BEAT
               </span>
-              {Array.from({ length: columns }, (_, offset) => {
-                const i = firstColumn + offset;
+              {Array.from({ length: columns }, (_, i) => {
+                const n = i + offset;
                 return (
                   <span
-                    key={`n${i}`}
-                    className={`generator-step-number ${playhead === visibleBar * resolution + i ? "current" : ""}`}
+                    key={n}
+                    className={`generator-step-number ${playhead === n ? "current" : ""}`}
                   >
-                    {i % (resolution / 4) === 0
-                      ? i / (resolution / 4) + 1
-                      : "·"}
+                    {n % 4 === 0 ? n / 4 + 1 : ["", "e", "&", "a"][n % 4]}
                   </span>
                 );
               })}
-              {drums.map((drum) => (
-                <div className="generator-grid-row" key={drum.id}>
-                  <span className="generator-row-label">{drum.name}</span>
-                  {Array.from({ length: columns }, (_, offset) => {
-                    const i = firstColumn + offset;
-                    const index = visibleBar * resolution + i;
-                    const velocity = history[index]?.[drum.id] ?? 0;
+              {shown.map((d) => (
+                <div className="generator-grid-row" key={d.id}>
+                  <span className="generator-row-label">{d.name}</span>
+                  {Array.from({ length: columns }, (_, i) => {
+                    const n = i + offset,
+                      v = groove?.steps[n][d.id] ?? 0;
                     return (
                       <button
                         type="button"
-                        key={i}
-                        className={`generator-cell ${velocity ? "on" : ""} ${i % (resolution / 4) === 0 ? "beat-start" : ""} ${playhead === visibleBar * resolution + i ? "current" : ""} ${!completed.has(index) ? "unmade" : ""}`}
-                        style={
-                          {
-                            "--strength": velocity / 127,
-                          } as React.CSSProperties
-                        }
-                        disabled={busy || live}
-                        onClick={() => edit(index, drum.id)}
-                        aria-label={`${drum.name}, bar ${visibleBar + 1}, step ${i + 1}: ${velocity ? `velocity ${velocity}` : "rest"}. Change intensity.`}
-                        aria-pressed={velocity > 0}
-                        title={`${drum.name} · bar ${visibleBar + 1} · step ${i + 1} · ${velocity || "rest"}`}
+                        key={n}
+                        disabled={!groove || busy}
+                        className={`generator-cell ${v ? "on" : ""} ${n % 4 === 0 ? "beat-start" : ""} ${playhead === n ? "current" : ""}`}
+                        style={{ "--strength": v / 127 } as React.CSSProperties}
+                        aria-label={`${d.name}, step ${n + 1}: ${v ? "velocity " + v : "rest"}. Change intensity.`}
+                        aria-pressed={v > 0}
+                        onClick={() => edit(n, d.id)}
                       >
-                        {velocity > 0 && <span />}
+                        {v > 0 && <span />}
                       </button>
                     );
                   })}
@@ -775,29 +483,13 @@ export default function BeatGenerator() {
           <div className="generator-foot">
             <span>Rest → ghost → soft → medium → strong → accent</span>
             <span>
-              {requests} completed model calls
-              {inputTokens > 0
-                ? ` · ${inputTokens.toLocaleString()} ${usageComplete ? "reported input tokens" : "reported input tokens (partial)"}`
-                : ""}
+              {elapsed !== null
+                ? `${calls} model calls · ${elapsed.toFixed(2)}s to arrange`
+                : "Authored drum vocabulary · arranged by TypeSafe"}
             </span>
           </div>
-          {busy && (
-            <progress
-              className="generator-progress"
-              max={steps}
-              value={completed.size}
-              aria-label="Generation progress"
-            />
-          )}
-          <p className="generator-message" role="status" aria-live="polite">
-            {message ||
-              (busy
-                ? "The groove fills in as its parts arrive."
-                : completed.size === steps
-                  ? patternNotes(history, bpm, resolution).length
-                    ? "Ready to play, tweak, or take into your DAW."
-                    : "TypeSafe chose silence. Try a more specific groove, or add hits in the grid."
-                  : "")}
+          <p className="generator-message" role="status">
+            {message}
           </p>
         </section>
       </main>

@@ -1,9 +1,16 @@
-import { defineConfig } from "vite";
+import { defineConfig, searchForWorkspaceRoot } from "vite";
+import { realpathSync } from "node:fs";
 import react from "@vitejs/plugin-react";
 const api = process.env.BEATBOX_API_URL || "http://127.0.0.1:8787";
 export default defineConfig({
   plugins: [react()],
   server: {
+    fs: {
+      allow: [
+        searchForWorkspaceRoot(process.cwd()),
+        realpathSync("node_modules"),
+      ],
+    },
     proxy: {
       "/api": {
         target: api,

@@ -55,27 +55,27 @@ This incurs API usage and writes the pattern to ignored `artifacts/generator/`. 
 4. Download the `.mid`. Set Logic's project tempo to that same BPM (or import the file's tempo), then drag the file onto a software instrument track with a GM-compatible drum kit. Leave region quantization off.
 5. If your kit uses another mapping, remap notes in Logic. Aux uses high woodblock as a placeholder for breaths; GM has no standard breath percussion note.
 
-| Sound | MIDI note | Channel |
-|---|---:|---:|
-| Kick | 36 | 10 |
-| Closed hi-hat | 42 | 10 |
-| Open hi-hat | 46 | 10 |
-| Ride | 51 | 10 |
-| Crash | 49 | 10 |
-| Snare | 38 | 10 |
-| Aux / breath (high woodblock) | 75 | 10 |
+| Sound                         | MIDI note | Channel |
+| ----------------------------- | --------: | ------: |
+| Kick                          |        36 |      10 |
+| Closed hi-hat                 |        42 |      10 |
+| Open hi-hat                   |        46 |      10 |
+| Ride                          |        51 |      10 |
+| Crash                         |        49 |      10 |
+| Snare                         |        38 |      10 |
+| Aux / breath (high woodblock) |        75 |      10 |
 
 Note numbers are authoritative; octave names vary between DAWs. Preview sounds are synthesized and will not match the timbre of your Logic kit. DAW sample attack times can also affect perceived timing.
 
-## Live drummer
+## One-bar groove arranger
 
-Open **[Your live drummer](https://beatbox.grahammiles.me/make)**, describe a groove, and press **Start drummer**. The click starts immediately. After a short count-in, TypeSafe continually chooses upcoming strikes and dynamics while Web Audio schedules them against its own clock. Edit the prompt while it plays; new directions enter the upcoming decision buffer. The click can be muted independently.
+Open **[the groove arranger](https://beatbox.grahammiles.me/make)**, describe a pocket, and press **Make & play**. TypeSafe selects a complete kick/snare phrase from an authored library, then chooses a cymbal phrase and timing feel against that foundation. Two model calls produce one bar. Playback repeats it unchanged with no further inference. **Make new groove** queues a complete replacement at the next bar boundary; editing the prompt alone does not change playback.
 
-The view defaults to four bars and cannot exceed four. Note division changes precision (1/8 through 1/64), not phrase length. Desktop shows a fitted bar; phones use bar/beat navigation without horizontal scrolling. Stop preserves an editable pattern snapshot for MIDI export. **Generate a fixed pattern** remains available as a secondary action.
+This is a bounded arranger, not an open-ended MIDI composer. The library includes pocket, straight backbeat, boom bap, funk, one-drop/rockers/steppers reggae, house/disco, half-time, broken beats and kick-only foundations. Unsupported explicit requests are reported rather than silently replaced. Dynamics are authored parts of the phrases: backbeats are stronger than hat support and ghost notes. Laid-back timing uses a 9 ms snare delay and 56% sixteenth swing; swung uses 62%. The same timing goes into MIDI export.
 
-The model selects a shared musical direction, then independent batches of up to eight positions. Questions carry explicit bar/beat/subdivision and metrical alignment because TypeSafe question IDs are not model input. Code calculates timing facts, including which positions fall on the model-selected timekeeping grid; TypeSafe still chooses every hit, rest, voice, and intensity. The old 550 ms serial delay is gone. Live requests look roughly 1.8 seconds ahead; delayed results are discarded, never played off-beat. Connection failures leave the click running and the UI reports the problem.
+The interface has one 16-step bar, with a beat view on phones and no horizontal scrolling. Click is optional. Stop/edit preserves the bar; MIDI export contains exactly one bar. The composer has a separate electronic preview kit with a tonal snare body, short hats, and open-hat choking. Logic renders use a different acoustic kit.
 
-Run `npm test` and `npm run build` for local validation. `scripts/live-drummer-check.mjs` exercises real browser generation, live prompt changes, stop, MIDI, and responsive layout; `scripts/live-drummer-timing.ts` measures first click/drum and deadline misses. These real-model scripts incur API usage. Set `UI_URL` and `BEATBOX_URL` to the relevant UI and Worker URLs. See [live drummer validation](docs/validation/live-drummer.md) for measured results and limits.
+Run `npm test`, `npm run build`, and `BEATBOX_URL=... npx tsx scripts/one-bar-smoke.ts`. The smoke check uses the real paid model and retains decisions and MIDI under ignored `artifacts/one-bar/`. See [one-bar validation](docs/validation/one-bar.md). Earlier live-drummer scripts and reports describe the superseded per-position design; the old API remains for compatibility, but the current UI does not use it.
 
 ## Timing and audio
 
