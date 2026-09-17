@@ -62,7 +62,24 @@ export function features(
     else if (f < 3500) mid += p;
     else high += p;
   }
+  const spectrum: number[] = [];
+  // Mel-spaced band shape, normalized to total power: independent of microphone gain.
+  const mel = (hz: number) => 2595 * Math.log10(1 + hz / 700);
+  const hz = (m: number) => 700 * (10 ** (m / 2595) - 1);
+  for (let band = 0; band < 20; band++) {
+    const lo = hz(mel(60) + ((mel(14000) - mel(60)) * band) / 20);
+    const hi = hz(mel(60) + ((mel(14000) - mel(60)) * (band + 1)) / 20);
+    let p = 0;
+    for (
+      let k = Math.max(1, Math.floor((lo * 1024) / sr));
+      k < Math.min(512, Math.ceil((hi * 1024) / sr));
+      k++
+    )
+      p += bins[k] / Math.max(frames, 1);
+    spectrum.push(Math.log10(Math.max(1e-7, p / (total || 1))));
+  }
   return {
+    spectrum,
     duration: end - start,
     centroid: weighted / (total || 1),
     low: low / (total || 1),
@@ -86,7 +103,12 @@ export function guess(f: Features): Drum {
 }
 // Energy novelty at 2 ms hops, followed by a sample-level backward attack search.
 // No beat grid or tempo enters this function.
-export function analyze(x: Float32Array, sr: number, sensitivity = 50): Hit[] {
+export function analyze(
+  x: Float32Array,
+  sr: number,
+  sensitivity = 50,
+  mode: "hits" | "syllables" = "hits",
+): Hit[] {
   const hop = Math.max(1, Math.round(sr * 0.002)),
     window = hop * 3,
     n = Math.ceil(x.length / hop),
@@ -130,7 +152,7 @@ export function analyze(x: Float32Array, sr: number, sensitivity = 50): Hit[] {
       const threshold = Math.max(0.00015, energy[f] * 0.08);
       while (idx > lower && Math.abs(x[idx]) > threshold) idx--;
       // Locate the first non-silent sample in the attack window, retaining leading silence.
-      for (let i = lower; i <= idx; i++) {
+      for (let i = lower; i < Math.min(x.length, f * hop + window); i++) {
         if (Math.abs(x[i]) > threshold) {
           idx = i;
           break;
@@ -139,6 +161,38 @@ export function analyze(x: Float32Array, sr: number, sensitivity = 50): Hit[] {
       onsets.push(idx / sr);
       last = f;
     }
+  }
+  if (mode === "syllables") {
+    // Keep short vowel re-attacks and attached /ts/ tails together. Quiet
+    // separates words; a new non-hiss attack also re-arms continuous speech.
+    const grouped: number[] = [];
+    for (const onset of onsets) {
+      if (!grouped.length) {
+        grouped.push(onset);
+        continue;
+      }
+      let quiet = 0,
+        longest = 0;
+      for (
+        let f = Math.ceil((grouped[grouped.length - 1] * sr) / hop);
+        f < Math.floor((onset * sr) / hop);
+        f++
+      ) {
+        quiet = energy[f] < floor ? quiet + 1 : 0;
+        longest = Math.max(longest, quiet);
+      }
+      const gap = onset - grouped[grouped.length - 1];
+      const attack = features(
+        x,
+        sr,
+        onset,
+        Math.min(x.length / sr, onset + 0.04),
+      );
+      const attachedHiss = attack.high > 0.65 && gap < 0.5;
+      if ((longest * hop) / sr >= 0.09 || (gap >= 0.12 && !attachedHiss))
+        grouped.push(onset);
+    }
+    onsets.splice(0, onsets.length, ...grouped);
   }
   return onsets.slice(0, 600).map((time, i) => {
     const next = onsets[i + 1] ?? x.length / sr;
@@ -151,7 +205,23 @@ export function analyze(x: Float32Array, sr: number, sensitivity = 50): Hit[] {
       }
     }
     end = Math.max(time + 0.01, end);
-    const f = features(x, sr, time, end);
+    if (mode === "syllables") {
+      let quiet = 0;
+      end = Math.min(next, time + 1.2);
+      for (let j = begin; j < Math.min(n, Math.floor((next * sr) / hop)); j++) {
+        quiet = energy[j] < floor ? quiet + 1 : 0;
+        if ((quiet * hop) / sr >= 0.09) {
+          end = Math.max(time + 0.01, ((j - quiet + 1) * hop) / sr);
+          break;
+        }
+      }
+    }
+    const f = features(
+      x,
+      sr,
+      time,
+      mode === "syllables" ? Math.min(end, time + 0.04) : end,
+    );
     return {
       id: `hit-${i}`,
       time,

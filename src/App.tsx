@@ -27,6 +27,7 @@ import {
 } from "./audio";
 import { drums, type Drum, type Hit } from "./model";
 import { midi } from "./midi";
+import { spectralDistance } from "./evidence";
 const fmt = (t: number) =>
   `${Math.floor(t / 60)}:${(t % 60).toFixed(2).padStart(5, "0")}`;
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
     [configured, setConfigured] = useState(false),
     [drag, setDrag] = useState(false),
     [sensitivity, setSensitivity] = useState(50),
+    [mode, setMode] = useState<"hits" | "syllables">("hits"),
     [bpm, setBpm] = useState(120),
     [playing, setPlaying] = useState<"original" | "drums" | null>(null),
     [position, setPosition] = useState(0),
@@ -160,7 +162,7 @@ export default function App() {
         `Keep it under ${MAX_SECONDS} seconds for this little beat machine.`,
       );
     const data = mono(decoded),
-      found = analyze(data, decoded.sampleRate, sensitivity);
+      found = analyze(data, decoded.sampleRate, sensitivity, mode);
     generation.current++;
     setBuffer(decoded);
     setSamples(data);
@@ -321,16 +323,45 @@ export default function App() {
     setHits((list) =>
       list.map((h) =>
         h.id === hit.id
-          ? { ...h, ...patch, source: "manual", confidence: null }
+          ? {
+              ...h,
+              ...patch,
+              source: "manual",
+              confidence: null,
+              confirmedDrum: patch.drum !== undefined || h.confirmedDrum,
+            }
           : h,
       ),
+    );
+  }
+  function teachSimilar() {
+    if (!hit) return;
+    setHits((list) =>
+      list.map((h) => {
+        if (
+          h.id === hit.id ||
+          spectralDistance(h.features, hit.features) < 0.5
+        ) {
+          return {
+            ...h,
+            drum: hit.drum,
+            confirmedDrum: true,
+            source: "manual" as const,
+            confidence: null,
+          };
+        }
+        return h;
+      }),
+    );
+    setMessage(
+      `Applied your ${drums.find((d) => d.id === hit.drum)!.name} label to similar sounds. Review the updated hit list.`,
     );
   }
   function detect() {
     if (!samples || !buffer) return;
     stop();
     generation.current++;
-    setHits(analyze(samples, buffer.sampleRate, sensitivity));
+    setHits(analyze(samples, buffer.sampleRate, sensitivity, mode));
     setSelected(null);
     setMessage("Hits detected again. Previous edits were replaced.");
   }
@@ -342,13 +373,23 @@ export default function App() {
     setMessage("");
     try {
       let next = [...hits];
-      for (let i = 0; i < hits.length; i += 24) {
-        setBusy(`Classifying hits ${i + 1}–${Math.min(i + 24, hits.length)}…`);
+      const pending = hits.filter((h) => !h.confirmedDrum);
+      const examples = drums.flatMap((d) =>
+        hits
+          .filter((h) => h.confirmedDrum && h.drum === d.id)
+          .slice(0, 3)
+          .map(({ drum, features }) => ({ drum, features })),
+      );
+      for (let i = 0; i < pending.length; i += 24) {
+        setBusy(
+          `Classifying hits ${i + 1}–${Math.min(i + 24, pending.length)}…`,
+        );
         const response = await fetch("/api/classify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            hits: hits
+            examples,
+            hits: pending
               .slice(i, i + 24)
               .map(({ id, features }) => ({ id, features })),
           }),
@@ -701,6 +742,36 @@ export default function App() {
                 <Plus size={14} /> Add at cursor
               </button>
             </div>
+            <div className="mode-control">
+              <label htmlFor="detection-mode">Performance</label>
+              <select
+                id="detection-mode"
+                disabled={disabled}
+                value={mode}
+                onChange={(e) => {
+                  const next = e.target.value as "hits" | "syllables";
+                  setMode(next);
+                  if (samples && buffer) {
+                    stop();
+                    generation.current++;
+                    setHits(
+                      analyze(samples, buffer.sampleRate, sensitivity, next),
+                    );
+                    setSelected(null);
+                  }
+                  setMessage(
+                    next === "syllables"
+                      ? "Syllable mode groups word endings. Leave a small gap between words; use hit mode for fast percussion."
+                      : "Hit mode keeps individual percussion attacks.",
+                  );
+                }}
+              >
+                <option value="hits">Beatbox hits</option>
+                <option value="syllables">
+                  Boots & cats · spoken syllables
+                </option>
+              </select>
+            </div>
             <div className="detection">
               <label>
                 Sensitivity{" "}
@@ -803,6 +874,13 @@ export default function App() {
                     />
                   </label>
                 </div>
+                <button
+                  className="teach-button"
+                  disabled={disabled}
+                  onClick={teachSimilar}
+                >
+                  <WandSparkles size={13} /> Apply this label to similar hits
+                </button>
                 <div className="hit-actions">
                   <button
                     disabled={disabled}

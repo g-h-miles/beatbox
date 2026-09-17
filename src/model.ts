@@ -9,6 +9,7 @@ export const drums = [
 ] as const;
 export type Drum = (typeof drums)[number]["id"];
 export type Features = {
+  spectrum?: number[];
   duration: number;
   centroid: number;
   low: number;
@@ -28,6 +29,7 @@ export type Hit = {
   confidence: number | null;
   source: "local" | "typesafe" | "manual";
   features: Features;
+  confirmedDrum?: boolean;
 };
 export const criteria = {
   kick: "Low, bass-heavy explosive lip plosive; short punch and low spectral centroid.",

@@ -108,7 +108,7 @@ describe("onsets", () => {
       const hits = analyze(x, sr);
       expect(hits).toHaveLength(times.length);
       hits.forEach((h, i) =>
-        expect(Math.abs(h.time - times[i])).toBeLessThan(0.008),
+        expect(Math.abs(h.time - times[i])).toBeLessThan(0.0005),
       );
     }
   });
@@ -120,5 +120,32 @@ describe("onsets", () => {
   });
   it("does not turn silence into hits", () => {
     expect(analyze(new Float32Array(44100), 44100)).toEqual([]);
+  });
+});
+
+describe("spoken-syllable grouping", () => {
+  it("keeps consonant tails with the preceding word without shifting its onset", () => {
+    const sr = 44100,
+      x = new Float32Array(sr * 2);
+    const burst = (
+      start: number,
+      length: number,
+      amp: number,
+      frequency = 0.19,
+    ) => {
+      for (let j = 0; j < length * sr; j++)
+        x[Math.floor(start * sr) + j] +=
+          amp * Math.cos(j * frequency) * Math.exp(-j / (length * sr * 0.8));
+    };
+    burst(0.2, 0.25, 0.7);
+    burst(0.5, 0.1, 0.15, 1.2);
+    burst(0.91, 0.25, 0.7);
+    burst(1.21, 0.1, 0.15, 1.2);
+    const regular = analyze(x, sr, 50, "hits"),
+      syllables = analyze(x, sr, 50, "syllables");
+    expect(regular.length).toBeGreaterThan(2);
+    expect(syllables).toHaveLength(2);
+    expect(syllables[0].time).toBeCloseTo(0.2, 3);
+    expect(syllables[1].time).toBeCloseTo(0.91, 3);
   });
 });

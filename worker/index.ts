@@ -1,4 +1,5 @@
 import { criteria, type Features } from "../src/model";
+import { describe, spectralDistance } from "../src/evidence";
 export type AppEnv = Env & { TYPESAFE_API_KEY?: string };
 const json = (body: unknown, status = 200) =>
   Response.json(body, {
@@ -57,7 +58,13 @@ export default {
         bytes.set(chunk, offset);
         offset += chunk.length;
       }
-      const body = JSON.parse(new TextDecoder().decode(bytes));
+      let body;
+      try {
+        body = JSON.parse(new TextDecoder().decode(bytes));
+      } catch {
+        throw Error("input");
+      }
+      if (!body || typeof body !== "object") throw Error("input");
       if (
         !Array.isArray(body.hits) ||
         body.hits.length < 1 ||
@@ -75,31 +82,72 @@ export default {
         "attack",
         "rms",
       ] as const;
-      const hits: { id: string; features: Features }[] = body.hits.map(
-        (h: unknown) => {
-          if (!h || typeof h !== "object") throw Error("input");
-          const v = h as { id: unknown; features: Record<string, unknown> };
+      const parseHit = (h: unknown) => {
+        if (!h || typeof h !== "object") throw Error("input");
+        const v = h as { id: unknown; features: Record<string, unknown> };
+        if (typeof v.id !== "string" || !/^hit-\d+$/.test(v.id) || !v.features)
+          throw Error("input");
+        const features = {} as Features;
+        for (const k of names) {
+          const f = v.features[k];
           if (
-            typeof v.id !== "string" ||
-            !/^hit-\d+$/.test(v.id) ||
-            !v.features
+            typeof f !== "number" ||
+            !Number.isFinite(f) ||
+            f < 0 ||
+            f > 100000
           )
             throw Error("input");
-          const features = {} as Features;
-          for (const k of names) {
-            const f = v.features[k];
-            if (
-              typeof f !== "number" ||
-              !Number.isFinite(f) ||
-              f < 0 ||
-              f > 100000
+          features[k] = f;
+        }
+        if (v.features.spectrum !== undefined) {
+          const values = v.features.spectrum;
+          if (
+            !Array.isArray(values) ||
+            values.length !== 20 ||
+            values.some(
+              (n) =>
+                typeof n !== "number" ||
+                !Number.isFinite(n) ||
+                n < -10 ||
+                n > 5,
             )
-              throw Error("input");
-            features[k] = f;
-          }
-          return { id: v.id, features };
-        },
-      );
+          )
+            throw Error("input");
+          features.spectrum = values;
+        }
+        return { id: v.id, features };
+      };
+      const hits: { id: string; features: Features }[] =
+        body.hits.map(parseHit);
+      if (
+        body.examples !== undefined &&
+        (!Array.isArray(body.examples) || body.examples.length > 21)
+      )
+        throw Error("input");
+      const examples: { drum: string; features: Features }[] = (
+        body.examples || []
+      ).map((e: { drum: string; features: unknown }, i: number) => {
+        if (
+          !e ||
+          typeof e.drum !== "string" ||
+          !Object.hasOwn(criteria, e.drum)
+        )
+          throw Error("input");
+        return {
+          drum: e.drum,
+          features: parseHit({ id: `hit-${i}`, features: e.features }).features,
+        };
+      });
+      const personalEvidence = (f: Features) => {
+        const ranked = examples
+          .map((e) => ({ ...e, distance: spectralDistance(f, e.features) }))
+          .filter((e) => Number.isFinite(e.distance))
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, 3);
+        return ranked.length
+          ? ` This performer has manually labeled reference sounds in this recording. Closest personal matches: ${ranked.map((e) => `${e.drum} at spectral distance ${e.distance.toFixed(2)}`).join(", ")}. A distance below 0.6 is a close match. Prefer strong personal evidence over generic drum timbre rules; people's kicks may be bright. Distant examples are weak evidence.`
+          : "";
+      };
       if (new Set(hits.map((h) => h.id)).size !== hits.length)
         return json({ error: "Duplicate IDs" }, 400);
       const questions = Object.fromEntries(
@@ -107,7 +155,7 @@ export default {
           h.id,
           {
             type: "choice",
-            instructions: `Choose the most likely intended drum for hits[${i}] from its acoustic measurements. These are vocal percussion features, not audio. Duration and attack are seconds; centroid is Hz; low (<350 Hz), mid (350–3500 Hz), high (>3500 Hz) are energy fractions. Flatness measures noise vs tonality. Consider ambiguity; use aux if no clear drum match. Do not infer timing or use musical position.`,
+            instructions: `Classify this ONE vocal-percussion sound: ${describe(h.features)}${personalEvidence(h.features)} Which intended drum best matches these observations? A brief high-frequency hiss is a closed hi-hat. A bass-heavy b/boot/plosive is a kick. A midrange k/cat/pf burst is a snare. A long high-frequency hiss is an open hat. Do not mistake all noise for snare, or all sustained vowels for cymbals. Use aux if no drum fits. Do not infer rhythm or timing.`,
             criteria,
           },
         ]),
@@ -122,7 +170,8 @@ export default {
           },
           body: JSON.stringify({
             model: "jev-latest",
-            state: { hits },
+            state:
+              "Monophonic human beatboxing, possibly spoken boots/cats syllables. Each question supplies independent measured acoustic evidence about one sound. There is no raw audio and no transcription. Classify only the described sound in the question.",
             questions,
           }),
           signal: AbortSignal.timeout(25000),
@@ -154,7 +203,7 @@ export default {
         if (
           !a ||
           a.type !== "choice" ||
-          !(a.choice in criteria) ||
+          !Object.hasOwn(criteria, a.choice) ||
           !Number.isFinite(a.confidence) ||
           a.confidence < 0 ||
           a.confidence > 1

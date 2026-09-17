@@ -92,7 +92,8 @@ describe("classification boundary", () => {
     expect(body.model).toBe("jev-latest");
     expect(body.questions["hit-1"].type).toBe("choice");
     expect(Object.keys(body.questions["hit-1"].criteria)).toHaveLength(7);
-    expect(body.state).toEqual({ hits: [{ id: "hit-1", features: f }] });
+    expect(body.state).toContain("Monophonic human beatboxing");
+    expect(body.questions["hit-1"].instructions).toContain("Bass-dominated");
   });
   it("rejects invented answer labels", async () => {
     vi.stubGlobal("fetch", async () =>
@@ -118,4 +119,47 @@ describe("classification boundary", () => {
     } as AppEnv;
     expect((await worker.fetch(request({}), limited)).status).toBe(429);
   });
+});
+
+it("includes validated personal examples as acoustic evidence", async () => {
+  const spectrum = Array(20).fill(-2);
+  const upstream = vi.fn(async () =>
+    Response.json({
+      answers: {
+        "hit-1": {
+          type: "choice",
+          choice: "kick",
+          confidence: 0.9,
+          probabilities: { kick: 1 },
+        },
+      },
+    }),
+  );
+  vi.stubGlobal("fetch", upstream);
+  const response = await worker.fetch(
+    request({
+      hits: [{ id: "hit-1", features: { ...f, spectrum } }],
+      examples: [{ drum: "kick", features: { ...f, spectrum } }],
+    }),
+    env,
+  );
+  expect(response.status).toBe(200);
+  const [, init] = upstream.mock.calls[0] as unknown as [string, RequestInit];
+  expect(
+    JSON.parse(init.body as string).questions["hit-1"].instructions,
+  ).toContain("kick at spectral distance 0.00");
+});
+it("rejects malformed bodies and invalid personal labels", async () => {
+  expect((await worker.fetch(request(null), env)).status).toBe(400);
+  expect(
+    (
+      await worker.fetch(
+        request({
+          hits: [{ id: "hit-1", features: f }],
+          examples: [{ drum: "__proto__", features: f }],
+        }),
+        env,
+      )
+    ).status,
+  ).toBe(400);
 });

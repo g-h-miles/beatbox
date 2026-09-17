@@ -24,6 +24,7 @@
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
     "prettier": "^3.9.7",
+    "tsx": "^4.23.13",
     "typescript": "latest",
     "vite": "latest",
     "vitest": "latest",

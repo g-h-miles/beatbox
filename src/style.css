@@ -965,7 +965,7 @@ footer span:last-child {
   }
   .timeline {
     margin: 0 15px;
-    height: 140px;
+    height: 146px;
   }
   .transport {
     padding: 12px 15px 18px;
@@ -1055,4 +1055,28 @@ footer span:last-child {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+.mode-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 10px;
+  color: #65765a;
+}
+.mode-control select {
+  max-width: 72%;
+  background: #fcfcf7;
+  border: 1px solid #d7ddcb;
+  border-radius: 4px;
+  color: #48583f;
+  font-size: 10px;
+  padding: 8px;
+}
+.teach-button {
+  font-size: 10px;
+  width: 100%;
+  margin-top: 10px;
+  min-height: 32px;
 }
