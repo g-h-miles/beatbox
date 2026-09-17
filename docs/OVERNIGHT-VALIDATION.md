@@ -31,3 +31,13 @@ Long crop windows were being described as long sounds even when their tails were
 Raw recordings, personal checkpoints, and detailed benchmark outputs remain under ignored `artifacts/`. Public dataset sources and license boundaries are recorded in `scripts/data-sources.md`. Private training recordings never become public assets. Public test cohorts repeatedly examined during development are explicitly described as previously inspected; they are not fresh blind tests.
 
 Reproduction scripts include `ml/neural_crop_evaluate.py`, `scripts/neural-typesafe-compare.ts --active-duration`, and the `ml/core_*` experiments. The app continues to preserve unquantized event times in MIDI; inferred tempo must never reposition detected notes.
+
+## Released and verified
+
+Main commit `6467bf7` is deployed at `beatbox.grahammiles.me`, Cloudflare version `84feace0-9e3a-4f32-a1cd-3f14b72d0f16`. It combines neural timestamps, active sound duration, the existing TypeSafe classifier, and the reviewed UI. No rejected instrument classifier was shipped. Thirty-eight tests and the build passed.
+
+The UI agent subsequently tested the actual public site without API mocks: model/runtime loaded, P15 Personal produced 27 events, both TypeSafe requests succeeded, and classification left note times unchanged. Export contained 27 channel-10 notes at 9,600 PPQ. A separate forced model-download failure showed the fallback message. These functional checks do not score instrument correctness.
+
+The final bounded context comparison used identical 706 detections against 694 validation references, performers15–20 only. An independent MLP got547/672 matched core labels correct (78.14% labeled event F1); the two-layer sequence Transformer got553/672 (79.00% F1). The existing relative SVM was stronger at592/672 (84.57% F1). Sequence context reduced snare recall, so neither new model was deployed. Reserved test voices were not consumed to give these rejected candidates another chance.
+
+The >95% complete-transcription target remains unmet. Further claims require stronger generalization and independently labeled real spoken-phrase evidence; neither synthetic phrases nor timing-only scores close that gap.
