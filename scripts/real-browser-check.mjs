@@ -26,10 +26,10 @@ for (const [index, label] of [
   await page.locator(".hit-row").nth(index).click();
   await page.getByLabel("Sound", { exact: true }).selectOption(label);
 }
-await page.getByRole("button", { name: "Classify with TypeSafe" }).click();
+await page.getByRole("button", { name: "Classify sounds" }).click();
 await page
   .getByRole("status")
-  .filter({ hasText: "TypeSafe pass complete" })
+  .filter({ hasText: "Classification complete" })
   .waitFor({ timeout: 90000 });
 const rows = await page.locator(".hit-row").allTextContents();
 writeFileSync(
@@ -61,10 +61,10 @@ await page
 await page.waitForFunction(
   () => document.querySelectorAll(".hit-row").length === 8,
 );
-await page.getByRole("button", { name: "Classify with TypeSafe" }).click();
+await page.getByRole("button", { name: "Classify sounds" }).click();
 await page
   .getByRole("status")
-  .filter({ hasText: "TypeSafe pass complete" })
+  .filter({ hasText: "Classification complete" })
   .waitFor({ timeout: 90000 });
 const words = await page.locator(".hit-row").allTextContents();
 console.log("Spoken word labels:", words);

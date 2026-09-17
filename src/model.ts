@@ -28,7 +28,7 @@ export type Hit = {
   velocity: number;
   drum: Drum;
   confidence: number | null;
-  source: "local" | "typesafe" | "manual";
+  source: "local" | "typesafe" | "model" | "manual";
   features: Features;
   confirmedDrum?: boolean;
   probabilities?: Partial<Record<Drum, number>>;

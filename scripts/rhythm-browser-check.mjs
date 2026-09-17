@@ -30,10 +30,10 @@ await page.locator(".groove-controls summary").click();
 await page
   .getByRole("button", { name: "Selected hit is beat 1", exact: true })
   .click();
-await page.getByRole("button", { name: /Classify with TypeSafe/ }).click();
+await page.getByRole("button", { name: /Classify sounds/ }).click();
 await page
   .getByText(
-    "TypeSafe pass complete. Play the preview and check any wrong sounds.",
+    "Classification complete. Play the preview and check any wrong sounds.",
     { exact: true },
   )
   .waitFor();

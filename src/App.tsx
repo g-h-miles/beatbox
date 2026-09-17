@@ -21,6 +21,9 @@ import { demoBuffer, drumSound, features, MAX_SECONDS, mono } from "./audio";
 import { drums, type Drum, type Hit } from "./model";
 import { applyRhythm, estimateTempo, inferGrid, probabilities } from "./rhythm";
 import { detectHits } from "./detect";
+import { applyCoreLabels, type CoreLabel } from "./core-labels";
+import { supportsRelative } from "./core-diversity";
+import { predictRelative } from "./research-relative";
 import { midi } from "./midi";
 import { spectralDistance } from "./evidence";
 const fmt = (t: number) =>
@@ -48,6 +51,7 @@ export default function App() {
     [help, setHelp] = useState(false);
   const helpButton = useRef<HTMLButtonElement>(null);
   const detection = useRef<AbortController | null>(null);
+  const classification = useRef<AbortController | null>(null);
   const input = useRef<HTMLInputElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     context = useRef<AudioContext | null>(null),
@@ -103,6 +107,7 @@ export default function App() {
       .catch(() => {});
     return () => {
       detection.current?.abort();
+      classification.current?.abort();
       stream.current?.getTracks().forEach((t) => t.stop());
       cancelAnimationFrame(frame.current);
       void context.current?.close();
@@ -426,11 +431,45 @@ export default function App() {
     if (!hits.length) return;
     stop();
     const version = generation.current;
+    classification.current?.abort();
+    const controller = new AbortController();
+    classification.current = controller;
     setBusy("Classifying your hits…");
     setMessage("");
     try {
       let next = [...hits];
-      const pending = hits.filter((h) => !h.confirmedDrum);
+      const pending = hits.filter(
+        (h) => !h.confirmedDrum && h.source !== "manual",
+      );
+      let core: CoreLabel[] | null = null;
+      let modelUnavailable = false;
+      if (
+        pending.length &&
+        mode === "hits" &&
+        samples &&
+        buffer &&
+        supportsRelative(hits.map((h) => h.features.spectrum))
+      ) {
+        setBusy("Recognizing kick, snare and hats…");
+        try {
+          const ordered = hits
+            .map((hit, index) => ({ hit, index }))
+            .sort((a, b) => a.hit.time - b.hit.time);
+          const labels = await predictRelative(
+            samples,
+            buffer.sampleRate,
+            ordered.map(({ hit }) => hit.time),
+            controller.signal,
+          );
+          core = new Array(hits.length);
+          ordered.forEach(({ index }, i) => {
+            core![index] = labels[i];
+          });
+        } catch (error) {
+          if (controller.signal.aborted) throw error;
+          modelUnavailable = true;
+        }
+      }
       const examples = drums.flatMap((d) =>
         hits
           .filter((h) => h.confirmedDrum && h.drum === d.id)
@@ -443,6 +482,7 @@ export default function App() {
         );
         const response = await fetch("/api/classify", {
           method: "POST",
+          signal: controller.signal,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             examples,
@@ -478,18 +518,22 @@ export default function App() {
             : h;
         });
       }
-      if (version === generation.current) {
+      if (version === generation.current && !controller.signal.aborted) {
+        if (core) next = applyCoreLabels(next, core);
         setHits(next);
         setMessage(
-          "TypeSafe pass complete. Play the preview and check any wrong sounds.",
+          modelUnavailable
+            ? "The local classifier is unavailable. TypeSafe suggestions are ready to review."
+            : "Classification complete. Play the preview and check any wrong sounds.",
         );
       }
     } catch (e) {
-      setMessage(
-        e instanceof Error
-          ? e.message
-          : "TypeSafe could not connect. Local suggestions are unchanged.",
-      );
+      if (!controller.signal.aborted)
+        setMessage(
+          e instanceof Error
+            ? e.message
+            : "Classification failed. Your hits are unchanged.",
+        );
     } finally {
       setBusy("");
     }
@@ -600,7 +644,7 @@ export default function App() {
             <p>
               Record a beat or drop an audio file. Compare Original with Drum
               preview, then click a hit to change its sound or timing. Try
-              Classify with TypeSafe for another set of suggestions.
+              Classify sounds for another set of suggestions.
             </p>
             <p>
               Set your Logic project to the export BPM, then drag the MIDI onto
@@ -838,7 +882,7 @@ export default function App() {
                 disabled={!hits.length || disabled || !configured}
                 onClick={() => void classify()}
               >
-                <WandSparkles size={14} /> Classify with TypeSafe
+                <WandSparkles size={14} /> Classify sounds
               </button>
               {!configured && (
                 <small>
@@ -892,9 +936,11 @@ export default function App() {
                   <span>
                     {hit.source === "typesafe"
                       ? `${hit.rhythmAdjusted ? "Groove hint · " : ""}Model confidence ${Math.round((hit.confidence || 0) * 100)}%`
-                      : hit.source === "manual"
-                        ? "Edited by you"
-                        : "Local suggestion · unverified"}
+                      : hit.source === "model"
+                        ? "Suggested sound · check the preview"
+                        : hit.source === "manual"
+                          ? "Edited by you"
+                          : "Local suggestion · unverified"}
                   </span>
                   <button
                     onClick={() => setSelected(null)}
@@ -1037,7 +1083,9 @@ export default function App() {
                               : `${Math.round((h.confidence || 0) * 100)}%`
                             : h.source === "manual"
                               ? "Edited"
-                              : "Review"}
+                              : h.source === "model"
+                                ? "Suggested"
+                                : "Review"}
                         </span>
                       </button>
                     ))}

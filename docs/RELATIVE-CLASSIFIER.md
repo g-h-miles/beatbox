@@ -51,6 +51,8 @@ After freezing that threshold, validation performers15–20 selected all12 varie
 - Model failure leaves TypeSafe available; API failure preserves the hit list.
 - No personal voice audio or private checkpoint is included in the model.
 
+Training and research scripts are maintained on the [research/audio-classification branch](https://github.com/g-h-miles/beatbox/tree/research/audio-classification).
+
 ## Reproduction
 
 ```sh
