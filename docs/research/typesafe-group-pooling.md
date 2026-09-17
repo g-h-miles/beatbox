@@ -2,6 +2,11 @@
 
 A single frozen rule recovered 12 core hits incorrectly labeled as noncore on native AVP validation recordings. It is **not ready to promote from this evidence**: the validation contains zero genuine ride, crash, or auxiliary reference events, so it cannot measure whether the rule destroys those sounds.
 
+The subsequent [mixed-recording safety check](typesafe-noncore-safety.md)
+rejects this rule: it changes an independently annotated breath/miscellaneous
+event from auxiliary to open hat. The all-core gain below is insufficient to
+justify that regression.
+
 ## Frozen rule
 
 Use the current browser core model's eight Ward groups, computed from all detected hits without reference labels. Average all seven TypeSafe probabilities within each group. For an individual event whose TypeSafe choice and probability argmax are noncore, substitute the frozen browser combiner's label only when the group probability argmax is core and the existing recording diversity gate passes. Otherwise preserve the current pipeline output. There are no new thresholds, tempo assumptions, model fits, or parameter searches.
