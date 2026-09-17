@@ -114,13 +114,13 @@
   min-height: 44px;
 }
 .generator-grid-scroll {
-  overflow-x: auto;
+  width: 100%;
   padding-bottom: 8px;
 }
 .generator-grid {
   display: grid;
-  gap: 5px;
-  min-width: max-content;
+  gap: 2px;
+  min-width: 0;
 }
 .generator-grid-row {
   display: contents;
@@ -150,7 +150,9 @@
 .generator-cell {
   min-height: 40px;
   height: 40px;
-  padding: 5px;
+  padding: 0;
+  min-width: 0;
+  justify-content: center;
   border: 1px solid #d8dcd0;
   border-radius: 4px;
   background: #e9ece2;
@@ -263,7 +265,7 @@
     flex: 1;
   }
   .generator-cell {
-    min-width: 44px;
+    min-width: 0;
     min-height: 44px;
   }
   .generator-foot {
@@ -319,4 +321,49 @@
   color: #636d62;
   line-height: 1.6;
   margin: 0 0 16px;
+}
+
+.generator-cell.on span {
+  max-width: 70%;
+  animation: note-arrive 180ms ease-out;
+}
+@keyframes note-arrive {
+  from {
+    opacity: 0;
+    transform: scaleY(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .generator-cell.on span {
+    animation: none;
+  }
+}
+
+.generator-live-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 18px;
+  font-size: 12px;
+  color: #536246;
+}
+.generator-form .generator-click-toggle {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+.generator-click-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #63774c;
+}
+.generator-live-controls button {
+  min-height: 44px;
+  font-size: 12px;
 }

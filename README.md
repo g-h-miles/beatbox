@@ -67,6 +67,16 @@ This incurs API usage and writes the pattern to ignored `artifacts/generator/`. 
 
 Note numbers are authoritative; octave names vary between DAWs. Preview sounds are synthesized and will not match the timbre of your Logic kit. DAW sample attack times can also affect perceived timing.
 
+## Live drummer
+
+Open **[Your live drummer](https://beatbox.grahammiles.me/make)**, describe a groove, and press **Start drummer**. The click starts immediately. After a short count-in, TypeSafe continually chooses upcoming strikes and dynamics while Web Audio schedules them against its own clock. Edit the prompt while it plays; new directions enter the upcoming decision buffer. The click can be muted independently.
+
+The view defaults to four bars and cannot exceed four. Note division changes precision (1/8 through 1/64), not phrase length. Desktop shows a fitted bar; phones use bar/beat navigation without horizontal scrolling. Stop preserves an editable pattern snapshot for MIDI export. **Generate a fixed pattern** remains available as a secondary action.
+
+The model selects a shared musical direction, then independent batches of up to eight positions. Questions carry explicit bar/beat/subdivision and metrical alignment because TypeSafe question IDs are not model input. Code calculates timing facts, including which positions fall on the model-selected timekeeping grid; TypeSafe still chooses every hit, rest, voice, and intensity. The old 550 ms serial delay is gone. Live requests look roughly 1.8 seconds ahead; delayed results are discarded, never played off-beat. Connection failures leave the click running and the UI reports the problem.
+
+Run `npm test` and `npm run build` for local validation. `scripts/live-drummer-check.mjs` exercises real browser generation, live prompt changes, stop, MIDI, and responsive layout; `scripts/live-drummer-timing.ts` measures first click/drum and deadline misses. These real-model scripts incur API usage. Set `UI_URL` and `BEATBOX_URL` to the relevant UI and Worker URLs. See [live drummer validation](docs/validation/live-drummer.md) for measured results and limits.
+
 ## Timing and audio
 
 Web Audio decodes supported audio formats (browser-dependent). Input is limited to 90 seconds / 30 MB; microphone recording stops automatically at 90 seconds. Beatbox-hit detection runs a public-data neural onset model in a browser worker, with an explicitly reported energy-detector fallback. Spoken-syllable mode uses separate grouping. Detection preserves leading silence and never snaps timestamps to a beat grid. Optional groove hints affect uncertain TypeSafe labels, not timing. Feature extraction uses FFT band energy, spectral centroid/flatness, zero crossings, attack, duration, RMS, and normalized 20-band spectral shape for personal examples. No librosa or Python server is required.

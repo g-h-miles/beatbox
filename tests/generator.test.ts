@@ -1,3 +1,4 @@
+import { pendingBatches } from "../src/generator";
 import { describe, expect, it } from "vitest";
 import {
   patternNotes,
@@ -111,5 +112,21 @@ describe("generated pattern MIDI", () => {
     );
     expect(parsed.notes).toEqual([]);
     expect(parsed.end).toBe(153600);
+  });
+});
+
+describe("parallel position coverage", () => {
+  it.each([8, 16, 32, 64, 128, 256])(
+    "covers all %i positions without gaps or overlaps",
+    (total) => {
+      const indices = pendingBatches(total, new Set()).flatMap(
+        ({ start, size }) => Array.from({ length: size }, (_, i) => start + i),
+      );
+      expect(indices).toEqual(Array.from({ length: total }, (_, i) => i));
+    },
+  );
+  it("retries a partial batch but preserves completed chunks", () => {
+    const done = new Set([...Array(8).keys(), 9, 10]);
+    expect(pendingBatches(16, done)).toEqual([{ start: 8, size: 8 }]);
   });
 });

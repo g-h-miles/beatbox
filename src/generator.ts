@@ -60,3 +60,19 @@ export function patternMidi(
     "BEATBOX • TypeSafe beat",
   );
 }
+
+// Cover every position exactly once; partial completion retries only incomplete chunks.
+export function pendingBatches(
+  total: number,
+  completed: Set<number>,
+  size = 8,
+) {
+  return Array.from({ length: Math.ceil(total / size) }, (_, i) => ({
+    start: i * size,
+    size: Math.min(size, total - i * size),
+  })).filter((batch) =>
+    Array.from({ length: batch.size }, (_, i) => batch.start + i).some(
+      (index) => !completed.has(index),
+    ),
+  );
+}

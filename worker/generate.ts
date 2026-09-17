@@ -151,7 +151,7 @@ export async function generateStep(
       !Number.isInteger(body.bpm) ||
       body.bpm < 40 ||
       body.bpm > 240 ||
-      ![1, 2, 4, 8].includes(body.bars as number) ||
+      ![1, 2, 4].includes(body.bars as number) ||
       ![8, 16, 32, 64].includes(body.resolution as number) ||
       !Array.isArray(body.history) ||
       body.history.length >= (body.bars as number) * (body.resolution as number)
@@ -174,6 +174,24 @@ export async function generateStep(
     if (body.intent !== undefined && !validIntent(body.intent))
       throw Error("input");
     if (history.length && !validIntent(body.intent)) throw Error("input");
+    const batch = body.batchStart !== undefined;
+    if (body.planOnly !== undefined && typeof body.planOnly !== "boolean")
+      throw Error("input");
+    if (
+      batch &&
+      (!Number.isInteger(body.batchStart) ||
+        !Number.isInteger(body.batchSize) ||
+        (body.batchStart as number) < 0 ||
+        (body.batchSize as number) < 1 ||
+        (body.batchSize as number) > 8 ||
+        (body.batchStart as number) + (body.batchSize as number) >
+          (body.bars as number) * (body.resolution as number) ||
+        history.length ||
+        !validIntent(body.intent) ||
+        body.planOnly)
+    )
+      throw Error("input");
+    if (body.planOnly && (history.length || body.intent)) throw Error("input");
     const index = history.length;
     const resolution = body.resolution as number;
     const bars = body.bars as number;
@@ -229,7 +247,18 @@ export async function generateStep(
               record(state) && "currentPosition" in state ? "step" : "intent",
           }),
         );
-        await response.body?.cancel();
+        if (response.status === 400 || response.status === 422) {
+          const detail = await boundedJson(response.body, 8000);
+          console.error(
+            JSON.stringify({
+              event: "generator_validation_error",
+              errorType:
+                record(detail) && record(detail.detail)
+                  ? detail.detail.error_type
+                  : "invalid_request",
+            }),
+          );
+        } else await response.body?.cancel();
         if ([429, 502, 503, 504, 529].includes(response.status)) {
           const retry = json(
             {
@@ -290,6 +319,8 @@ export async function generateStep(
       planningTokens = reportedTokens(plan);
       modelCalls = 2;
     }
+    if (body.planOnly)
+      return json({ intent, inputTokens: planningTokens, modelCalls: 1 });
     const musicalIntent = Object.fromEntries(
       Object.entries(intent).map(([key, value]) => [
         key,
@@ -301,8 +332,9 @@ export async function generateStep(
         )[value],
       ]),
     );
-    const state = {
-      prompt: body.prompt.trim(),
+    const prompt = body.prompt.trim();
+    const stateAt = (index: number) => ({
+      prompt,
       bpm: body.bpm,
       musicalIntent,
       task: "Write the next instant of an actual drum performance, not a description of music. The user wants an intentional, recognizable groove across the whole phrase. You are the drummer: choose the next action using the style and the metrical position.",
@@ -318,10 +350,12 @@ export async function generateStep(
         thirtySecondNoteBoundary: index % (resolution / 32) === 0,
         sixtyFourthNoteBoundary: index % (resolution / 64) === 0,
       },
-      numberedBeatOnset: index % perBeat === 0
-        ? `EXACT onset of numbered beat ${Math.floor((index % resolution) / perBeat) + 1}`
-        : "NONE: this instant is BETWEEN numbered beat onsets, not on the numbered beat",
-      onsetSemantics: "Every PLAY creates a NEW drum strike at this exact instant. A previous note ringing out is NOT a new strike. Grid positions between the requested note boundaries require REST, even while the previous sound is still audible. metricalAlignment describes timing only: true means the instant lies exactly on that note-value boundary, false means between its boundaries. These boundaries OVERLAP: every numbered quarter-note beat is ALSO an eighth-note boundary (and a sixteenth-note boundary). Eighth-note timekeeping plays on BOTH the numbered beats AND the & offbeats, not only the offbeats. For example, eighth-note strikes only occur on eighthNoteBoundary=true positions; finer intervening grid positions are gaps, not extra eighth-note strikes. History is observation, not permission to repeat an earlier mistake. Follow the requested pattern over history when they conflict.",
+      numberedBeatOnset:
+        index % perBeat === 0
+          ? `EXACT onset of numbered beat ${Math.floor((index % resolution) / perBeat) + 1}`
+          : "NONE: this instant is BETWEEN numbered beat onsets, not on the numbered beat",
+      onsetSemantics:
+        "Every PLAY creates a NEW drum strike at this exact instant. A previous note ringing out is NOT a new strike. Grid positions between the requested note boundaries require REST, even while the previous sound is still audible. metricalAlignment describes timing only: true means the instant lies exactly on that note-value boundary, false means between its boundaries. These boundaries OVERLAP: every numbered quarter-note beat is ALSO an eighth-note boundary (and a sixteenth-note boundary). Eighth-note timekeeping plays on BOTH the numbered beats AND the & offbeats, not only the offbeats. For example, eighth-note strikes only occur on eighthNoteBoundary=true positions; finer intervening grid positions are gaps, not extra eighth-note strikes. History is observation, not permission to repeat an earlier mistake. Follow the requested pattern over history when they conflict.",
       isQuarterNoteBeat: index % perBeat === 0,
       isEighthNoteOffbeat: index % perBeat === perBeat / 2,
       samePositionPreviousBar:
@@ -335,7 +369,8 @@ export async function generateStep(
         "Follow the user's explicit musical instructions first, then realize musicalIntent (chosen by TypeSafe for this phrase). Interpret the intent fields as compatible roles: foundation describes kick/snare, timekeeping describes cymbals. Syncopation adds offbeat character where those roles permit; it does not erase their anchor beats or override explicit user instructions. Establish a coherent rhythmic motif, then develop it through repetition and purposeful variation. Recurring kicks and snares form a groove rather than isolated sound effects. A previously played instrument can and usually should recur at the corresponding musical position in later bars. Judge this exact beat/subdivision, not whether an instrument has already appeared. Sustain the requested groove across the phrase; use fills and accents intentionally and resolve naturally into the loop. A fine resolution should leave space between the groove's meaningful hits. History is a record of past actions, not evidence that silence is the goal.",
       velocityMeaning:
         "Each previous line lists simultaneous instruments and MIDI velocities. Unlisted instruments were silent. A rest line means all instruments were silent.",
-    };
+    });
+    const state = stateAt(index);
     const questions = {
       ...Object.fromEntries(
         ["kick", "snare"].map((instrument) => [
@@ -395,52 +430,157 @@ export async function generateStep(
         ]),
       ),
     };
-    const result = await infer(state, questions);
-    const answers = result.answers as Record<string, unknown>;
-    const choice = (id: string, allowed: string[]) => {
-      const answer = answers[id];
-      if (
-        !record(answer) ||
-        answer.type !== "choice" ||
-        typeof answer.choice !== "string" ||
-        !allowed.includes(answer.choice)
-      )
-        throw Error("upstream");
-      return answer.choice;
-    };
-    const cymbalPlay = choice("cymbal", ["play", "rest"]) === "play";
-    const cymbalVoice = choice("cymbal_voice", ["closed", "open", "ride"]);
-    const cymbal = cymbalPlay ? cymbalVoice : "rest";
-    const plays: Record<string, boolean> = {
-      kick: choice("kick", ["play", "rest"]) === "play",
-      snare: choice("snare", ["play", "rest"]) === "play",
-      closed: cymbal === "closed",
-      open: cymbal === "open",
-      ride: cymbal === "ride",
-      crash: choice("crash", ["play", "rest"]) === "play",
-      aux: choice("aux", ["play", "rest"]) === "play",
-    };
-    const step = Object.fromEntries(
-      drums.map(({ id }) => {
-        const dynamic = choice(`${id}_velocity`, [
-          "ghost",
-          "soft",
-          "medium",
-          "strong",
-          "accent",
-        ]);
-        return [
-          id,
-          plays[id] ? velocities[dynamic as keyof typeof velocities] : 0,
+    // Each question carries its full position: API question IDs are NOT model input.
+    const batchStart = batch ? (body.batchStart as number) : 0;
+    const batchSize = batch ? (body.batchSize as number) : 1;
+    const batchQuestions = Object.fromEntries(
+      Array.from({ length: batchSize }, (_, offset) => {
+        const i = batchStart + offset;
+        const at = stateAt(i);
+        const cadence = {
+          none: false,
+          quarters: i % perBeat === 0,
+          eighths: i % (resolution / 8) === 0,
+          offbeat_eighths: i % perBeat === perBeat / 2,
+          sixteenths: resolution >= 16 && i % (resolution / 16) === 0,
+          sparse: null,
+          free: null,
+        }[intent!.timekeeping];
+        const timing = JSON.stringify({
+          currentPosition: at.currentPosition,
+          numberedBeatOnset: at.numberedBeatOnset,
+          metricalAlignment: at.metricalAlignment,
+          isEighthNoteOffbeat: at.isEighthNoteOffbeat,
+        });
+        const ask = (
+          id: string,
+          instructions: string,
+          options: Record<string, string>,
+        ) => [
+          `${offset}_${id}`,
+          {
+            type: "choice",
+            instructions: `${timing} ${instructions}`,
+            criteria: options,
+          },
         ];
-      }),
-    ) as BeatStep;
+        const onset = (instrument: string, role: string) =>
+          ask(
+            instrument,
+            `Should a NEW ${instrument} strike start HERE? Follow the user's groove and ${role}. A ringing earlier note is not a new strike.`,
+            {
+              play: `A ${instrument} onset belongs at this exact position.`,
+              rest: `No ${instrument} onset here.`,
+            },
+          );
+        return [
+          onset("kick", "the kick/snare foundation"),
+          onset("snare", "the kick/snare foundation"),
+          ask(
+            "cymbal",
+            `Inferred timekeeping = ${intent!.timekeeping}. This exact instant lies ${cadence === null ? "on an unspecified rhythmic grid" : cadence ? "ON the selected timekeeping onset grid" : "BETWEEN the selected timekeeping onsets"}. ${questions.cymbal.instructions}`,
+            questions.cymbal.criteria,
+          ),
+          ask(
+            "cymbal_voice",
+            "If a timekeeping cymbal strikes here, choose its voice.",
+            {
+              closed: "Closed hi-hat",
+              open: "Open hi-hat",
+              ride: "Ride cymbal",
+            },
+          ),
+          ...["crash", "aux"].map((id) =>
+            ask(
+              id,
+              `Add a NEW ${id === "aux" ? "auxiliary percussion or breath" : "crash cymbal"} strike here? Honor exclusions in the prompt. Ordinary kick/snare/hat grooves do not imply this extra instrument.`,
+              {
+                play: `The requested arrangement calls for this additional ${id} strike here.`,
+                rest: `No additional ${id} strike is called for here.`,
+              },
+            ),
+          ),
+          ...drums.map(({ id, name }) =>
+            ask(
+              `${id}_velocity`,
+              `If ${name} strikes here, select its intensity. Hats normally support the kick/snare at soft or medium intensity; main kick/snare accents are strong. Ghost notes are quiet. Follow explicit requested dynamics.`,
+              Object.fromEntries(
+                Object.entries(criteria).filter(([key]) => key !== "rest"),
+              ),
+            ),
+          ),
+        ];
+      }).flat(),
+    );
+    const result = await infer(
+      batch
+        ? {
+            prompt: state.prompt,
+            musicalIntent,
+            meter: `4/4, ${bars} bars, 1/${resolution} note grid. Repeat a coherent groove; use variation only as requested.`,
+            rule: "The explicit user prompt overrides inferred direction. Every question is a separate exact onset. Finer resolution does not increase requested note density. Kick/snare and cymbals may strike together. No instrument is required to play on every position.",
+          }
+        : state,
+      batch ? batchQuestions : questions,
+    );
+    const decode = (prefix: string) => {
+      const answers = result.answers as Record<string, unknown>;
+      const choice = (id: string, allowed: string[]) => {
+        const answer = answers[prefix + id];
+        if (
+          !record(answer) ||
+          answer.type !== "choice" ||
+          typeof answer.choice !== "string" ||
+          !allowed.includes(answer.choice)
+        )
+          throw Error("upstream");
+        return answer.choice;
+      };
+      const cymbalPlay = choice("cymbal", ["play", "rest"]) === "play";
+      const cymbalVoice = choice("cymbal_voice", ["closed", "open", "ride"]);
+      const cymbal = cymbalPlay ? cymbalVoice : "rest";
+      const plays: Record<string, boolean> = {
+        kick: choice("kick", ["play", "rest"]) === "play",
+        snare: choice("snare", ["play", "rest"]) === "play",
+        closed: cymbal === "closed",
+        open: cymbal === "open",
+        ride: cymbal === "ride",
+        crash: choice("crash", ["play", "rest"]) === "play",
+        aux: choice("aux", ["play", "rest"]) === "play",
+      };
+      const step = Object.fromEntries(
+        drums.map(({ id }) => {
+          const dynamic = choice(`${id}_velocity`, [
+            "ghost",
+            "soft",
+            "medium",
+            "strong",
+            "accent",
+          ]);
+          return [
+            id,
+            plays[id] ? velocities[dynamic as keyof typeof velocities] : 0,
+          ];
+        }),
+      ) as BeatStep;
+      return step;
+    };
     const stepTokens = reportedTokens(result);
     const inputTokens =
       planningTokens === null || stepTokens === null
         ? null
         : planningTokens + stepTokens;
-    return json({ step, intent, inputTokens, modelCalls });
+    return json(
+      batch
+        ? {
+            start: batchStart,
+            steps: Array.from({ length: batchSize }, (_, i) => decode(`${i}_`)),
+            intent,
+            inputTokens,
+            modelCalls,
+          }
+        : { step: decode(""), intent, inputTokens, modelCalls },
+    );
   } catch (error) {
     if (error instanceof Response) return error;
     if (!upstream)

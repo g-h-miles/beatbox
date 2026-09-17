@@ -24,7 +24,7 @@ const valid = {
   intent,
   prompt: "syncopated reggae",
   bpm: 96,
-  bars: 8,
+  bars: 4,
   resolution: 16,
   history: [],
 };
@@ -89,7 +89,7 @@ describe("beat generation boundary", () => {
       "aux",
       ...drums.map((d) => `${d.id}_velocity`),
     ]);
-    expect(payload.state.grid).toContain("8 bars total");
+    expect(payload.state.grid).toContain("4 bars total");
     expect(payload.state.fractionAfterBeat).toBe("3/4");
     for (const { id } of drums) {
       expect(payload.questions[`${id}_velocity`].instructions).toContain(
@@ -108,9 +108,9 @@ describe("beat generation boundary", () => {
         await worker.fetch(
           request({
             ...valid,
-            bars: 8,
+            bars: 4,
             resolution: 64,
-            history: Array(511).fill(silent),
+            history: Array(255).fill(silent),
           }),
           env,
         )
@@ -121,9 +121,9 @@ describe("beat generation boundary", () => {
         await worker.fetch(
           request({
             ...valid,
-            bars: 8,
+            bars: 4,
             resolution: 64,
-            history: Array(512).fill(silent),
+            history: Array(256).fill(silent),
           }),
           env,
         )
@@ -139,6 +139,7 @@ describe("beat generation boundary", () => {
     { ...valid, resolution: 17 },
     { ...valid, bars: 3 },
     { ...valid, bars: 16 },
+    { ...valid, bars: 8 },
     { ...valid, history: [null] },
     { ...valid, history: [{ kick: 32 }] },
     { ...valid, history: [{ ...silent, kick: 33 }] },
@@ -216,18 +217,34 @@ describe("beat generation boundary", () => {
     [4, false, false, true, true],
     [8, false, true, true, true],
     [16, true, true, true, true],
-  ])("grounds 1/64 position %s in exact musical boundaries", async (index, quarter, eighth, sixteenth, thirtySecond) => {
-    const upstream = vi.fn<typeof fetch>(async () => Response.json({ answers: answers() }));
-    vi.stubGlobal("fetch", upstream);
-    await worker.fetch(request({ ...valid, resolution: 64, history: Array(index).fill(silent) }), env);
-    const payload = JSON.parse(upstream.mock.calls[0][1]?.body as string);
-    expect(payload.state.metricalAlignment).toEqual({
-      quarterNoteBoundary: quarter, eighthNoteBoundary: eighth,
-      sixteenthNoteBoundary: sixteenth, thirtySecondNoteBoundary: thirtySecond,
-      sixtyFourthNoteBoundary: true,
-    });
-    expect(payload.state.numberedBeatOnset).toContain(quarter ? "EXACT onset" : "NONE");
-  });
+  ])(
+    "grounds 1/64 position %s in exact musical boundaries",
+    async (index, quarter, eighth, sixteenth, thirtySecond) => {
+      const upstream = vi.fn<typeof fetch>(async () =>
+        Response.json({ answers: answers() }),
+      );
+      vi.stubGlobal("fetch", upstream);
+      await worker.fetch(
+        request({
+          ...valid,
+          resolution: 64,
+          history: Array(index).fill(silent),
+        }),
+        env,
+      );
+      const payload = JSON.parse(upstream.mock.calls[0][1]?.body as string);
+      expect(payload.state.metricalAlignment).toEqual({
+        quarterNoteBoundary: quarter,
+        eighthNoteBoundary: eighth,
+        sixteenthNoteBoundary: sixteenth,
+        thirtySecondNoteBoundary: thirtySecond,
+        sixtyFourthNoteBoundary: true,
+      });
+      expect(payload.state.numberedBeatOnset).toContain(
+        quarter ? "EXACT onset" : "NONE",
+      );
+    },
+  );
   it("preserves simultaneous model-selected kick, snare, cymbal, crash and aux", async () => {
     vi.stubGlobal("fetch", async () =>
       Response.json({
@@ -355,6 +372,86 @@ describe("beat generation boundary", () => {
     controller.abort();
     const aborted = new Request(request(valid), { signal: controller.signal });
     expect((await worker.fetch(aborted, env)).status).toBe(502);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+});
+
+describe("parallel composer", () => {
+  it("plans once without making a hidden first step", async () => {
+    const upstream = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        answers: Object.fromEntries(
+          Object.entries(intent).map(([id, choice]) => [
+            id,
+            { type: "choice", choice },
+          ]),
+        ),
+        usage: { input_tokens: 123 },
+      }),
+    );
+    vi.stubGlobal("fetch", upstream);
+    const response = await worker.fetch(
+      request({ ...valid, intent: undefined, planOnly: true }),
+      env,
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      intent,
+      inputTokens: 123,
+      modelCalls: 1,
+    });
+    expect(upstream).toHaveBeenCalledTimes(1);
+  });
+  it("maps a batch by position, with timing inside each question and no fabricated history", async () => {
+    const upstream = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        answers: Object.fromEntries(
+          [0, 1].flatMap((i) =>
+            Object.entries(answers()).map(([key, value]) => [
+              `${i}_${key}`,
+              value,
+            ]),
+          ),
+        ),
+        usage: { input_tokens: 456 },
+      }),
+    );
+    vi.stubGlobal("fetch", upstream);
+    const response = await worker.fetch(
+      request({ ...valid, batchStart: 12, batchSize: 2 }),
+      env,
+    );
+    expect(response.status).toBe(200);
+    const result = (await response.json()) as {
+      start: number;
+      steps: unknown[];
+    };
+    expect(result.start).toBe(12);
+    expect(result.steps).toEqual([
+      { ...silent, kick: 104 },
+      { ...silent, kick: 104 },
+    ]);
+    const payload = JSON.parse(upstream.mock.calls[0][1]!.body as string);
+    expect(payload.state.previousDecisions).toBeUndefined();
+    expect(payload.questions["0_kick"].instructions).toContain("bar 1, beat 4");
+    expect(payload.questions["1_cymbal"].instructions).toContain(
+      "subdivision 2/4",
+    );
+  });
+  it.each([
+    { batchStart: -1, batchSize: 4 },
+    { batchStart: 0, batchSize: 9 },
+    { batchStart: 63, batchSize: 2 },
+    { batchStart: 0.5, batchSize: 4 },
+    { batchStart: 0, batchSize: 4, intent: undefined },
+    { batchStart: 0, batchSize: 4, history: [silent] },
+    { planOnly: "yes" },
+  ])("rejects invalid batch boundaries before inference: %j", async (extra) => {
+    const upstream = vi.fn();
+    vi.stubGlobal("fetch", upstream);
+    expect(
+      (await worker.fetch(request({ ...valid, ...extra }), env)).status,
+    ).toBe(400);
     expect(upstream).not.toHaveBeenCalled();
   });
 });
