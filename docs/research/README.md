@@ -22,6 +22,14 @@ does not resolve that tradeoff. See the [source audit](beatboxset-scope-audit.md
 for corpus limits and the [beatrhyming inventory](beatrhyming-reference-inventory.md)
 for a newly located partial reference that has not been used for evaluation.
 
+[Onset-only fine-tuning](../../ml/onset_only_protocol.md) reduced missed events,
+but its changed crop boundaries regressed classification. Training an
+[adapted classifier](../../ml/onset_adapt_protocol.md) did not fix that.
+[Preserving labels for matched old/new events](../../ml/onset_association.md)
+recovers a small development gain at the cost of two detection/classification
+passes; it remains unshipped. The [training-only pooling selector](../../ml/browser_pool_selector_protocol.md)
+was also rejected.
+
 ## Data and evaluation
 
 Source: Alejandro Delgado, **Amateur Vocal Percussion Dataset v3**, https://zenodo.org/records/3250230, licensed CC BY 4.0. Features, model weights and tiny numeric test fixtures in this branch are derived from that dataset. Audio is not redistributed. This attribution applies to the generated model and fixtures in addition to the application MIT license.
