@@ -45,3 +45,9 @@ Public AVP P15 Personal improvisation produced 27 events. The detector ONNX, MJS
 The downloaded MIDI was parsed independently. It contained 27 notes on channel 10 at 9,600 PPQ, including the edited snare note 38 with velocity 101. Its largest difference from the UI's rounded millisecond timestamps was 0.5104 ms. This checks export consistency with detected times, not timing against audio annotations or recognition accuracy.
 
 Local evidence is `artifacts/hybrid-live/report.json`, `artifacts/hybrid-live/live.png`, and `artifacts/hybrid-live/reviewed.mid`. The reproducible check is `scripts/hybrid-live-smoke.mjs`. No additional code changes or deployment were required by this check.
+
+## Acoustic grouping worker review
+
+The next built release groups similar hits before assigning core sounds. The browser loaded the new worker bundle `worker-DX8b03_K.js`, existing model binary and detector runtime, and completed eight real TypeSafe API batches. Manual timing edits and added-hit velocity edits survived; every displayed timestamp remained unchanged. Original/drum playback, slice playback, label edits, model-failure fallback and unchanged-list behavior on API failure passed. Four responsive sizes passed with no page errors or horizontal overflow.
+
+An independently parsed MIDI contained76 notes on channel10 at9600PPQ, preserving edited onsets at0 and0.070 seconds and the added note's velocity115. These checks verify behavior, not recognition accuracy. All51 release unit tests passed. Separate results are retained in ignored `artifacts/consistency-ui/`; the test supports `SMOKE_OUTPUT` to avoid overwriting earlier evidence.

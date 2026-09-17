@@ -1,7 +1,7 @@
 import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-const out = "artifacts/hybrid-ui";
+const out = process.env.SMOKE_OUTPUT || "artifacts/hybrid-ui";
 mkdirSync(out, { recursive: true });
 const root =
   process.env.AVP_PERSONAL_DIR ||
@@ -15,7 +15,7 @@ const errors = [],
   api = [];
 p.on("pageerror", (e) => errors.push(e.message));
 p.on("response", (r) => {
-  if (/onnx|wasm|relative-model/.test(r.url()))
+  if (/onnx|wasm|relative-model|worker-/.test(r.url()))
     requests.push({ url: r.url(), status: r.status() });
 });
 await p.route("**/api/**", async (route) => {

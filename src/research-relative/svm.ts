@@ -27,11 +27,11 @@ export function readModel(buffer: ArrayBuffer): RelativeModel {
   };
 }
 
-/** LIBSVM one-vs-one voting, with the original earliest-class tie rule. */
-export function predictRelative(
+/** Match sklearn float32 StandardScaler evaluation. */
+export function standardizeRelative(
   features: Float32Array,
   model: RelativeModel,
-): RelativePrediction {
+): Float32Array {
   if (features.length !== FEATURE_COUNT)
     throw new Error("Relative model feature count mismatch");
   const standardized = new Float32Array(FEATURE_COUNT);
@@ -42,6 +42,15 @@ export function predictRelative(
       Math.fround(features[d] - model.mean[d]) / model.scale[d],
     );
   }
+  return standardized;
+}
+
+/** LIBSVM one-vs-one voting, with the original earliest-class tie rule. */
+export function predictRelative(
+  features: Float32Array,
+  model: RelativeModel,
+): RelativePrediction {
+  const standardized = standardizeRelative(features, model);
   const kernels = new Float64Array(metadata.supportCount);
   for (let s = 0; s < kernels.length; s++) {
     let squared = 0;
