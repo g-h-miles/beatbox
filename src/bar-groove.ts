@@ -1,3 +1,4 @@
+import type { DrumKit } from "./drum-kits";
 import { drums, type Drum } from "./model";
 import { type BeatStep, stepSeconds } from "./generator";
 import { midi } from "./midi";
@@ -184,11 +185,59 @@ export const feels = {
   swung:
     "Clearly swung sixteenths, 62% swing. Use for an explicit swung or shuffle-like sixteenth feel, not ordinary straight reggae.",
 } as const;
+export const fills = {
+  none: "No fill. Keep the chosen groove unchanged for this bar.",
+  snare_pickup:
+    "A short snare pickup on 4& and 4a, building into the following bar. Keep the kick pattern.",
+  snare_roll:
+    "A one-beat snare fill across beat 4 in sixteenth notes, increasing intensity. Keep the kick pattern, clear cymbals during the fill.",
+  snare_build:
+    "A two-beat snare fill across beats 3 and 4 in sixteenth notes, building intensity. Keep the kick pattern, clear cymbals during the fill.",
+  fine_roll:
+    "A one-beat snare fill across beat 4 in thirty-second notes. Keep the kick pattern, clear cymbals during the fill.",
+} as const;
+export type BarPlan = {
+  foundation: keyof typeof foundations;
+  top: keyof typeof tops;
+  feel: keyof typeof feels;
+  fill: keyof typeof fills;
+};
+export function applyFill(
+  groove: BarGroove,
+  fill: keyof typeof fills,
+): BarGroove {
+  if (fill === "none") return groove;
+  const resolution = groove.resolution ?? 16;
+  const steps = groove.steps.map((s) => ({ ...s }));
+  const start =
+    fill === "snare_build"
+      ? resolution / 2
+      : fill === "snare_pickup"
+        ? (resolution * 7) / 8
+        : (resolution * 3) / 4;
+  const spacing = fill === "fine_roll" ? 1 : resolution / 16;
+  for (let i = start; i < resolution; i++) {
+    if (fill !== "snare_pickup") {
+      steps[i].closed = 0;
+      steps[i].open = 0;
+      steps[i].ride = 0;
+    }
+    steps[i].snare =
+      (i - start) % spacing === 0
+        ? i < start + (resolution - start) / 2
+          ? 56
+          : 104
+        : 0;
+  }
+  return { ...groove, steps };
+}
 export type BarGroove = {
   foundation: keyof typeof foundations;
   top: keyof typeof tops;
   feel: keyof typeof feels;
   steps: BeatStep[];
+  kit?: DrumKit;
+  arrangements?: BarPlan[];
   bars?: number;
   resolution?: number;
 };
@@ -240,7 +289,28 @@ export function arrangeBar(
     ).flat(),
   };
 }
-export function barNotes(groove: BarGroove, bpm: number) {
+export function barNotes(
+  groove: BarGroove,
+  bpm: number,
+): { drum: Drum; velocity: number; time: number; duration: number }[] {
+  if (groove.arrangements) {
+    const resolution = groove.resolution ?? 16;
+    return groove.arrangements.flatMap((plan, index) =>
+      barNotes(
+        {
+          ...groove,
+          ...plan,
+          arrangements: undefined,
+          bars: 1,
+          steps: groove.steps.slice(
+            index * resolution,
+            (index + 1) * resolution,
+          ),
+        },
+        bpm,
+      ).map((note) => ({ ...note, time: note.time + (index * 240) / bpm })),
+    );
+  }
   const resolution = groove.resolution ?? 16;
   const unit = stepSeconds(bpm, resolution);
   const swing =

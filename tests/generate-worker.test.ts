@@ -489,23 +489,21 @@ describe("one-bar endpoint", () => {
   ])(
     "returns a complete %s-bar arrangement at 1/%s from two dependent requests",
     async (bars, resolution) => {
-      const fetcher = vi
-        .fn()
-        .mockResolvedValueOnce(
-          Response.json({
-            answers: { foundation: { type: "choice", choice: "straight" } },
-            usage: { input_tokens: 100 },
-          }),
-        )
-        .mockResolvedValueOnce(
-          Response.json({
-            answers: {
-              top: { type: "choice", choice: "eighths" },
-              feel: { type: "choice", choice: "straight" },
-            },
-            usage: { input_tokens: 200 },
-          }),
-        );
+      let call = 0;
+      const fetcher = vi.fn(async (_url: unknown, _init: RequestInit) => {
+        const foundation = call++ % 2 === 0;
+        return Response.json({
+          answers: foundation
+            ? { foundation: { type: "choice", choice: "straight" } }
+            : {
+                top: { type: "choice", choice: "eighths" },
+                feel: { type: "choice", choice: "straight" },
+                fill: { type: "choice", choice: "none" },
+                kit: { type: "choice", choice: "electronic" },
+              },
+          usage: { input_tokens: foundation ? 100 : 200 },
+        });
+      });
       vi.stubGlobal("fetch", fetcher);
       const r = await worker.fetch(
         request({
@@ -521,10 +519,11 @@ describe("one-bar endpoint", () => {
       expect(r.status).toBe(200);
       const data = (await r.json()) as any;
       expect(data.groove.steps).toHaveLength(bars * resolution);
-      expect(data.modelCalls).toBe(2);
-      expect(data.inputTokens).toBe(300);
+      expect(data.modelCalls).toBe(2 * bars);
+      expect(data.inputTokens).toBe(300 * bars);
       expect(
-        JSON.parse(fetcher.mock.calls[1][1].body).state.foundation.snare,
+        JSON.parse(fetcher.mock.calls[1][1].body as string).state.foundation
+          .snare,
       ).toEqual([4, 12]);
     },
   );

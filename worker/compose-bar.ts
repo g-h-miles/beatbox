@@ -1,5 +1,9 @@
+import { drumKits, type DrumKit } from "../src/drum-kits";
 import {
   arrangeBar,
+  applyFill,
+  fills,
+  type BarPlan,
   foundations,
   tops,
   feels,
@@ -37,102 +41,140 @@ export async function composeBar(
   bars = 1,
   resolution = 16,
 ) {
-  const options = Object.fromEntries(
-    Object.entries(foundations).map(([key, v]) => [key, v.description]),
-  );
-  const foundationResult = await infer(
-    {
+  let kit: DrumKit = "electronic";
+  const arrangements: BarPlan[] = [];
+  const steps: BarGroove["steps"] = [];
+  let modelCalls = 0;
+  let inputTokens: number | null = 0;
+  const ask: Infer = async (state, questions) => {
+    const result = await infer(state, questions);
+    modelCalls++;
+    const n = tokens(result);
+    inputTokens = inputTokens === null || n === null ? null : inputTokens + n;
+    return result;
+  };
+  const fail = () => ({
+    unsupported: true,
+    message:
+      "That request needs a rhythm outside the available drum phrases. Your previous groove has not changed.",
+    modelCalls,
+    inputTokens,
+  });
+  for (let index = 0; index < bars; index++) {
+    const context = {
       prompt,
       bpm,
-      phrase: `${bars} bars repeating the chosen groove, 1/${resolution} editing grid.`,
-      meter: "One bar of 4/4, looped without fills.",
-      purpose:
-        "Select a complete kick/snare relationship from the authored vocabulary. This is a bounded arrangement task. Do not approximate explicitly requested unavailable rhythms as if they were exact. Genre-only requests can use the closest conventional foundation.",
-    },
-    {
+      currentBar: index + 1,
+      totalBars: bars,
+      resolution,
+      previousDecisions: arrangements.map(
+        (plan, i) => `Bar ${i + 1}: ${JSON.stringify(plan)}`,
+      ),
+      previousNotes: steps.map((s) => ({ ...s })),
+      instruction:
+        "Arrange ONLY currentBar within this complete phrase. Read bar-specific requests carefully. A fill on bar 3 applies ONLY when currentBar is 3. For other bars maintain the established groove unless explicitly asked to change it. Fills are chosen separately after the foundation: do not reject a fill request because foundation options do not contain fills. Return to the underlying groove after a fill. Do not force variation, and do not copy a previous fill into later bars.",
+    };
+    const foundationOptions = Object.fromEntries(
+      Object.entries(foundations).map(([key, v]) => [key, v.description]),
+    );
+    const first = await ask(context, {
       foundation: {
         type: "choice",
         instructions:
-          "Which complete one-bar kick AND snare phrase fits the musical request? Compare the whole rhythm, including spaces. Explicit note positions and exclusions take priority over genre. Choose unsupported when an explicit requirement cannot be represented by any option.",
+          "Choose the underlying kick/snare relationship for CURRENT BAR, before adding any requested fill. Honor explicit exclusions and positions. Multi-bar structure and snare fills are supported separately. Choose unsupported only for unavailable underlying rhythms or meter.",
         criteria: {
-          ...options,
+          ...foundationOptions,
           unsupported:
-            "No available foundation can satisfy an explicit required rhythm, instrument, meter or multi-bar structure.",
+            "The underlying required rhythm or meter cannot be expressed.",
         },
       },
-    },
-  );
-  const foundation = selected(foundationResult, "foundation", {
-    ...options,
-    unsupported: "",
-  });
-  if (foundation === "unsupported")
-    return {
-      unsupported: true,
-      message:
-        "That rhythm is outside this one-bar vocabulary. Try a pocket, funk, reggae, house, or half-time groove.",
-      modelCalls: 1,
-      inputTokens: tokens(foundationResult),
-    };
-  const selectedFoundation =
-    foundations[foundation as keyof typeof foundations];
-  // This dependency is musical: cymbals are arranged against the chosen full foundation.
-  const topResult = await infer(
-    {
-      prompt,
-      bpm,
-      phrase: `${bars} bars repeating the chosen groove, 1/${resolution} editing grid.`,
-      meter: "One repeating bar in 4/4.",
-      foundation: selectedFoundation,
-      purpose:
-        "Finish this whole-bar arrangement. The kick/snare phrase is already fixed. Choose a compatible cymbal phrase and performance feel. No fills, random new notes, crashes or constant regeneration. Reggae normally retains an eighth-note pulse with offbeat accents; four offbeat-only hats are a distinct sparse choice.",
-    },
-    {
-      top: {
-        type: "choice",
-        instructions:
-          "Choose the complete cymbal phrase that supports the selected kick/snare foundation and matches the request. Honor explicit cymbal exclusions. If the required cymbal pattern is unavailable choose unsupported.",
-        criteria: {
-          ...Object.fromEntries(
-            Object.entries(tops)
-              .filter(([key]) => resolution === 32 || key !== "thirty_seconds")
-              .map(([key, v]) => [key, v.description]),
-          ),
-          unsupported:
-            "Explicitly requested cymbal phrase cannot be expressed by any option.",
+    });
+    const foundation = selected(first, "foundation", {
+      ...foundations,
+      unsupported: "",
+    });
+    if (foundation === "unsupported") return fail();
+    const topOptions = Object.fromEntries(
+      Object.entries(tops)
+        .filter(([key]) => resolution === 32 || key !== "thirty_seconds")
+        .map(([key, v]) => [key, v.description]),
+    );
+    const fillOptions = Object.fromEntries(
+      Object.entries(fills).filter(
+        ([key]) => resolution === 32 || key !== "fine_roll",
+      ),
+    );
+    const second = await ask(
+      {
+        ...context,
+        foundation: foundations[foundation as keyof typeof foundations],
+      },
+      {
+        ...(index === 0
+          ? {
+              kit: {
+                type: "choice",
+                instructions:
+                  "Choose the drum sound palette that best matches the user description. This changes timbre only, not the rhythm. Use electronic for techno or house, acoustic for a natural band, dusty for lo-fi hip-hop, funk for tight syncopation, reggae for roots/dub.",
+                criteria: Object.fromEntries(
+                  Object.entries(drumKits).map(([key, v]) => [
+                    key,
+                    v.description,
+                  ]),
+                ),
+              },
+            }
+          : {}),
+        top: {
+          type: "choice",
+          instructions:
+            "Choose the cymbal phrase for CURRENT BAR supporting the selected foundation. Fills will be applied separately. Respect exclusions and requested changes. Otherwise preserve the established cymbal pulse.",
+          criteria: {
+            ...topOptions,
+            unsupported:
+              "The explicitly required cymbal phrase is unavailable.",
+          },
+        },
+        feel: {
+          type: "choice",
+          instructions:
+            "Choose the timing feel. Maintain the established feel through the phrase. Straight unless relaxed or swing timing is requested.",
+          criteria: feels,
+        },
+        fill: {
+          type: "choice",
+          instructions:
+            "Which fill, if any, belongs in CURRENT BAR? An explicit bar number is binding. Choose none for every bar not designated for a fill. If fills are generally requested without a location, use the last bar. No fills unless requested. A generic fill can be a short snare roll; unavailable instruments or explicitly unsupported fill patterns require unsupported.",
+          criteria: {
+            ...fillOptions,
+            unsupported:
+              "The specifically required fill cannot be represented, e.g. toms that are not available.",
+          },
         },
       },
-      feel: {
-        type: "choice",
-        instructions:
-          "Choose the timing feel for this whole bar. Use straight unless relaxed or swing timing is requested. Do not infer swing merely from syncopation.",
-        criteria: feels,
-      },
-    },
-  );
-  const top = selected(topResult, "top", { ...tops, unsupported: "" });
-  const n1 = tokens(foundationResult),
-    n2 = tokens(topResult);
-  const usage = {
-    modelCalls: 2,
-    inputTokens: n1 === null || n2 === null ? null : n1 + n2,
-  };
-  if (top === "unsupported")
-    return {
-      unsupported: true,
-      message:
-        "That cymbal pattern is outside this one-bar vocabulary. Try eighth-note hats, offbeats, sixteenths, or ride.",
-      ...usage,
-    };
-  const feel = selected(topResult, "feel", feels) as BarGroove["feel"];
-  return {
-    groove: arrangeBar(
-      foundation as BarGroove["foundation"],
-      top as BarGroove["top"],
+    );
+    if (index === 0) kit = selected(second, "kit", drumKits) as DrumKit;
+    const top = selected(second, "top", { ...topOptions, unsupported: "" });
+    const fill = selected(second, "fill", { ...fillOptions, unsupported: "" });
+    if (top === "unsupported" || fill === "unsupported") return fail();
+    const feel = selected(second, "feel", feels) as BarPlan["feel"];
+    const plan: BarPlan = {
+      foundation: foundation as BarPlan["foundation"],
+      top: top as BarPlan["top"],
       feel,
-      bars,
-      resolution,
-    ),
-    ...usage,
+      fill: fill as BarPlan["fill"],
+    };
+    arrangements.push(plan);
+    steps.push(
+      ...applyFill(
+        arrangeBar(plan.foundation, plan.top, plan.feel, 1, resolution),
+        plan.fill,
+      ).steps,
+    );
+  }
+  return {
+    groove: { ...arrangements[0], kit, bars, resolution, arrangements, steps },
+    modelCalls,
+    inputTokens,
   };
 }

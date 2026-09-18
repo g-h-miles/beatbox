@@ -1,3 +1,4 @@
+import { drumKits, type DrumKit } from "./drum-kits";
 import { useEffect, useRef, useState } from "react";
 import { AudioLines, ArrowLeft, Download, Play, Square } from "lucide-react";
 import { grooveSound } from "./groove-audio";
@@ -17,6 +18,9 @@ export default function BeatGenerator() {
   const [prompt, setPrompt] = useState(
     "A laid-back pocket. Firm kick, snare on 2 and 4, quiet eighth-note hats.",
   );
+  const [amendment, setAmendment] = useState("");
+  const [undoGroove, setUndoGroove] = useState<BarGroove | null>(null);
+  const [kitChoice, setKitChoice] = useState<DrumKit | "auto">("auto");
   const [resolution, setResolution] = useState(16);
   const [bar, setBar] = useState(0);
   const [bpm, setBpm] = useState(90);
@@ -86,11 +90,18 @@ export default function BeatGenerator() {
   function start(value: BarGroove) {
     if (!ctx.current) return;
     const audio = ctx.current;
+    let activeGroove = value;
     player.current?.stop();
     const transport = new BarPlayer(value, bpm, {
       now: () => audio.currentTime,
       hit: (note, time) =>
-        grooveSound(audio, note.drum, time, note.velocity).forEach(keep),
+        grooveSound(
+          audio,
+          note.drum,
+          time,
+          note.velocity,
+          kitChoice === "auto" ? (activeGroove.kit ?? "electronic") : kitChoice,
+        ).forEach(keep),
       click: (time, accent) => {
         if (!clickRef.current) return;
         const osc = audio.createOscillator(),
@@ -106,6 +117,7 @@ export default function BeatGenerator() {
         clickSources.current.push(osc);
       },
       bar: (value) => {
+        activeGroove = value;
         setGroove(value);
         setMessage(
           "Looping four bars. Make a new groove to change it at the next bar.",
@@ -127,9 +139,10 @@ export default function BeatGenerator() {
     setPlaying(true);
     transport.start();
   }
-  async function make() {
+  async function make(amend = false) {
     if (
       busy ||
+      (amend && (!groove || !amendment.trim())) ||
       !prompt.trim() ||
       !Number.isInteger(bpm) ||
       bpm < 40 ||
@@ -140,7 +153,7 @@ export default function BeatGenerator() {
     controller.current?.abort();
     controller.current = abort;
     setBusy(true);
-    setMessage("Arranging your groove…");
+    setMessage(amend ? "Applying your edit…" : "Arranging your groove…");
     setElapsed(null);
     const started = performance.now();
     try {
@@ -150,14 +163,15 @@ export default function BeatGenerator() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: prompt.trim(),
+          prompt: amend ? amendment.trim() : prompt.trim(),
+          ...(amend ? { amend: groove } : {}),
           bpm,
           bars: 4,
           resolution,
           history: [],
           oneBar: true,
         }),
-        signal: AbortSignal.any([abort.signal, AbortSignal.timeout(12000)]),
+        signal: AbortSignal.any([abort.signal, AbortSignal.timeout(60000)]),
       });
       const data = (await response.json()) as {
         error?: string;
@@ -165,6 +179,7 @@ export default function BeatGenerator() {
         unsupported?: boolean;
         message?: string;
         groove?: BarGroove;
+        edits?: { step: number; drum: string; before: number; after: number }[];
       };
       abort.signal.throwIfAborted();
       if (!response.ok)
@@ -175,7 +190,7 @@ export default function BeatGenerator() {
       setElapsed((performance.now() - started) / 1000);
       if (data.unsupported) {
         setMessage(
-          data.message || "That request is outside this one-bar vocabulary.",
+          data.message || "That request is outside the available drum phrases.",
         );
         return;
       }
@@ -196,7 +211,15 @@ export default function BeatGenerator() {
         )
       )
         throw Error("The model returned an invalid arrangement.");
-      if (player.current) {
+      setUndoGroove(amend ? groove : null);
+      if (amend) {
+        stop();
+        setGroove(next);
+        setMessage(
+          `${data.edits?.length ?? 0} ${(data.edits?.length ?? 0) === 1 ? "cell" : "cells"} changed. Everything else preserved. Press Play to listen.`,
+        );
+        setAmendment("");
+      } else if (player.current) {
         player.current.queue(next);
         setMessage("New groove ready. Switching at the next bar.");
       } else {
@@ -237,6 +260,7 @@ export default function BeatGenerator() {
   function edit(index: number, drum: Drum) {
     if (!groove) return;
     stop();
+    setUndoGroove(null);
     const steps = groove.steps.map((s) => ({ ...s }));
     const old = steps[index][drum];
     steps[index][drum] =
@@ -265,6 +289,7 @@ export default function BeatGenerator() {
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  const currentPlan = groove?.arrangements?.[bar] ?? groove;
   const validBpm = Number.isInteger(bpm) && bpm >= 40 && bpm <= 240;
   const shown = [...drums]
     .sort(
@@ -305,7 +330,8 @@ export default function BeatGenerator() {
           <h1>A groove worth repeating.</h1>
           <p>
             Describe the feel. TypeSafe combines written drum phrases from a
-            small groove library. The groove repeats across four editable bars.
+            small groove library, arranging each bar in context. Ask for a fill
+            on a specific bar.
           </p>
         </section>
         <form
@@ -360,6 +386,25 @@ export default function BeatGenerator() {
                 <option value={32}>1/32</option>
               </select>
             </label>
+            <label>
+              Kit
+              <select
+                aria-label="Drum kit"
+                value={kitChoice}
+                disabled={busy}
+                onChange={(e) => {
+                  stop();
+                  setKitChoice(e.target.value as DrumKit | "auto");
+                }}
+              >
+                <option value="auto">TypeSafe chooses</option>
+                {Object.entries(drumKits).map(([id, kit]) => (
+                  <option key={id} value={id}>
+                    {kit.name}
+                  </option>
+                ))}
+              </select>
+            </label>
             <span className="generator-direction">4 bars · 4/4</span>
             <button
               type="submit"
@@ -400,7 +445,9 @@ export default function BeatGenerator() {
               />
               Click track
             </label>
-            <span>Changes land at the next bar. No random fills.</span>
+            <span>
+              Changes land at the next bar. Fills where you ask for them.
+            </span>
             {busy && (
               <button type="button" onClick={stop}>
                 Cancel
@@ -408,6 +455,47 @@ export default function BeatGenerator() {
             )}
           </div>
         </form>
+        {groove && (
+          <form
+            className="generator-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void make(true);
+            }}
+          >
+            <label className="generator-prompt">
+              Amend your beat
+              <input
+                aria-label="Amend your beat"
+                value={amendment}
+                maxLength={500}
+                required
+                disabled={busy}
+                onChange={(e) => setAmendment(e.target.value)}
+                placeholder="Add a closed hat on bar 3, beat 2&"
+              />
+            </label>
+            <div className="generator-settings">
+              <button type="submit" disabled={busy || !amendment.trim()}>
+                Apply edit
+              </button>
+              <button
+                type="button"
+                disabled={busy || !undoGroove}
+                onClick={() => {
+                  if (undoGroove) {
+                    stop();
+                    setGroove(undoGroove);
+                    setUndoGroove(null);
+                    setMessage("Edit undone.");
+                  }
+                }}
+              >
+                Undo edit
+              </button>
+            </div>
+          </form>
+        )}
         <section className="generator-pattern" aria-label="Beat pattern">
           <div className="generator-toolbar">
             <div>
@@ -438,8 +526,20 @@ export default function BeatGenerator() {
           </div>
           {groove && (
             <p className="generator-direction">
-              {foundations[groove.foundation].name} · {tops[groove.top].name} ·{" "}
-              {groove.feel.replaceAll("_", " ")}
+              {foundations[currentPlan!.foundation].name} ·{" "}
+              {tops[currentPlan!.top].name} ·{" "}
+              {currentPlan!.feel.replaceAll("_", " ")} ·{" "}
+              {
+                drumKits[
+                  kitChoice === "auto"
+                    ? (groove.kit ?? "electronic")
+                    : kitChoice
+                ].name
+              }
+              {groove.arrangements?.[bar]?.fill !== "none" &&
+              groove.arrangements?.[bar]?.fill
+                ? " · Fill"
+                : ""}
             </p>
           )}
           <nav className="generator-bars" aria-label="Bars">

@@ -53,6 +53,8 @@ export class BarPlayer {
       const barIndex = this.nextBar % (this.groove.bars ?? 1);
       const barGroove = {
         ...this.groove,
+        ...this.groove.arrangements?.[barIndex],
+        arrangements: undefined,
         bars: 1,
         steps: this.groove.steps.slice(
           barIndex * resolution,

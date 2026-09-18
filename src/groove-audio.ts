@@ -1,3 +1,4 @@
+import { drumKits, type DrumKit } from "./drum-kits";
 import type { Drum } from "./model";
 // Electronic kit for the composer. The transcription demo keeps its own test sound.
 // In particular, a snare needs a pitched body as well as the noisy wire transient.
@@ -14,7 +15,9 @@ export function grooveSound(
   drum: Drum,
   time: number,
   velocity: number,
+  kitName: DrumKit = "electronic",
 ): AudioScheduledSourceNode[] {
+  const profile = drumKits[kitName];
   let kit = kits.get(ctx);
   if (!kit) {
     const bus = ctx.createDynamicsCompressor();
@@ -80,12 +83,17 @@ export function grooveSound(
     nodes.push(source);
   };
   if (drum === "kick") {
-    tone(145, 0.85, 0.3, 49);
+    tone(profile.kick[0], 0.85, profile.kick[2], profile.kick[1]);
     noise(1800, 0.12, 0.012);
   } else if (drum === "snare") {
-    tone(185, 0.32, 0.11, 145);
-    tone(330, 0.1, 0.07);
-    noise(1400, 0.65, 0.16);
+    tone(
+      profile.snare[0],
+      0.32 * profile.body,
+      profile.snare[2] * 0.7,
+      profile.snare[0] * 0.78,
+    );
+    tone(profile.snare[0] * 1.78, 0.1 * profile.body, 0.07);
+    noise(profile.snare[1], 0.65 * profile.wire, profile.snare[2]);
   } else if (drum === "closed" || drum === "open") {
     for (const source of kit.open) {
       try {
@@ -93,12 +101,17 @@ export function grooveSound(
       } catch {}
     }
     kit.open = [];
-    const decay = drum === "closed" ? 0.055 : 0.34;
-    noise(7200, 0.36, decay);
-    noise(10500, 0.1, decay * 0.6, "bandpass");
+    const decay = drum === "closed" ? profile.hats[1] : profile.hats[2];
+    noise(profile.hats[0], 0.36, decay);
+    noise(
+      Math.min(15000, profile.hats[0] * 1.45),
+      0.1,
+      decay * 0.6,
+      "bandpass",
+    );
     if (drum === "open") kit.open = [...nodes];
   } else if (drum === "ride" || drum === "crash") {
-    noise(5500, 0.2, drum === "ride" ? 0.55 : 0.85);
+    noise(profile.hats[0] * 0.76, 0.2, drum === "ride" ? 0.55 : 0.85);
     for (const f of [2053, 3047, 4051, 5987])
       tone(f, 0.025, drum === "ride" ? 0.4 : 0.6);
   } else {

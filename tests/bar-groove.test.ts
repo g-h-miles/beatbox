@@ -60,6 +60,8 @@ describe("whole-bar arrangement", () => {
         answers: {
           top: { type: "choice", choice: "offbeat_accent" },
           feel: { type: "choice", choice: "straight" },
+          fill: { type: "choice", choice: "none" },
+          kit: { type: "choice", choice: "electronic" },
         },
         usage: { input_tokens: 200 },
       });
@@ -159,4 +161,61 @@ describe("four-bar fine grid", () => {
     expect(hats[1].time).toBeCloseTo(0.0625);
     expect(hats[127].time).toBeCloseTo(7.9375);
   });
+});
+
+describe("contextual phrase", () => {
+  it.each([16, 32])(
+    "applies the chosen bar-3 fill only, passes prior decisions, exports per-bar timing at 1/%s",
+    async (resolution) => {
+      const infer = vi.fn(async (state: any, questions: any) => ({
+        answers: questions.foundation
+          ? { foundation: { type: "choice", choice: "four_floor" } }
+          : {
+              top: { type: "choice", choice: "eighths" },
+              feel: {
+                type: "choice",
+                choice: state.currentBar === 3 ? "laid_back" : "straight",
+              },
+              fill: {
+                type: "choice",
+                choice: state.currentBar === 3 ? "snare_roll" : "none",
+              },
+              kit: { type: "choice", choice: "funk" },
+            },
+        usage: { input_tokens: 10 },
+      }));
+      const result = await composeBar(
+        "Four on the floor with a fill on bar 3",
+        120,
+        infer,
+        4,
+        resolution,
+      );
+      if (!("groove" in result)) throw Error("Unexpected unsupported result");
+      const g = result.groove;
+      expect(result.modelCalls).toBe(8);
+      expect(g.kit).toBe("funk");
+      expect(g.arrangements?.map((p) => p.fill)).toEqual([
+        "none",
+        "none",
+        "snare_roll",
+        "none",
+      ]);
+      expect(g.steps.slice(0, resolution)).toEqual(
+        g.steps.slice(3 * resolution),
+      );
+      expect(g.steps.slice(2 * resolution, 3 * resolution)).not.toEqual(
+        g.steps.slice(0, resolution),
+      );
+      expect(infer.mock.calls[6][0].previousDecisions).toHaveLength(3);
+      expect(infer.mock.calls[6][0].previousNotes).toHaveLength(3 * resolution);
+      const notes = barNotes(g, 120);
+      expect(
+        notes.some(
+          (n) => n.drum === "snare" && Math.abs(n.time - 5.509) < 0.00001,
+        ),
+      ).toBe(true);
+      expect(notes.every((n) => n.time + n.duration <= 8)).toBe(true);
+    },
+  );
 });

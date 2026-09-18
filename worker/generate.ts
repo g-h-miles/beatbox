@@ -1,3 +1,4 @@
+import { amendGroove, validateGroove } from "./amend-groove";
 import { composeBar } from "./compose-bar";
 import { drums } from "../src/model";
 import type { BeatStep, MusicalIntent } from "../src/generator";
@@ -169,6 +170,15 @@ export async function generateStep(
         body.planOnly)
     )
       throw Error("input");
+    if (body.amend !== undefined && body.oneBar !== true) throw Error("input");
+    const original =
+      body.amend === undefined
+        ? undefined
+        : validateGroove(
+            body.amend,
+            body.bars as number,
+            body.resolution as number,
+          );
     const history: BeatStep[] = body.history.map((step: unknown) => {
       if (
         !record(step) ||
@@ -237,7 +247,7 @@ export async function generateStep(
     upstream = true;
     const signal = AbortSignal.any([
       request.signal,
-      AbortSignal.timeout(25000),
+      AbortSignal.timeout(body.oneBar === true ? 55000 : 25000),
     ]);
     const infer = async (state: unknown, questions: unknown) => {
       signal.throwIfAborted();
@@ -296,6 +306,8 @@ export async function generateStep(
         ? value
         : null;
     };
+    if (original)
+      return json(await amendGroove(body.prompt.trim(), original, infer));
     if (body.oneBar === true)
       return json(
         await composeBar(
