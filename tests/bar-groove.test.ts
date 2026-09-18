@@ -72,11 +72,9 @@ describe("whole-bar arrangement", () => {
     });
   });
   it("does not substitute a preset for an unsupported request or malformed answer", async () => {
-    const infer = vi
-      .fn()
-      .mockResolvedValue({
-        answers: { foundation: { type: "choice", choice: "unsupported" } },
-      });
+    const infer = vi.fn().mockResolvedValue({
+      answers: { foundation: { type: "choice", choice: "unsupported" } },
+    });
     expect(await composeBar("7/8 polyrhythm", 90, infer)).toMatchObject({
       unsupported: true,
       modelCalls: 1,
@@ -140,5 +138,25 @@ describe("one-bar playback", () => {
     p.tick();
     expect(hit.mock.calls.every(([, time]) => time >= now)).toBe(true);
     p.stop();
+  });
+});
+
+describe("four-bar fine grid", () => {
+  it("doubles available positions without changing musical timing", () => {
+    const a = arrangeBar("funk", "sixteenths", "laid_back", 4, 16);
+    const b = arrangeBar("funk", "sixteenths", "laid_back", 4, 32);
+    expect(a.steps).toHaveLength(64);
+    expect(b.steps).toHaveLength(128);
+    expect(barNotes(a, 120)).toEqual(barNotes(b, 120));
+    b.steps[127].kick = 80;
+    expect(b.steps[31].kick).toBe(0);
+    expect(barNotes(b, 120).every((n) => n.time + n.duration <= 8)).toBe(true);
+  });
+  it("places actual thirty-second notes within each bar", () => {
+    const g = arrangeBar("straight", "thirty_seconds", "straight", 4, 32);
+    const hats = barNotes(g, 120).filter((n) => n.drum === "closed");
+    expect(hats).toHaveLength(128);
+    expect(hats[1].time).toBeCloseTo(0.0625);
+    expect(hats[127].time).toBeCloseTo(7.9375);
   });
 });

@@ -17,6 +17,8 @@ export default function BeatGenerator() {
   const [prompt, setPrompt] = useState(
     "A laid-back pocket. Firm kick, snare on 2 and 4, quiet eighth-note hats.",
   );
+  const [resolution, setResolution] = useState(16);
+  const [bar, setBar] = useState(0);
   const [bpm, setBpm] = useState(90);
   const [groove, setGroove] = useState<BarGroove | null>(null);
   const [busy, setBusy] = useState(false),
@@ -68,7 +70,7 @@ export default function BeatGenerator() {
     clickSources.current = [];
     setPlaying(false);
     setPlayhead(-1);
-    setMessage("Stopped. Your bar is ready to edit or export.");
+    setMessage("Stopped. Your phrase is ready to edit or export.");
   }
   const keep = (node: AudioScheduledSourceNode) => {
     sources.current.push(node);
@@ -106,12 +108,19 @@ export default function BeatGenerator() {
       bar: (value) => {
         setGroove(value);
         setMessage(
-          "Looping one bar. Make a new groove to change it at the next bar.",
+          "Looping four bars. Make a new groove to change it at the next bar.",
         );
       },
       position: (i) => {
         setPlayhead(i);
-        if (i >= 0) setBeat(Math.floor(i / 4));
+        if (i >= 0) {
+          setBar(Math.floor(i / (value.resolution ?? 16)));
+          setBeat(
+            Math.floor(
+              (i % (value.resolution ?? 16)) / ((value.resolution ?? 16) / 4),
+            ),
+          );
+        }
       },
     });
     player.current = transport;
@@ -131,7 +140,7 @@ export default function BeatGenerator() {
     controller.current?.abort();
     controller.current = abort;
     setBusy(true);
-    setMessage("Arranging the whole bar…");
+    setMessage("Arranging your groove…");
     setElapsed(null);
     const started = performance.now();
     try {
@@ -143,8 +152,8 @@ export default function BeatGenerator() {
         body: JSON.stringify({
           prompt: prompt.trim(),
           bpm,
-          bars: 1,
-          resolution: 16,
+          bars: 4,
+          resolution,
           history: [],
           oneBar: true,
         }),
@@ -177,7 +186,7 @@ export default function BeatGenerator() {
         !Object.hasOwn(tops, next.top) ||
         !Object.hasOwn(feels, next.feel) ||
         !Array.isArray(next.steps) ||
-        next.steps.length !== 16 ||
+        next.steps.length !== 4 * resolution ||
         next.steps.some(
           (s) =>
             !s ||
@@ -242,7 +251,7 @@ export default function BeatGenerator() {
       for (const other of ["closed", "open", "ride"] as const)
         if (other !== drum) steps[index][other] = 0;
     setGroove({ ...groove, steps });
-    setMessage("Edited. Press Play to hear your bar.");
+    setMessage("Edited. Press Play to hear your phrase.");
   }
   function download() {
     if (!groove) return;
@@ -252,7 +261,7 @@ export default function BeatGenerator() {
       );
     const link = document.createElement("a");
     link.href = url;
-    link.download = `beatbox-${bpm}bpm-one-bar.mid`;
+    link.download = `beatbox-${bpm}bpm-four-bars.mid`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -272,8 +281,10 @@ export default function BeatGenerator() {
         ["kick", "snare", "closed", "open"].includes(d.id) ||
         groove?.steps.some((s) => s[d.id] > 0),
     );
-  const offset = compact ? beat * 4 : 0,
-    columns = compact ? 4 : 16;
+  const gridResolution = groove?.resolution ?? resolution;
+  const perBeat = gridResolution / 4;
+  const offset = bar * gridResolution + (compact ? beat * perBeat : 0),
+    columns = compact ? perBeat : gridResolution;
   return (
     <div className="generator-app">
       <header>
@@ -290,11 +301,11 @@ export default function BeatGenerator() {
       </header>
       <main className="generator-main">
         <section className="generator-intro">
-          <p className="eyebrow">ONE BAR. FIND THE POCKET.</p>
+          <p className="eyebrow">FOUR BARS. FIND THE POCKET.</p>
           <h1>A groove worth repeating.</h1>
           <p>
             Describe the feel. TypeSafe combines written drum phrases from a
-            small groove library. One bar repeats steadily until you change it.
+            small groove library. The groove repeats across four editable bars.
           </p>
         </section>
         <form
@@ -332,9 +343,24 @@ export default function BeatGenerator() {
                 <span>BPM</span>
               </span>
             </label>
-            <span className="generator-direction">
-              1 bar · 4/4 · sixteenth-note grid
-            </span>
+            <label>
+              Grid
+              <select
+                aria-label="Note subdivision"
+                value={resolution}
+                disabled={busy || playing}
+                onChange={(e) => {
+                  setResolution(Number(e.target.value));
+                  setGroove(null);
+                  setBar(0);
+                  setBeat(0);
+                }}
+              >
+                <option value={16}>1/16</option>
+                <option value={32}>1/32</option>
+              </select>
+            </label>
+            <span className="generator-direction">4 bars · 4/4</span>
             <button
               type="submit"
               className="generator-primary"
@@ -385,9 +411,9 @@ export default function BeatGenerator() {
         <section className="generator-pattern" aria-label="Beat pattern">
           <div className="generator-toolbar">
             <div>
-              <h2>Your bar</h2>
+              <h2>Your phrase</h2>
               <p>
-                {validBpm ? (240 / bpm).toFixed(2) : "—"} seconds · Tap a cell
+                {validBpm ? (960 / bpm).toFixed(2) : "—"} seconds · Tap a cell
                 to change its intensity.
               </p>
             </div>
@@ -416,6 +442,18 @@ export default function BeatGenerator() {
               {groove.feel.replaceAll("_", " ")}
             </p>
           )}
+          <nav className="generator-bars" aria-label="Bars">
+            {[0, 1, 2, 3].map((i) => (
+              <button
+                key={i}
+                type="button"
+                aria-current={bar === i ? "page" : undefined}
+                onClick={() => setBar(i)}
+              >
+                Bar {i + 1}
+              </button>
+            ))}
+          </nav>
           {compact && (
             <nav className="generator-bars" aria-label="Beats within bar">
               {[0, 1, 2, 3].map((i) => (
@@ -451,7 +489,11 @@ export default function BeatGenerator() {
                     key={n}
                     className={`generator-step-number ${playhead === n ? "current" : ""}`}
                   >
-                    {n % 4 === 0 ? n / 4 + 1 : ["", "e", "&", "a"][n % 4]}
+                    {n % perBeat === 0
+                      ? (n % gridResolution) / perBeat + 1
+                      : gridResolution === 16
+                        ? ["", "e", "&", "a"][n % 4]
+                        : "·"}
                   </span>
                 );
               })}
@@ -466,7 +508,7 @@ export default function BeatGenerator() {
                         type="button"
                         key={n}
                         disabled={!groove || busy}
-                        className={`generator-cell ${v ? "on" : ""} ${n % 4 === 0 ? "beat-start" : ""} ${playhead === n ? "current" : ""}`}
+                        className={`generator-cell ${v ? "on" : ""} ${n % perBeat === 0 ? "beat-start" : ""} ${playhead === n ? "current" : ""}`}
                         style={{ "--strength": v / 127 } as React.CSSProperties}
                         aria-label={`${d.name}, step ${n + 1}: ${v ? "velocity " + v : "rest"}. Change intensity.`}
                         aria-pressed={v > 0}

@@ -30,7 +30,13 @@ function tokens(result: Record<string, unknown>) {
   const n = record(result.usage) ? result.usage.input_tokens : null;
   return typeof n === "number" && Number.isSafeInteger(n) && n >= 0 ? n : null;
 }
-export async function composeBar(prompt: string, bpm: number, infer: Infer) {
+export async function composeBar(
+  prompt: string,
+  bpm: number,
+  infer: Infer,
+  bars = 1,
+  resolution = 16,
+) {
   const options = Object.fromEntries(
     Object.entries(foundations).map(([key, v]) => [key, v.description]),
   );
@@ -38,6 +44,7 @@ export async function composeBar(prompt: string, bpm: number, infer: Infer) {
     {
       prompt,
       bpm,
+      phrase: `${bars} bars repeating the chosen groove, 1/${resolution} editing grid.`,
       meter: "One bar of 4/4, looped without fills.",
       purpose:
         "Select a complete kick/snare relationship from the authored vocabulary. This is a bounded arrangement task. Do not approximate explicitly requested unavailable rhythms as if they were exact. Genre-only requests can use the closest conventional foundation.",
@@ -74,6 +81,7 @@ export async function composeBar(prompt: string, bpm: number, infer: Infer) {
     {
       prompt,
       bpm,
+      phrase: `${bars} bars repeating the chosen groove, 1/${resolution} editing grid.`,
       meter: "One repeating bar in 4/4.",
       foundation: selectedFoundation,
       purpose:
@@ -86,7 +94,9 @@ export async function composeBar(prompt: string, bpm: number, infer: Infer) {
           "Choose the complete cymbal phrase that supports the selected kick/snare foundation and matches the request. Honor explicit cymbal exclusions. If the required cymbal pattern is unavailable choose unsupported.",
         criteria: {
           ...Object.fromEntries(
-            Object.entries(tops).map(([key, v]) => [key, v.description]),
+            Object.entries(tops)
+              .filter(([key]) => resolution === 32 || key !== "thirty_seconds")
+              .map(([key, v]) => [key, v.description]),
           ),
           unsupported:
             "Explicitly requested cymbal phrase cannot be expressed by any option.",
@@ -120,6 +130,8 @@ export async function composeBar(prompt: string, bpm: number, infer: Infer) {
       foundation as BarGroove["foundation"],
       top as BarGroove["top"],
       feel,
+      bars,
+      resolution,
     ),
     ...usage,
   };

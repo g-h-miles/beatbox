@@ -461,7 +461,7 @@ describe("one-bar endpoint", () => {
     const fetcher = vi.fn();
     vi.stubGlobal("fetch", fetcher);
     for (const extra of [
-      { bars: 4 },
+      { bars: 2 },
       { resolution: 64 },
       { batchStart: 0 },
       { intent },
@@ -482,43 +482,50 @@ describe("one-bar endpoint", () => {
     }
     expect(fetcher).not.toHaveBeenCalled();
   });
-  it("returns a complete one-bar arrangement from two dependent model requests", async () => {
-    const fetcher = vi
-      .fn()
-      .mockResolvedValueOnce(
-        Response.json({
-          answers: { foundation: { type: "choice", choice: "straight" } },
-          usage: { input_tokens: 100 },
+  it.each([
+    [1, 16],
+    [4, 16],
+    [4, 32],
+  ])(
+    "returns a complete %s-bar arrangement at 1/%s from two dependent requests",
+    async (bars, resolution) => {
+      const fetcher = vi
+        .fn()
+        .mockResolvedValueOnce(
+          Response.json({
+            answers: { foundation: { type: "choice", choice: "straight" } },
+            usage: { input_tokens: 100 },
+          }),
+        )
+        .mockResolvedValueOnce(
+          Response.json({
+            answers: {
+              top: { type: "choice", choice: "eighths" },
+              feel: { type: "choice", choice: "straight" },
+            },
+            usage: { input_tokens: 200 },
+          }),
+        );
+      vi.stubGlobal("fetch", fetcher);
+      const r = await worker.fetch(
+        request({
+          prompt: "Straight backbeat",
+          bpm: 90,
+          bars,
+          resolution,
+          history: [],
+          oneBar: true,
         }),
-      )
-      .mockResolvedValueOnce(
-        Response.json({
-          answers: {
-            top: { type: "choice", choice: "eighths" },
-            feel: { type: "choice", choice: "straight" },
-          },
-          usage: { input_tokens: 200 },
-        }),
+        env,
       );
-    vi.stubGlobal("fetch", fetcher);
-    const r = await worker.fetch(
-      request({
-        prompt: "Straight backbeat",
-        bpm: 90,
-        bars: 1,
-        resolution: 16,
-        history: [],
-        oneBar: true,
-      }),
-      env,
-    );
-    expect(r.status).toBe(200);
-    const data = (await r.json()) as any;
-    expect(data.groove.steps).toHaveLength(16);
-    expect(data.modelCalls).toBe(2);
-    expect(data.inputTokens).toBe(300);
-    expect(
-      JSON.parse(fetcher.mock.calls[1][1].body).state.foundation.snare,
-    ).toEqual([4, 12]);
-  });
+      expect(r.status).toBe(200);
+      const data = (await r.json()) as any;
+      expect(data.groove.steps).toHaveLength(bars * resolution);
+      expect(data.modelCalls).toBe(2);
+      expect(data.inputTokens).toBe(300);
+      expect(
+        JSON.parse(fetcher.mock.calls[1][1].body).state.foundation.snare,
+      ).toEqual([4, 12]);
+    },
+  );
 });

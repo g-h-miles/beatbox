@@ -161,8 +161,8 @@ export async function generateStep(
     if (
       body.oneBar !== undefined &&
       (body.oneBar !== true ||
-        body.bars !== 1 ||
-        body.resolution !== 16 ||
+        ![1, 4].includes(body.bars as number) ||
+        ![16, 32].includes(body.resolution as number) ||
         body.history.length ||
         body.intent ||
         body.batchStart !== undefined ||
@@ -297,7 +297,15 @@ export async function generateStep(
         : null;
     };
     if (body.oneBar === true)
-      return json(await composeBar(body.prompt.trim(), body.bpm, infer));
+      return json(
+        await composeBar(
+          body.prompt.trim(),
+          body.bpm,
+          infer,
+          body.bars as number,
+          body.resolution as number,
+        ),
+      );
     let intent = body.intent as MusicalIntent | undefined;
     let planningTokens: number | null = 0;
     let modelCalls = 1;

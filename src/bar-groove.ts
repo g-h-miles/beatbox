@@ -159,6 +159,14 @@ export const tops = {
     accents: [0, 4, 8, 12],
     open: [],
   },
+  thirty_seconds: {
+    name: "Thirty-second-note hats",
+    description:
+      "Continuous quiet 1/32 closed hats, with stronger eighth-note accents. Use only when explicitly requested.",
+    hits: Array.from({ length: 32 }, (_, i) => i / 2),
+    accents: [0, 2, 4, 6, 8, 10, 12, 14],
+    open: [],
+  },
   none: {
     name: "No cymbals",
     description:
@@ -181,23 +189,30 @@ export type BarGroove = {
   top: keyof typeof tops;
   feel: keyof typeof feels;
   steps: BeatStep[];
+  bars?: number;
+  resolution?: number;
 };
 export function arrangeBar(
   foundation: BarGroove["foundation"],
   top: BarGroove["top"],
   feel: BarGroove["feel"],
+  bars = 1,
+  resolution = 16,
 ): BarGroove {
   const base = foundations[foundation],
     cymbals = tops[top];
   const steps = Array.from(
-    { length: 16 },
+    { length: resolution },
     () => Object.fromEntries(drums.map((d) => [d.id, 0])) as BeatStep,
   );
   const reggae = ["one_drop", "rockers", "steppers"].includes(foundation);
-  base.kick.forEach((i) => (steps[i].kick = 104));
-  base.snare.forEach((i) => (steps[i].snare = reggae ? 80 : 104));
-  base.ghosts.forEach((i) => (steps[i].snare = 32));
+  base.kick.forEach((i) => (steps[(i * resolution) / 16].kick = 104));
+  base.snare.forEach(
+    (i) => (steps[(i * resolution) / 16].snare = reggae ? 80 : 104),
+  );
+  base.ghosts.forEach((i) => (steps[(i * resolution) / 16].snare = 32));
   cymbals.hits.forEach((i) => {
+    if (!Number.isInteger((i * resolution) / 16)) return;
     const voice: Drum =
       top === "ride"
         ? "ride"
@@ -205,13 +220,29 @@ export function arrangeBar(
           ? "open"
           : "closed";
     const accent = (cymbals.accents as readonly number[]).includes(i);
-    steps[i][voice] =
-      top === "sixteenths" ? (accent ? 56 : 32) : accent ? 80 : 56;
+    steps[(i * resolution) / 16][voice] =
+      top === "sixteenths" || top === "thirty_seconds"
+        ? accent
+          ? 56
+          : 32
+        : accent
+          ? 80
+          : 56;
   });
-  return { foundation, top, feel, steps };
+  return {
+    foundation,
+    top,
+    feel,
+    bars,
+    resolution,
+    steps: Array.from({ length: bars }, () =>
+      steps.map((s) => ({ ...s })),
+    ).flat(),
+  };
 }
 export function barNotes(groove: BarGroove, bpm: number) {
-  const unit = stepSeconds(bpm, 16);
+  const resolution = groove.resolution ?? 16;
+  const unit = stepSeconds(bpm, resolution);
   const swing =
     groove.feel === "swung" ? 0.62 : groove.feel === "laid_back" ? 0.56 : 0.5;
   return groove.steps
@@ -223,7 +254,11 @@ export function barNotes(groove: BarGroove, bpm: number) {
                 drum: id,
                 velocity: step[id],
                 time:
-                  (Math.floor(i / 2) * 2 + (i % 2 ? 2 * swing : 0)) * unit +
+                  (i +
+                    (Math.floor(i / (resolution / 16)) % 2
+                      ? ((2 * swing - 1) * resolution) / 16
+                      : 0)) *
+                    unit +
                   (id === "snare" && groove.feel === "laid_back" ? 0.009 : 0),
                 duration: Math.min(0.06, unit),
               },
@@ -233,7 +268,10 @@ export function barNotes(groove: BarGroove, bpm: number) {
     )
     .map((note) => ({
       ...note,
-      duration: Math.min(note.duration, 240 / bpm - note.time),
+      duration: Math.min(
+        note.duration,
+        (240 / bpm) * (groove.bars ?? 1) - note.time,
+      ),
     }))
     .sort((a, b) => a.time - b.time);
 }
@@ -242,7 +280,7 @@ export function barMidi(groove: BarGroove, bpm: number) {
   return midi(
     barNotes(groove, 60 / quarter),
     bpm,
-    quarter * 4,
-    "BEATBOX • One-bar arrangement",
+    quarter * 4 * (groove.bars ?? 1),
+    `BEATBOX • ${groove.bars ?? 1}-bar arrangement`,
   );
 }

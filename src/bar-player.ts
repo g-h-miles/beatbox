@@ -49,7 +49,17 @@ export class BarPlayer {
         this.callbacks.bar(this.groove);
         this.announced = this.groove;
       }
-      for (const note of barNotes(this.groove, this.bpm))
+      const resolution = this.groove.resolution ?? 16;
+      const barIndex = this.nextBar % (this.groove.bars ?? 1);
+      const barGroove = {
+        ...this.groove,
+        bars: 1,
+        steps: this.groove.steps.slice(
+          barIndex * resolution,
+          (barIndex + 1) * resolution,
+        ),
+      };
+      for (const note of barNotes(barGroove, this.bpm))
         if (start + note.time >= now)
           this.callbacks.hit(note, start + note.time);
       for (let beat = 0; beat < 4; beat++)
@@ -60,7 +70,11 @@ export class BarPlayer {
     this.callbacks.position(
       now < this.startTime
         ? -1
-        : Math.floor((((now - this.startTime) % duration) / duration) * 16),
+        : Math.floor(
+            (((now - this.startTime) % (duration * (this.groove.bars ?? 1))) /
+              duration) *
+              (this.groove.resolution ?? 16),
+          ),
     );
   }
 }
