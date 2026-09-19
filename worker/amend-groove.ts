@@ -5,6 +5,7 @@ import {
   tops,
   feels,
   fills,
+  applyFill,
   type BarGroove,
 } from "../src/bar-groove";
 import { drumKits } from "../src/drum-kits";
@@ -100,10 +101,25 @@ export async function amendGroove(
         "This is a surgical edit, not a new composition. Identify ONLY instruments explicitly changed by this request. A hi-hat without open/closed qualification means closed hat. Do not select accompanying instruments or make implicit musical improvements.",
     },
     {
+      fill: {
+        type: "choice",
+        instructions:
+          "Does the amendment ask to ADD or REPLACE a drum fill? Choose the requested fill pattern; generic tom fills mean a descending tom_run unless a longer build is requested. Choose none for individual note edits, velocity changes, or removing fills. Apply only to the selected bars. If a specific fill cannot be represented choose unsupported.",
+        criteria: {
+          ...Object.fromEntries(
+            Object.entries(fills).filter(
+              ([k]) => groove.resolution === 32 || k !== "fine_roll",
+            ),
+          ),
+          none: "Not a request to add/replace a fill; handle as individual cell edits.",
+          unsupported:
+            "Explicit requested fill cannot be represented by available patterns.",
+        },
+      },
       supported: {
         type: "choice",
         instructions:
-          "Can this request be represented by adding, removing or changing velocities of existing drum-grid cells? Timbre, tempo, swing, off-grid timing, unavailable instruments and ambiguous locations are unsupported. A bar, numbered beat, e/&/a or explicit subdivision are supported.",
+          "Can this request be represented by adding, removing or changing velocities of existing drum-grid cells? Timbre, tempo, swing, off-grid timing, unavailable instruments and ambiguous locations are unsupported. A bar, numbered beat, e/&/a or explicit subdivision are supported. Adding a snare or tom fill on a specified bar IS SUPPORTED even without individual note positions; the fill choice defines those positions.",
         criteria: {
           yes: "A clear drum-cell edit on this grid.",
           no: "Outside drum-cell editing or location too ambiguous.",
@@ -166,6 +182,53 @@ export async function amendGroove(
       (bar) => choice(scope, `bar_${bar}`, ["yes", "no"]) === "yes",
     ),
   );
+  const fill = choice(scope, "fill", [...Object.keys(fills), "unsupported"]);
+  if (fill === "unsupported")
+    return {
+      unsupported: true,
+      message:
+        "That fill is outside the available patterns. Try a descending tom fill or snare roll on a specific bar.",
+      modelCalls,
+      inputTokens,
+    };
+  if (fill !== "none") {
+    const resolution = groove.resolution!;
+    const steps = groove.steps.map((s) => ({ ...s }));
+    const arrangements = groove.arrangements?.map((p) => ({ ...p }));
+    const edits: {
+      step: number;
+      drum: string;
+      before: number;
+      after: number;
+    }[] = [];
+    for (const bar of targetBars) {
+      const offset = (bar - 1) * resolution;
+      const edited = applyFill(
+        {
+          ...groove,
+          bars: 1,
+          arrangements: undefined,
+          steps: steps.slice(offset, offset + resolution),
+        },
+        fill as keyof typeof fills,
+      );
+      for (let i = 0; i < resolution; i++)
+        for (const d of drums) {
+          const before = steps[offset + i][d.id],
+            after = edited.steps[i][d.id];
+          if (before !== after)
+            edits.push({ step: offset + i, drum: d.id, before, after });
+        }
+      steps.splice(offset, resolution, ...edited.steps);
+      if (arrangements) arrangements[bar - 1].fill = fill as keyof typeof fills;
+    }
+    return {
+      groove: { ...groove, steps, ...(arrangements ? { arrangements } : {}) },
+      edits,
+      modelCalls,
+      inputTokens,
+    };
+  }
   const targets = drums.filter(
     (d) => choice(scope, d.id, ["yes", "no"]) === "yes",
   );

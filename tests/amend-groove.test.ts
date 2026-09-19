@@ -14,17 +14,19 @@ describe("surgical amendments", () => {
           {
             type: "choice",
             choice:
-              k === "supported" || k === "closed" || k.startsWith("bar_")
-                ? "yes"
-                : k.startsWith("p")
-                  ? k === "p75"
-                    ? "add"
-                    : "keep"
-                  : k.startsWith("alignment_")
-                    ? "all"
-                    : k.startsWith("v")
-                      ? "v56"
-                      : "no",
+              k === "fill"
+                ? "none"
+                : k === "supported" || k === "closed" || k.startsWith("bar_")
+                  ? "yes"
+                  : k.startsWith("p")
+                    ? k === "p75"
+                      ? "add"
+                      : "keep"
+                    : k.startsWith("alignment_")
+                      ? "all"
+                      : k.startsWith("v")
+                        ? "v56"
+                        : "no",
           },
         ]),
       ),
@@ -73,3 +75,50 @@ describe("surgical amendments", () => {
     ).toThrow("input");
   });
 });
+
+it.each([16, 32])(
+  "adds a bar-2 tom fill without changing other bars at 1/%s",
+  async (resolution) => {
+    const original = arrangeBar(
+      "four_floor",
+      "eighths",
+      "straight",
+      4,
+      resolution,
+    );
+    const snapshot = structuredClone(original);
+    const result = await amendGroove(
+      "add tom fills on bar 2",
+      original,
+      async () => ({
+        answers: {
+          supported: { type: "choice", choice: "yes" },
+          fill: { type: "choice", choice: "tom_run" },
+          ...Object.fromEntries(
+            [1, 2, 3, 4].map((i) => [
+              `bar_${i}`,
+              { type: "choice", choice: i === 2 ? "yes" : "no" },
+            ]),
+          ),
+        },
+      }),
+    );
+    if (!result.groove || !result.edits) throw Error("Unsupported");
+    expect(result.edits.length).toBeGreaterThan(0);
+    expect(
+      result.edits.every(
+        (e) => e.step >= resolution && e.step < 2 * resolution,
+      ),
+    ).toBe(true);
+    expect(result.groove.steps.slice(0, resolution)).toEqual(
+      original.steps.slice(0, resolution),
+    );
+    expect(result.groove.steps.slice(2 * resolution)).toEqual(
+      original.steps.slice(2 * resolution),
+    );
+    expect(result.groove.steps[resolution * 2 - resolution / 4].tom_high).toBe(
+      104,
+    );
+    expect(original).toEqual(snapshot);
+  },
+);
