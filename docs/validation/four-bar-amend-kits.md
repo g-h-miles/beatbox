@@ -17,3 +17,9 @@ Real provider validation (2026-09-18):
 - Make closed hats in bar 4 quieter: only steps 48, 52, 56 and 60 changed from 56 to 32.
 
 Browser check `node scripts/four-bar-ui-check.mjs` exercises per-bar labels, kit overrides, playback, amendment and undo, MIDI download and mobile overflow. Offline audio rendering verifies each kit produces distinct non-silent audio without clipping in the test phrase. These checks establish behavior, not acoustic realism or general musical quality. Live browser check: `LIVE=1 UI_URL=https://beatbox.grahammiles.me node scripts/four-bar-ui-check.mjs`.
+
+## Model-decided fill amendments (September 19)
+
+The short-lived `applyFill` amendment route was removed at the user's request. For a fill amendment, Jev now selects its scope and musical direction, then decides each position sequentially with previous decisions in context. A binary strike/rest judgment is separate from drum and velocity selection. Code applies those returned choices and limits changes to the model-selected bars; it does not substitute an authored fill pattern.
+
+Real requests: “add tom fills on bar 2” produced three high/mid/low hits; “ascending tom fill” reversed the pitch order; “sparse tom fill” selected one hit. Exact individual-note edits remained exact. Other bars were compared against the original and remained unchanged. A regression test makes Jev return an arbitrary single fill hit and verifies no template adds any other notes. This change concerns the amendment path; the initial groove arranger still uses its documented phrase vocabulary.

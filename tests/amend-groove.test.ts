@@ -14,8 +14,8 @@ describe("surgical amendments", () => {
           {
             type: "choice",
             choice:
-              k === "fill"
-                ? "none"
+              k === "intent"
+                ? "exact"
                 : k === "supported" || k === "closed" || k.startsWith("bar_")
                   ? "yes"
                   : k.startsWith("p")
@@ -77,7 +77,7 @@ describe("surgical amendments", () => {
 });
 
 it.each([16, 32])(
-  "adds a bar-2 tom fill without changing other bars at 1/%s",
+  "applies only Jev's individual fill decisions at 1/%s",
   async (resolution) => {
     const original = arrangeBar(
       "four_floor",
@@ -86,39 +86,58 @@ it.each([16, 32])(
       4,
       resolution,
     );
-    const snapshot = structuredClone(original);
-    const result = await amendGroove(
-      "add tom fills on bar 2",
-      original,
-      async () => ({
-        answers: {
-          supported: { type: "choice", choice: "yes" },
-          fill: { type: "choice", choice: "tom_run" },
-          ...Object.fromEntries(
-            [1, 2, 3, 4].map((i) => [
-              `bar_${i}`,
-              { type: "choice", choice: i === 2 ? "yes" : "no" },
-            ]),
-          ),
-        },
-      }),
-    );
+    const picked = resolution + 3;
+    const infer = async (_state: any, questions: any) =>
+      questions.voice
+        ? {
+            answers: {
+              strike: {
+                type: "choice",
+                choice: _state.currentPosition.index === picked ? "yes" : "no",
+              },
+              voice: {
+                type: "choice",
+                choice:
+                  _state.currentPosition.index === picked ? "tom_low" : "keep",
+              },
+              velocity: { type: "choice", choice: "v80" },
+            },
+          }
+        : {
+            answers: Object.fromEntries(
+              Object.keys(questions).map((k) => [
+                k,
+                {
+                  type: "choice",
+                  choice:
+                    k === "supported" || k === "bar_2" || k === "tom_low"
+                      ? "yes"
+                      : k === "intent"
+                        ? "fill"
+                        : k === "span"
+                          ? "custom"
+                          : k === "contour"
+                            ? "single"
+                            : k.startsWith("alignment_")
+                              ? "all"
+                              : k.startsWith("p")
+                                ? k === `p${picked}`
+                                  ? "add"
+                                  : "keep"
+                                : k.startsWith("v")
+                                  ? "v80"
+                                  : "no",
+                },
+              ]),
+            ),
+          };
+    const result = await amendGroove("add tom fills on bar 2", original, infer);
     if (!result.groove || !result.edits) throw Error("Unsupported");
-    expect(result.edits.length).toBeGreaterThan(0);
-    expect(
-      result.edits.every(
-        (e) => e.step >= resolution && e.step < 2 * resolution,
-      ),
-    ).toBe(true);
-    expect(result.groove.steps.slice(0, resolution)).toEqual(
-      original.steps.slice(0, resolution),
-    );
-    expect(result.groove.steps.slice(2 * resolution)).toEqual(
-      original.steps.slice(2 * resolution),
-    );
-    expect(result.groove.steps[resolution * 2 - resolution / 4].tom_high).toBe(
-      104,
-    );
-    expect(original).toEqual(snapshot);
+    expect(result.edits).toEqual([
+      { step: picked, drum: "tom_low", before: 0, after: 80 },
+    ]);
+    const expected = structuredClone(original);
+    expected.steps[picked].tom_low = 80;
+    expect(result.groove).toEqual(expected);
   },
 );

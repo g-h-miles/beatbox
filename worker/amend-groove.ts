@@ -5,7 +5,6 @@ import {
   tops,
   feels,
   fills,
-  applyFill,
   type BarGroove,
 } from "../src/bar-groove";
 import { drumKits } from "../src/drum-kits";
@@ -98,28 +97,44 @@ export async function amendGroove(
       amendment: prompt,
       existingPattern: groove,
       instruction:
-        "This is a surgical edit, not a new composition. Identify ONLY instruments explicitly changed by this request. A hi-hat without open/closed qualification means closed hat. Do not select accompanying instruments or make implicit musical improvements.",
+        "This is a surgical edit, not a new composition. Identify the instruments requested by this edit. A tom fill is a composition request covering high, mid and low toms unless particular pitches are specified. Individual positions do NOT need to be explicitly listed for a fill. A hi-hat without open/closed qualification means closed hat. Do not select accompanying instruments or make implicit musical improvements.",
     },
     {
-      fill: {
+      intent: {
         type: "choice",
         instructions:
-          "Does the amendment ask to ADD or REPLACE a drum fill? Choose the requested fill pattern; generic tom fills mean a descending tom_run unless a longer build is requested. Choose none for individual note edits, velocity changes, or removing fills. Apply only to the selected bars. If a specific fill cannot be represented choose unsupported.",
+          "Interpret the requested edit. Choose fill for composing a new fill, even if its individual notes are not specified. Choose exact for targeted note/dynamic changes or removing notes.",
         criteria: {
-          ...Object.fromEntries(
-            Object.entries(fills).filter(
-              ([k]) => groove.resolution === 32 || k !== "fine_roll",
-            ),
-          ),
-          none: "Not a request to add/replace a fill; handle as individual cell edits.",
-          unsupported:
-            "Explicit requested fill cannot be represented by available patterns.",
+          fill: "Compose a musical fill in the selected bars.",
+          exact: "Perform the specified note or dynamic edit.",
+        },
+      },
+      span: {
+        type: "choice",
+        instructions:
+          "If composing a fill, choose its extent from the request and musical context. A generic fill usually occupies the last beat or last two beats, not the entire bar. Explicit requests win.",
+        criteria: {
+          last_beat: "Short fill near the end of the bar.",
+          last_two: "Two-beat fill developing into the next bar.",
+          whole_bar: "Whole-bar fill explicitly requested.",
+          custom: "Other explicitly specified position or not a fill.",
+        },
+      },
+      contour: {
+        type: "choice",
+        instructions:
+          "Choose the musical direction of a requested fill. Honor any explicit ascending/descending request. This guides your later individual note decisions; it is not a preset pattern.",
+        criteria: {
+          descending: "Move from higher drums towards lower drums.",
+          ascending: "Move from lower drums towards higher drums.",
+          mixed: "A conversational mixture of pitches and spaces.",
+          single: "One requested drum only.",
         },
       },
       supported: {
         type: "choice",
         instructions:
-          "Can this request be represented by adding, removing or changing velocities of existing drum-grid cells? Timbre, tempo, swing, off-grid timing, unavailable instruments and ambiguous locations are unsupported. A bar, numbered beat, e/&/a or explicit subdivision are supported. Adding a snare or tom fill on a specified bar IS SUPPORTED even without individual note positions; the fill choice defines those positions.",
+          "Can this request be represented by adding, removing or changing velocities of existing drum-grid cells? Timbre, tempo, swing, off-grid timing, unavailable instruments and ambiguous locations are unsupported. A bar, numbered beat, e/&/a or explicit subdivision are supported. Adding a snare or tom fill on a specified bar IS SUPPORTED even without individual note positions; you will choose its individual hits and intensities in the next step.",
         criteria: {
           yes: "A clear drum-cell edit on this grid.",
           no: "Outside drum-cell editing or location too ambiguous.",
@@ -143,7 +158,7 @@ export async function amendGroove(
           `alignment_${d.id}`,
           {
             type: "choice",
-            instructions: `For edits to ${d.name}, what within-beat alignment is requested? A numbered beat without suffix (such as beat 3) means exactly its START, never the whole beat. If no specific onset is requested (e.g. make hats quieter), or several distinct alignments are requested, choose all.`,
+            instructions: `For edits to ${d.name}, what within-beat alignment is requested? A numbered beat without suffix (such as beat 3) means exactly its START, never the whole beat. If no specific onset is requested (e.g. make hats quieter), a fill is requested, or several distinct alignments are requested, choose all.`,
             criteria: {
               start: "Only numbered beat starts (fraction 0).",
               e: "Only e sixteenth (fraction 1/4).",
@@ -159,7 +174,7 @@ export async function amendGroove(
           d.id,
           {
             type: "choice",
-            instructions: `Does the amendment explicitly request changing ${d.name} notes? Select no for every instrument not requested.`,
+            instructions: `Does this edit involve ${d.name}? A general tom fill selects all three tom pitches; a snare fill selects snare. For an individual note edit, select only the named instrument. Do not change unrelated accompaniment unless requested.`,
             criteria: {
               yes: "Explicitly requested target instrument.",
               no: "Leave every note of this instrument unchanged.",
@@ -182,53 +197,24 @@ export async function amendGroove(
       (bar) => choice(scope, `bar_${bar}`, ["yes", "no"]) === "yes",
     ),
   );
-  const fill = choice(scope, "fill", [...Object.keys(fills), "unsupported"]);
-  if (fill === "unsupported")
-    return {
-      unsupported: true,
-      message:
-        "That fill is outside the available patterns. Try a descending tom fill or snare roll on a specific bar.",
-      modelCalls,
-      inputTokens,
-    };
-  if (fill !== "none") {
-    const resolution = groove.resolution!;
-    const steps = groove.steps.map((s) => ({ ...s }));
-    const arrangements = groove.arrangements?.map((p) => ({ ...p }));
-    const edits: {
-      step: number;
-      drum: string;
-      before: number;
-      after: number;
-    }[] = [];
-    for (const bar of targetBars) {
-      const offset = (bar - 1) * resolution;
-      const edited = applyFill(
-        {
-          ...groove,
-          bars: 1,
-          arrangements: undefined,
-          steps: steps.slice(offset, offset + resolution),
-        },
-        fill as keyof typeof fills,
-      );
-      for (let i = 0; i < resolution; i++)
-        for (const d of drums) {
-          const before = steps[offset + i][d.id],
-            after = edited.steps[i][d.id];
-          if (before !== after)
-            edits.push({ step: offset + i, drum: d.id, before, after });
+  const intent = choice(scope, "intent", ["fill", "exact"]);
+  const musicalDirection =
+    intent === "fill"
+      ? {
+          span: choice(scope, "span", [
+            "last_beat",
+            "last_two",
+            "whole_bar",
+            "custom",
+          ]),
+          contour: choice(scope, "contour", [
+            "descending",
+            "ascending",
+            "mixed",
+            "single",
+          ]),
         }
-      steps.splice(offset, resolution, ...edited.steps);
-      if (arrangements) arrangements[bar - 1].fill = fill as keyof typeof fills;
-    }
-    return {
-      groove: { ...groove, steps, ...(arrangements ? { arrangements } : {}) },
-      edits,
-      modelCalls,
-      inputTokens,
-    };
-  }
+      : null;
   const targets = drums.filter(
     (d) => choice(scope, d.id, ["yes", "no"]) === "yes",
   );
@@ -236,6 +222,106 @@ export async function amendGroove(
   const resolution = groove.resolution!;
   const edits: { step: number; drum: string; before: number; after: number }[] =
     [];
+  if (intent === "fill") {
+    const voiceOptions = Object.fromEntries(
+      targets.map((d) => [
+        d.id,
+        `Start a NEW ${d.name} strike at this exact position.`,
+      ]),
+    );
+    const decisions: string[] = [];
+    for (const bar of targetBars)
+      for (let local = 0; local < resolution; local++) {
+        const index = (bar - 1) * resolution + local;
+        const beat = local / (resolution / 4) + 1;
+        const inSpan =
+          musicalDirection?.span === "last_beat"
+            ? beat >= 4
+            : musicalDirection?.span === "last_two"
+              ? beat >= 3
+              : true;
+        const r = await ask(
+          {
+            amendment: prompt,
+            musicalDirection,
+            currentPosition: {
+              index,
+              bar,
+              beat,
+              numberedBeat: Math.floor(beat),
+              fractionOfBeat: (local % (resolution / 4)) / (resolution / 4),
+              sixteenthBoundary: local % (resolution / 16) === 0,
+              inChosenSpan: inSpan,
+            },
+            existingNotes: groove.steps[index],
+            previousDecisions: decisions,
+            instruction:
+              "Compose one position of the requested fill. You choose every hit, rest and intensity. KEEP means leave existing notes alone and add nothing. Outside the chosen span choose keep. Inside it, make a rhythmic phrase, not a machine-gun roll: for a normal fill use eighth/sixteenth onsets with spaces, leaving intervening thirty-second positions empty. For descending fills start high and move toward low near the bar end; ascending is the reverse. Read prior decisions to maintain this direction. Do not repeat a ringing note at every subdivision. Preserve unrelated accompaniment.",
+          },
+          {
+            strike: {
+              type: "choice",
+              instructions:
+                "Should a NEW drum strike begin at this exact position? If inChosenSpan is false choose no. Within the chosen span, a normal fill needs a few purposeful strikes on eighth/sixteenth boundaries; choose no on intervening thirty-second subdivisions unless a roll was requested. Do not let previous rests stop the requested fill from starting. Decide occurrence separately from which drum plays.",
+              criteria: {
+                yes: "A new strike belongs here in the requested fill.",
+                no: "This position remains unchanged; no new strike.",
+              },
+            },
+            voice: {
+              type: "choice",
+              instructions:
+                "Assuming a new strike begins here, which ONE drum should play? Follow the requested pitch direction across the span and your previous decisions. Descending means high first, mid next, low at the end; ascending reverses that progression.",
+              criteria: voiceOptions,
+            },
+            velocity: {
+              type: "choice",
+              instructions:
+                "If a hit starts here, choose its intensity to shape a musical fill. Strong anchor hits, softer connecting hits; not maximum throughout.",
+              criteria: {
+                v32: "Ghost",
+                v56: "Soft",
+                v80: "Medium",
+                v104: "Strong",
+                v127: "Maximum accent",
+              },
+            },
+          },
+        );
+        const voice =
+          choice(r, "strike", ["yes", "no"]) === "no"
+            ? "keep"
+            : choice(
+                r,
+                "voice",
+                targets.map((d) => d.id),
+              );
+        const velocity =
+          voice === "keep"
+            ? 0
+            : Number(
+                choice(r, "velocity", [
+                  "v32",
+                  "v56",
+                  "v80",
+                  "v104",
+                  "v127",
+                ]).slice(1),
+              );
+        decisions.push(
+          `Bar ${bar}, beat ${beat}: ${voice}${velocity ? ` velocity ${velocity}` : ""}`,
+        );
+        if (voice !== "keep") {
+          const drum = voice as (typeof drums)[number]["id"];
+          const before = steps[index][drum];
+          if (before !== velocity) {
+            steps[index][drum] = velocity;
+            edits.push({ step: index, drum, before, after: velocity });
+          }
+        }
+      }
+    return { groove: { ...groove, steps }, edits, modelCalls, inputTokens };
+  }
   for (const drum of targets) {
     const alignment = choice(scope, `alignment_${drum.id}`, [
       "start",
@@ -282,13 +368,17 @@ export async function amendGroove(
       const r = await ask(
         {
           amendment: prompt,
+          intent,
+          musicalDirection,
+          originalNotes: groove.steps,
+          previousEditDecisions: edits,
           instrument: drum.name,
           positions: scopedPositions,
           targetBars: [...targetBars],
           instructionPriority:
             "The amendment adds NEW hits even where the existing velocity is zero. Original arrangement labels or fill locations do not limit where a new hit may be added.",
           instruction:
-            "Edit only explicitly requested positions. All other positions MUST keep their exact original velocity. Beat 2& means beat=2 AND syllable=&, not beat 2 onset. A specified bar excludes every other bar. For add, keep existing hits unless a velocity change is requested. For quieter/softer or louder requests, target EXISTING nonzero hits in the requested instrument and location and choose softer or louder; keep rests. Never add chokes, fills, accompaniment or improve other notes.",
+            "For intent=exact, edit only explicitly requested positions; preserve everything else. For intent=fill, COMPOSE individual new onsets to realize musicalDirection within the selected bar: the broad fill request authorizes choosing positions and velocities, so do not return keep merely because each hit was not spelled out. Keep the rest of the bar unchanged. A descending tom fill moves high to mid to low through its selected span, with purposeful spaces; avoid simultaneous tom pitches or rolls at every subdivision unless requested. Consult previousEditDecisions to coordinate with already chosen tom notes. Beat 2& means beat=2 AND syllable=&, not beat 2 onset. A specified bar excludes every other bar. For add, keep existing hits unless a velocity change is requested. For quieter/softer or louder requests, target EXISTING nonzero hits in the requested instrument and location and choose softer or louder; keep rests. Never add chokes, fills, accompaniment or improve other notes.",
         },
         Object.fromEntries(
           scopedPositions.flatMap((p) => [
@@ -296,7 +386,7 @@ export async function amendGroove(
               `p${p.index}`,
               {
                 type: "choice",
-                instructions: `At bar ${p.bar}, beat ${p.beat}, subdivision ${p.subdivision}/${p.subdivisionsPerBeat} (${p.syllable}), should this ${drum.name} cell change? Current velocity ${p.currentVelocity}. KEEP unless this exact cell is targeted by the amendment.`,
+                instructions: `At bar ${p.bar}, beat ${p.beat}, subdivision ${p.subdivision}/${p.subdivisionsPerBeat} (${p.syllable}), should this ${drum.name} cell change? Current velocity ${p.currentVelocity}. For an exact edit, KEEP unless this exact cell is targeted. For a fill, choose whether a NEW strike of this drum belongs at this position given the requested fill, span, contour and previous decisions. You are choosing the actual rhythm; no preset will be applied.`,
                 criteria: {
                   keep: "Preserve the original cell exactly. Default outside explicit targets.",
                   remove: "Remove the explicitly targeted hit.",
