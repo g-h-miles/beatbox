@@ -498,6 +498,7 @@ describe("one-bar endpoint", () => {
             : {
                 top: { type: "choice", choice: "eighths" },
                 feel: { type: "choice", choice: "straight" },
+                variation: { type: "choice", choice: "unchanged" },
                 fill: { type: "choice", choice: "none" },
                 kit: { type: "choice", choice: "electronic" },
               },

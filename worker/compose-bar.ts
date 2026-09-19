@@ -1,6 +1,8 @@
 import { drumKits, type DrumKit } from "../src/drum-kits";
 import {
   arrangeBar,
+  variations,
+  applyVariation,
   applyFill,
   fills,
   type BarPlan,
@@ -67,12 +69,18 @@ export async function composeBar(
       currentBar: index + 1,
       totalBars: bars,
       resolution,
+      phraseRole: [
+        "Establish the main motif",
+        "Answer the motif with a small change",
+        "Develop the groove while retaining the pulse",
+        "Create a restrained turnaround into bar 1",
+      ][index],
       previousDecisions: arrangements.map(
         (plan, i) => `Bar ${i + 1}: ${JSON.stringify(plan)}`,
       ),
       previousNotes: steps.map((s) => ({ ...s })),
       instruction:
-        "Arrange ONLY currentBar within this complete phrase. Read bar-specific requests carefully. A fill on bar 3 applies ONLY when currentBar is 3. For other bars maintain the established groove unless explicitly asked to change it. Fills are chosen separately after the foundation: do not reject a fill request because foundation options do not contain fills. Return to the underlying groove after a fill. Do not force variation, and do not copy a previous fill into later bars.",
+        "Arrange ONLY currentBar within this complete phrase. Read bar-specific requests carefully. A fill on bar 3 applies ONLY when currentBar is 3. By default compose a coherent developing four-bar phrase, not four identical copies: establish the motif, answer it subtly, develop it, and lead back into the loop. Keep the foundational groove recognizable. Exact note instructions, repeat-exactly requests and instrument exclusions override development. Variation is chosen separately; do not switch genres to create variety. Fills are chosen separately after the foundation: do not reject a fill request because foundation options do not contain fills. Return to the underlying groove after a fill. Do not copy a previous fill into later bars. Use small non-fill variations on ordinary bars; no-fills still permits small variations unless identical repetition is requested.",
     };
     const foundationOptions = Object.fromEntries(
       Object.entries(foundations).map(([key, v]) => [key, v.description]),
@@ -135,6 +143,12 @@ export async function composeBar(
               "The explicitly required cymbal phrase is unavailable.",
           },
         },
+        variation: {
+          type: "choice",
+          instructions:
+            "Choose the small variation for CURRENT BAR according to phraseRole. Establish the motif unchanged on bar 1. By default later bars should develop it using distinct compatible variations, not all unchanged. Explicit identical repetition or exact position constraints take priority: use unchanged when required. No fills means no rolls; subtle variations are still permitted. Check that the selected variation actually changes the existing foundation/cymbals and respects exclusions. Avoid repeating the same variation in adjacent bars.",
+          criteria: variations,
+        },
         feel: {
           type: "choice",
           instructions:
@@ -144,7 +158,7 @@ export async function composeBar(
         fill: {
           type: "choice",
           instructions:
-            "Which fill, if any, belongs in CURRENT BAR? An explicit bar number is binding. Choose none for every bar not designated for a fill. If fills are generally requested without a location, use the last bar. No fills unless requested. A generic fill can be a short snare roll; unavailable instruments or explicitly unsupported fill patterns require unsupported.",
+            "Which fill, if any, belongs in CURRENT BAR? An explicit bar number is binding. Choose none for every bar not designated for a fill. If fills are generally requested without a location, use the last bar. A restrained last-bar fill is allowed for a general groove request; choose none when the user says no fills or gives exact positions. A generic fill can be a short snare roll; unavailable instruments or explicitly unsupported fill patterns require unsupported.",
           criteria: {
             ...fillOptions,
             unsupported:
@@ -158,7 +172,13 @@ export async function composeBar(
     const fill = selected(second, "fill", { ...fillOptions, unsupported: "" });
     if (top === "unsupported" || fill === "unsupported") return fail();
     const feel = selected(second, "feel", feels) as BarPlan["feel"];
+    const variation = selected(
+      second,
+      "variation",
+      variations,
+    ) as keyof typeof variations;
     const plan: BarPlan = {
+      variation,
       foundation: foundation as BarPlan["foundation"],
       top: top as BarPlan["top"],
       feel,
@@ -167,7 +187,10 @@ export async function composeBar(
     arrangements.push(plan);
     steps.push(
       ...applyFill(
-        arrangeBar(plan.foundation, plan.top, plan.feel, 1, resolution),
+        applyVariation(
+          arrangeBar(plan.foundation, plan.top, plan.feel, 1, resolution),
+          variation,
+        ),
         plan.fill,
       ).steps,
     );

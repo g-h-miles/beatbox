@@ -196,7 +196,45 @@ export const fills = {
   fine_roll:
     "A one-beat snare fill across beat 4 in thirty-second notes. Keep the kick pattern, clear cymbals during the fill.",
 } as const;
+export const variations = {
+  unchanged:
+    "Keep the foundation and cymbal phrase unchanged. Use for the opening motif, an explicitly identical repeat, or exact note-position constraints.",
+  kick_pickup:
+    "Add one kick at 4& leading into the next bar. Keep other notes unchanged. Not for strict four-on-floor-only or one-drop-only kick instructions.",
+  snare_ghost:
+    "Add a quiet snare ghost on 3a, keeping the main backbeats unchanged. Not when snare positions are strictly specified or snare is excluded.",
+  hat_answer:
+    "A quiet closed-hat answer on 2a and 4a. Preserve the main pulse. Not for exact hat-position constraints or cymbal exclusions.",
+  open_lift:
+    "Open the existing hat on 4& for a short lift. Keep its velocity and all other notes. Only when a closed hat exists there and open hats are allowed.",
+  hat_space:
+    "Leave out the hat on 4& to create a small breath before the next bar. Only when a hat exists there and exact positions were not requested.",
+} as const;
+export function applyVariation(
+  groove: BarGroove,
+  variation: keyof typeof variations,
+): BarGroove {
+  const steps = groove.steps.map((s) => ({ ...s }));
+  const r = groove.resolution ?? 16;
+  const at = (i: number) => steps[(i * r) / 16];
+  if (variation === "kick_pickup") at(14).kick ||= 80;
+  if (variation === "snare_ghost") at(11).snare ||= 32;
+  if (variation === "hat_answer")
+    for (const i of [7, 15]) {
+      if (!at(i).open && !at(i).ride) at(i).closed ||= 32;
+    }
+  if (variation === "open_lift" && at(14).closed) {
+    at(14).open = at(14).closed;
+    at(14).closed = 0;
+  }
+  if (variation === "hat_space") {
+    at(14).closed = 0;
+    at(14).open = 0;
+  }
+  return { ...groove, steps };
+}
 export type BarPlan = {
+  variation?: keyof typeof variations;
   foundation: keyof typeof foundations;
   top: keyof typeof tops;
   feel: keyof typeof feels;

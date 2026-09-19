@@ -60,6 +60,7 @@ describe("whole-bar arrangement", () => {
         answers: {
           top: { type: "choice", choice: "offbeat_accent" },
           feel: { type: "choice", choice: "straight" },
+          variation: { type: "choice", choice: "unchanged" },
           fill: { type: "choice", choice: "none" },
           kit: { type: "choice", choice: "electronic" },
         },
@@ -176,6 +177,7 @@ describe("contextual phrase", () => {
                 type: "choice",
                 choice: state.currentBar === 3 ? "laid_back" : "straight",
               },
+              variation: { type: "choice", choice: "unchanged" },
               fill: {
                 type: "choice",
                 choice: state.currentBar === 3 ? "snare_roll" : "none",
@@ -218,4 +220,51 @@ describe("contextual phrase", () => {
       expect(notes.every((n) => n.time + n.duration <= 8)).toBe(true);
     },
   );
+});
+
+describe("developing phrase playback", () => {
+  it("plays each bar's actual notes instead of replaying bar one", async () => {
+    vi.useFakeTimers();
+    const { applyVariation } = await import("../src/bar-groove");
+    const base = arrangeBar("straight", "eighths", "straight", 1, 16);
+    const bars = ["unchanged", "hat_answer", "snare_ghost", "hat_space"].map(
+      (v) => applyVariation(base, v as any),
+    );
+    const groove = { ...base, bars: 4, steps: bars.flatMap((b) => b.steps) };
+    let now = 0;
+    const hit = vi.fn();
+    const player = new BarPlayer(groove, 120, {
+      now: () => now,
+      hit,
+      bar: vi.fn(),
+      click: vi.fn(),
+      position: vi.fn(),
+    });
+    player.start();
+    for (let i = 1; i < 4; i++) {
+      now = i * 2;
+      player.tick();
+    }
+    for (let i = 0; i < 4; i++) {
+      const played = hit.mock.calls
+        .filter(
+          ([, time]) =>
+            time >= i * 2 + 0.08 - 0.00001 &&
+            time < (i + 1) * 2 + 0.08 - 0.00001,
+        )
+        .map(([note, time]) => ({
+          drum: note.drum,
+          velocity: note.velocity,
+          time: Math.round((time - 0.08) * 1000),
+        }));
+      const expected = barNotes(bars[i], 120).map((n) => ({
+        drum: n.drum,
+        velocity: n.velocity,
+        time: Math.round((n.time + i * 2) * 1000),
+      }));
+      expect(played).toEqual(expected);
+    }
+    expect(new Set(bars.map((b) => JSON.stringify(b.steps))).size).toBe(4);
+    player.stop();
+  });
 });
