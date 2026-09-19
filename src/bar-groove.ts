@@ -1,7 +1,7 @@
 import type { DrumKit } from "./drum-kits";
-import { drums, type Drum } from "./model";
+import { drums, type Drum } from "./composer-model";
 import { type BeatStep, stepSeconds } from "./generator";
-import { midi } from "./midi";
+import { midi } from "./composer-midi";
 
 // Complete phrases, not independent yes/no hit decisions. These are deliberately
 // authored vocabulary; the model arranges them rather than inventing arbitrary MIDI.
@@ -186,6 +186,10 @@ export const feels = {
     "Clearly swung sixteenths, 62% swing. Use for an explicit swung or shuffle-like sixteenth feel, not ordinary straight reggae.",
 } as const;
 export const fills = {
+  tom_run:
+    "A descending high/mid/low tom fill on beat 4: high on 4, mid on 4e, low on 4& and 4a. Clear snare and cymbals during the fill, retain the kick.",
+  tom_build:
+    "A two-beat descending tom fill over beats 3 and 4. High toms on 3/3e, mid toms on 3&/3a, low toms on 4/4e/4&/4a. Clear snare and cymbals during the fill, retain the kick.",
   none: "No fill. Keep the chosen groove unchanged for this bar.",
   snare_pickup:
     "A short snare pickup on 4& and 4a, building into the following bar. Keep the kick pattern.",
@@ -247,6 +251,22 @@ export function applyFill(
   if (fill === "none") return groove;
   const resolution = groove.resolution ?? 16;
   const steps = groove.steps.map((s) => ({ ...s }));
+  if (fill === "tom_run" || fill === "tom_build") {
+    const start = fill === "tom_build" ? resolution / 2 : (resolution * 3) / 4;
+    const count = fill === "tom_build" ? 8 : 4;
+    for (let i = start; i < resolution; i++) {
+      steps[i].snare = 0;
+      steps[i].closed = 0;
+      steps[i].open = 0;
+      steps[i].ride = 0;
+    }
+    for (let n = 0; n < count; n++) {
+      const voice =
+        n < count / 4 ? "tom_high" : n < count / 2 ? "tom_mid" : "tom_low";
+      steps[start + (n * resolution) / 16][voice] = n % 2 ? 80 : 104;
+    }
+    return { ...groove, steps };
+  }
   const start =
     fill === "snare_build"
       ? resolution / 2

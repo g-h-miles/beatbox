@@ -14,13 +14,17 @@ describe("surgical amendments", () => {
           {
             type: "choice",
             choice:
-              k === "supported" || k === "closed"
+              k === "supported" || k === "closed" || k.startsWith("bar_")
                 ? "yes"
                 : k.startsWith("p")
                   ? k === "p75"
-                    ? "v56"
+                    ? "add"
                     : "keep"
-                  : "no",
+                  : k.startsWith("alignment_")
+                    ? "all"
+                    : k.startsWith("v")
+                      ? "v56"
+                      : "no",
           },
         ]),
       ),
@@ -50,7 +54,7 @@ describe("surgical amendments", () => {
   });
   it("rejects malformed existing notes and arrangements", () => {
     const g = arrangeBar("straight", "eighths", "straight", 4, 16);
-    expect(validateGroove(g, 4, 16)).toBe(g);
+    expect(validateGroove(g, 4, 16)).toEqual(g);
     expect(() => validateGroove({ ...g, bars: 1 }, 4, 16)).toThrow("input");
     expect(() => validateGroove({ ...g, arrangements: [{}] }, 4, 16)).toThrow(
       "input",

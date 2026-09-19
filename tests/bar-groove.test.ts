@@ -268,3 +268,25 @@ describe("developing phrase playback", () => {
     player.stop();
   });
 });
+
+describe("tom fills", () => {
+  it.each([16, 32])(
+    "plays a descending run within beat 4 at 1/%s",
+    async (resolution) => {
+      const { applyFill } = await import("../src/bar-groove");
+      const g = applyFill(
+        arrangeBar("four_floor", "eighths", "straight", 1, resolution),
+        "tom_run",
+      );
+      const toms = barNotes(g, 120).filter((n) => n.drum.startsWith("tom_"));
+      expect(toms.map((n) => n.drum)).toEqual([
+        "tom_high",
+        "tom_mid",
+        "tom_low",
+        "tom_low",
+      ]);
+      expect(toms.map((n) => n.time)).toEqual([1.5, 1.625, 1.75, 1.875]);
+      expect(g.steps.filter((s) => s.kick)).toHaveLength(4);
+    },
+  );
+});

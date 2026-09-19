@@ -1,5 +1,5 @@
-import { drums, type Drum } from "./model";
-import { midi } from "./midi";
+import { drums, type Drum } from "./composer-model";
+import { midi } from "./composer-midi";
 
 export const VELOCITIES = [0, 32, 56, 80, 104, 127] as const;
 export type BeatStep = Record<Drum, number>;

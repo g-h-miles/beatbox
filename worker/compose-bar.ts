@@ -89,7 +89,7 @@ export async function composeBar(
       foundation: {
         type: "choice",
         instructions:
-          "Choose the underlying kick/snare relationship for CURRENT BAR, before adding any requested fill. Honor explicit exclusions and positions. Multi-bar structure and snare fills are supported separately. Choose unsupported only for unavailable underlying rhythms or meter.",
+          "Choose the underlying kick/snare relationship for CURRENT BAR, before adding any requested fill. Honor explicit exclusions and positions. Multi-bar structure and snare/tom fills are supported separately. Choose unsupported only for unavailable underlying rhythms or meter.",
         criteria: {
           ...foundationOptions,
           unsupported:
@@ -158,11 +158,11 @@ export async function composeBar(
         fill: {
           type: "choice",
           instructions:
-            "Which fill, if any, belongs in CURRENT BAR? An explicit bar number is binding. Choose none for every bar not designated for a fill. If fills are generally requested without a location, use the last bar. A restrained last-bar fill is allowed for a general groove request; choose none when the user says no fills or gives exact positions. A generic fill can be a short snare roll; unavailable instruments or explicitly unsupported fill patterns require unsupported.",
+            "Which fill, if any, belongs in CURRENT BAR? An explicit bar number is binding. Choose none for every bar not designated for a fill. If fills are generally requested without a location, use the last bar. A restrained last-bar fill is allowed for a general groove request; choose none when the user says no fills or gives exact positions. Choose tom_run or tom_build when toms are requested; high/mid/low toms are available. A generic fill can be a short snare roll; unavailable instruments or explicitly unsupported fill patterns require unsupported.",
           criteria: {
             ...fillOptions,
             unsupported:
-              "The specifically required fill cannot be represented, e.g. toms that are not available.",
+              "The specifically required fill cannot be represented, e.g. instruments outside the available drum kit.",
           },
         },
       },

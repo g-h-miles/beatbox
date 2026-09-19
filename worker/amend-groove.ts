@@ -1,4 +1,4 @@
-import { drums } from "../src/model";
+import { drums } from "../src/composer-model";
 import { VELOCITIES } from "../src/generator";
 import {
   foundations,
@@ -19,6 +19,13 @@ export function validateGroove(
   bars: number,
   resolution: number,
 ): BarGroove {
+  if (record(value) && Array.isArray(value.steps))
+    value = {
+      ...value,
+      steps: value.steps.map((s: unknown) =>
+        record(s) ? { tom_low: 0, tom_mid: 0, tom_high: 0, ...s } : s,
+      ),
+    };
   if (
     !record(value) ||
     value.bars !== bars ||
@@ -103,6 +110,35 @@ export async function amendGroove(
         },
       },
       ...Object.fromEntries(
+        Array.from({ length: groove.bars! }, (_, i) => [
+          `bar_${i + 1}`,
+          {
+            type: "choice",
+            instructions: `Does the requested edit apply to bar ${i + 1}? If a specific bar is named, only that bar is yes. If no bar is specified or all bars are requested, yes.`,
+            criteria: {
+              yes: "This bar is explicitly in scope.",
+              no: "This bar is excluded; keep every note.",
+            },
+          },
+        ]),
+      ),
+      ...Object.fromEntries(
+        drums.map((d) => [
+          `alignment_${d.id}`,
+          {
+            type: "choice",
+            instructions: `For edits to ${d.name}, what within-beat alignment is requested? A numbered beat without suffix (such as beat 3) means exactly its START, never the whole beat. If no specific onset is requested (e.g. make hats quieter), or several distinct alignments are requested, choose all.`,
+            criteria: {
+              start: "Only numbered beat starts (fraction 0).",
+              e: "Only e sixteenth (fraction 1/4).",
+              and: "Only & offbeat (fraction 1/2).",
+              a: "Only a sixteenth (fraction 3/4).",
+              all: "Multiple or unspecified alignments; let individual cell questions choose exact targets.",
+            },
+          },
+        ]),
+      ),
+      ...Object.fromEntries(
         drums.map((d) => [
           d.id,
           {
@@ -125,6 +161,11 @@ export async function amendGroove(
       modelCalls,
       inputTokens,
     };
+  const targetBars = new Set(
+    Array.from({ length: groove.bars! }, (_, i) => i + 1).filter(
+      (bar) => choice(scope, `bar_${bar}`, ["yes", "no"]) === "yes",
+    ),
+  );
   const targets = drums.filter(
     (d) => choice(scope, d.id, ["yes", "no"]) === "yes",
   );
@@ -133,6 +174,17 @@ export async function amendGroove(
   const edits: { step: number; drum: string; before: number; after: number }[] =
     [];
   for (const drum of targets) {
+    const alignment = choice(scope, `alignment_${drum.id}`, [
+      "start",
+      "e",
+      "and",
+      "a",
+      "all",
+    ]);
+    const fraction = { start: 0, e: 0.25, and: 0.5, a: 0.75 }[
+      alignment as "start" | "e" | "and" | "a"
+    ];
+
     for (let start = 0; start < steps.length; start += 32) {
       const positions = steps.slice(start, start + 32).map((s, j) => {
         const i = start + j;
@@ -158,49 +210,67 @@ export async function amendGroove(
           currentVelocity: s[drum.id],
         };
       });
+      const scopedPositions = positions.filter(
+        (p) =>
+          targetBars.has(p.bar) &&
+          (alignment === "all" || p.beatFraction === fraction),
+      );
+      if (!scopedPositions.length) continue;
       const r = await ask(
         {
           amendment: prompt,
           instrument: drum.name,
-          positions,
-          existingPattern: groove.steps,
+          positions: scopedPositions,
+          targetBars: [...targetBars],
+          instructionPriority:
+            "The amendment adds NEW hits even where the existing velocity is zero. Original arrangement labels or fill locations do not limit where a new hit may be added.",
           instruction:
             "Edit only explicitly requested positions. All other positions MUST keep their exact original velocity. Beat 2& means beat=2 AND syllable=&, not beat 2 onset. A specified bar excludes every other bar. For add, keep existing hits unless a velocity change is requested. For quieter/softer or louder requests, target EXISTING nonzero hits in the requested instrument and location and choose softer or louder; keep rests. Never add chokes, fills, accompaniment or improve other notes.",
         },
         Object.fromEntries(
-          positions.map((p) => [
-            `p${p.index}`,
-            {
-              type: "choice",
-              instructions: `At bar ${p.bar}, beat ${p.beat}, subdivision ${p.subdivision}/${p.subdivisionsPerBeat} (${p.syllable}), should this ${drum.name} cell change? Current velocity ${p.currentVelocity}. KEEP unless this exact cell is targeted by the amendment.`,
-              criteria: {
-                keep: "Preserve the original cell exactly. Default outside explicit targets.",
-                remove: "Remove the explicitly targeted hit.",
-                softer:
-                  "Make this existing targeted hit quieter by one dynamic level. Use for quieter/softer requests; keep rests.",
-                louder:
-                  "Make this existing targeted hit louder by one dynamic level. Use for louder requests; keep rests.",
-                v32: "Set explicitly targeted cell to ghost velocity 32.",
-                v56: "Set explicitly targeted cell to soft velocity 56; default added hi-hat.",
-                v80: "Set explicitly targeted cell to medium velocity 80.",
-                v104: "Set explicitly targeted cell to strong velocity 104; default added kick/snare.",
-                v127: "Set explicitly targeted cell to maximum accent 127.",
+          scopedPositions.flatMap((p) => [
+            [
+              `p${p.index}`,
+              {
+                type: "choice",
+                instructions: `At bar ${p.bar}, beat ${p.beat}, subdivision ${p.subdivision}/${p.subdivisionsPerBeat} (${p.syllable}), should this ${drum.name} cell change? Current velocity ${p.currentVelocity}. KEEP unless this exact cell is targeted by the amendment.`,
+                criteria: {
+                  keep: "Preserve the original cell exactly. Default outside explicit targets.",
+                  remove: "Remove the explicitly targeted hit.",
+                  softer:
+                    "Make this existing targeted hit quieter by one dynamic level. Use for quieter/softer requests; keep rests.",
+                  louder:
+                    "Make this existing targeted hit louder by one dynamic level. Use for louder requests; keep rests.",
+                  add: "Add a NEW hit at this explicitly targeted cell; keep an existing hit unchanged.",
+                  set: "Set the velocity of an explicitly targeted hit, or replace it at the requested intensity.",
+                },
               },
-            },
+            ],
+            [
+              `v${p.index}`,
+              {
+                type: "choice",
+                instructions: `If the edit adds or sets a ${drum.name} hit at bar ${p.bar} beat ${p.beat}, choose its velocity. Default kick/snare/toms 104, hats 56; explicit requested dynamics take priority.`,
+                criteria: {
+                  v32: "Ghost 32",
+                  v56: "Soft 56",
+                  v80: "Medium 80",
+                  v104: "Strong 104",
+                  v127: "Maximum 127",
+                },
+              },
+            ],
           ]),
         ),
       );
-      for (const p of positions) {
+      for (const p of scopedPositions) {
         const action = choice(r, `p${p.index}`, [
           "keep",
           "remove",
           "softer",
           "louder",
-          "v32",
-          "v56",
-          "v80",
-          "v104",
-          "v127",
+          "add",
+          "set",
         ]);
         const after =
           action === "keep"
@@ -229,7 +299,17 @@ export async function amendGroove(
                         )
                       ]
                     : 0
-                  : Number(action.slice(1));
+                  : action === "add" && p.currentVelocity
+                    ? p.currentVelocity
+                    : Number(
+                        choice(r, `v${p.index}`, [
+                          "v32",
+                          "v56",
+                          "v80",
+                          "v104",
+                          "v127",
+                        ]).slice(1),
+                      );
         if (after !== p.currentVelocity) {
           steps[p.index][drum.id] = after;
           edits.push({

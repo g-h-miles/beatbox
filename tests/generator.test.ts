@@ -6,7 +6,7 @@ import {
   stepSeconds,
   type BeatStep,
 } from "../src/generator";
-import { midi } from "../src/midi";
+import { midi } from "../src/composer-midi";
 const rest: BeatStep = {
   kick: 0,
   closed: 0,
@@ -15,6 +15,9 @@ const rest: BeatStep = {
   crash: 0,
   snare: 0,
   aux: 0,
+  tom_low: 0,
+  tom_mid: 0,
+  tom_high: 0,
 };
 function parseMidi(bytes: Uint8Array) {
   let i = 22,
