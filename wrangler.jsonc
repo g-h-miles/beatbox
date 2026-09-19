@@ -10,7 +10,7 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"],
+    "run_worker_first": ["/api/*", "/make", "/make/"],
   },
   "routes": [{ "pattern": "beatbox.grahammiles.me", "custom_domain": true }],
   "ratelimits": [

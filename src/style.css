@@ -1206,3 +1206,10 @@ aside > p,
 .timeline.dense .marker:not(.selected) span {
   display: none;
 }
+
+.header-right > a.text-button {display:inline-flex;align-items:center;white-space:nowrap;min-height:44px;}
+@media(max-width:480px){
+ .app header{flex-wrap:wrap;height:auto;min-height:72px;gap:0 12px;padding-bottom:4px;}
+ .app .header-right{gap:12px;}
+ .app .header-right button{margin-left:0;}
+}

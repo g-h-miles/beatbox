@@ -1,3 +1,7 @@
+# Beat maker moved
+
+The beat maker is now [Jevbox](https://jevbox.grahammiles.me), with its [own repository](https://github.com/g-h-miles/jevbox). Beatbox keeps audio-to-MIDI and currently hosts the shared private generation service. The generator notes below describe its development history.
+
 # BEATBOX
 
 Your mouth. Your groove. A small browser instrument for turning **monophonic beatboxing into unquantized drum MIDI**.

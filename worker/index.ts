@@ -13,7 +13,10 @@ const json = (body: unknown, status = 200) =>
 export default {
   async fetch(request: Request, env: AppEnv): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname === "/api/generate-step") return generateStep(request, env);
+    if (url.pathname === "/make" || url.pathname === "/make/")
+      return Response.redirect("https://jevbox.grahammiles.me/", 301);
+    if (url.pathname === "/api/generate-step")
+      return generateStep(request, env);
     if (url.pathname === "/api/status")
       return json({ configured: !!env.TYPESAFE_API_KEY });
     if (url.pathname !== "/api/classify")
